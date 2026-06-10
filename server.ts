@@ -75,14 +75,38 @@ const verifiedOrdersStore = new Set<string>();
 
 app.post("/api/cashfree/create-order", async (req, res) => {
   try {
-    const { courseId, courseName, price, couponCode, studentId, studentEmail, studentPhone } = req.body;
+    const { courseId, courseName, price, couponCode, studentId, studentName, studentEmail, studentPhone } = req.body;
 
-    if (!courseId || !price || !studentId) {
-      return res.status(400).json({ error: "Missing required order parameters (courseId, price, studentId)" });
+    // Rule 4: Validate Course ID exists
+    if (!courseId) {
+      return res.status(400).json({ error: "Validation Failure: Missing classroom course identifier." });
+    }
+
+    // Rule 4: Validate User logged in
+    if (!studentId) {
+      return res.status(400).json({ error: "Validation Failure: User must be logged in to create orders." });
+    }
+
+    // Rule 4: Validate Amount > 0
+    const rawPrice = parseFloat(price);
+    if (isNaN(rawPrice) || rawPrice <= 0) {
+      return res.status(400).json({ error: "Validation Failure: Subtotal price must be greater than zero." });
+    }
+
+    // Rule 4: Validate Customer details available
+    if (!studentName || studentName.trim() === "") {
+      return res.status(400).json({ error: "Validation Failure: Billing Full Name is required." });
+    }
+    if (!studentEmail || studentEmail.trim() === "") {
+      return res.status(400).json({ error: "Validation Failure: Billing Email address is required." });
+    }
+    const cleanPhone = studentPhone ? studentPhone.trim().replace(/\D/g, "") : "";
+    if (cleanPhone.length !== 10) {
+      return res.status(400).json({ error: "Validation Failure: A valid 10-digit customer mobile phone number is required." });
     }
 
     // Secure discount computation on the server-side
-    let finalAmount = parseFloat(price);
+    let finalAmount = rawPrice;
     let discount = 0;
 
     if (couponCode) {
@@ -99,17 +123,18 @@ app.post("/api/cashfree/create-order", async (req, res) => {
       finalAmount = Math.max(0, finalAmount - discount);
     }
 
+    // Rule 4: Validate Order ID generated starting with ORD_
     const orderId = "ORD_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
 
     const appId = process.env.CASHFREE_APP_ID;
     const secretKey = process.env.CASHFREE_SECRET_KEY;
     const isSandbox = process.env.CASHFREE_MODE !== "production";
 
-    // Standard redirect back to user portal
-    let paymentUrl = `/api/cashfree/mock-checkout?orderId=${orderId}&courseId=${courseId}&amount=${finalAmount}&studentId=${encodeURIComponent(studentId)}&courseName=${encodeURIComponent(courseName)}&discount=${discount}&couponCode=${couponCode || ""}`;
+    // Dynamic return url template matching Cashfree placeholders
+    let paymentUrl = `/api/cashfree/mock-checkout?orderId=${orderId}&courseId=${courseId}&amount=${finalAmount}&studentId=${encodeURIComponent(studentId)}&studentName=${encodeURIComponent(studentName)}&studentEmail=${encodeURIComponent(studentEmail)}&studentPhone=${encodeURIComponent(cleanPhone)}&courseName=${encodeURIComponent(courseName)}&discount=${discount}&couponCode=${couponCode || ""}`;
     let paymentSessionId = "session_" + Math.random().toString(36).substring(7);
 
-    // If actual Cashfree API credentials are set, do the secure API request
+    // Rule 1: Securely generate order backend side. If actual Cashfree API credentials are set, call official PG REST API.
     if (appId && secretKey) {
       try {
         const url = isSandbox 
@@ -130,27 +155,38 @@ app.post("/api/cashfree/create-order", async (req, res) => {
             order_currency: "INR",
             customer_details: {
               customer_id: studentId.toString().substring(0, 50),
-              customer_email: studentEmail || "student@edachievers.com",
-              customer_phone: studentPhone || "9876543210"
+              customer_name: studentName,
+              customer_email: studentEmail,
+              customer_phone: cleanPhone
             },
             order_meta: {
-              return_url: `${req.protocol}://${req.get("host")}/user.html?payment_status=SUCCESS&order_id=${orderId}&course_id=${courseId}&amount=${Math.round(finalAmount * 100) / 100}&discount=${Math.round(discount * 100) / 100}&coupon=${couponCode || ""}`
+              return_url: `${req.protocol}://${req.get("host")}/user.html?payment_status={payment_status}&order_id={order_id}&course_id=${courseId}&amount=${Math.round(finalAmount * 100) / 100}&discount=${Math.round(discount * 100) / 100}&coupon=${couponCode || ""}`
             }
           })
         });
 
         if (response.ok) {
           const apiData: any = await response.json();
+          // Rule 5: Generate dynamic payment_session_id from live gateway response
           paymentSessionId = apiData.payment_session_id;
           paymentUrl = apiData.payment_link || apiData.payments?.payment_link || `https://payments.cashfree.com/order/#${paymentSessionId}`;
-          console.log(`Cashfree production order created: ${orderId}, amount: ${finalAmount}`);
+          
+          // Rule 7: Add Payment Debug Logs: Order Created & Session Generated
+          console.log(`[PAYMENT_DEBUG] Order Created: orderId = ${orderId}, courseId = ${courseId}, Amount = ${finalAmount}`);
+          console.log(`[PAYMENT_DEBUG] Session Generated: paymentSessionId = ${paymentSessionId}`);
         } else {
           const errText = await response.text();
-          console.error("Cashfree order creation API rejected:", response.status, errText);
+          console.error("[PAYMENT_DEBUG] Cashfree order creation API rejected check:", response.status, errText);
+          return res.status(400).json({ error: "Unable to create payment session. Cashfree gateway rejection." });
         }
-      } catch (err) {
-        console.error("Cashfree API integration failure. Graceful Mocking Activated.", err);
+      } catch (err: any) {
+        console.error("[PAYMENT_DEBUG] Cashfree API integration failure:", err);
+        return res.status(500).json({ error: "Payment gateway is temporarily unavailable. Please try again." });
       }
+    } else {
+      // In Mock Mode, print the simulated logs as well
+      console.log(`[PAYMENT_DEBUG] Order Created (Mock): orderId = ${orderId}, courseId = ${courseId}, Amount = ${finalAmount}`);
+      console.log(`[PAYMENT_DEBUG] Session Generated (Mock): paymentSessionId = ${paymentSessionId}`);
     }
 
     res.json({
@@ -350,8 +386,15 @@ app.get("/api/cashfree/verify-payment", async (req, res) => {
           let finalStatus = "PENDING";
           if (pStatus === "PAID") {
             finalStatus = "SUCCESS";
+            // Rule 7: Add Payment Debug Logs: Payment Success
+            console.log(`[PAYMENT_DEBUG] Payment Success for Order ID: ${orderId}`);
           } else if (pStatus === "EXPIRED" || pStatus === "FAILED") {
             finalStatus = "FAILED";
+            // Rule 7: Add Payment Debug Logs: Payment Failed
+            console.log(`[PAYMENT_DEBUG] Payment Failed for Order ID: ${orderId}`);
+          } else {
+            // Rule 7: Add Payment Debug Logs: Payment Pending
+            console.log(`[PAYMENT_DEBUG] Payment Pending status for Order ID: ${orderId}`);
           }
 
           let alreadyProcessed = false;
@@ -378,10 +421,21 @@ app.get("/api/cashfree/verify-payment", async (req, res) => {
             }
           });
         } else {
-          console.error("Cashfree verification API rejected check, status:", response.status);
+          const errText = await response.text();
+          console.error("[PAYMENT_DEBUG] Cashfree verification API rejected check, status:", response.status, errText);
+          return res.status(response.status).json({
+            verified: false,
+            status: "FAILED",
+            error: "Unable to verify transaction history at Cashfree secure servers."
+          });
         }
-      } catch (err) {
-        console.error("Cashfree API Verification request failure:", err);
+      } catch (err: any) {
+        console.error("[PAYMENT_DEBUG] Cashfree API Verification request failure:", err);
+        return res.status(500).json({
+          verified: false,
+          status: "FAILED",
+          error: "Network latency error reaching Cashfree verification API."
+        });
       }
     }
 
@@ -389,10 +443,16 @@ app.get("/api/cashfree/verify-payment", async (req, res) => {
     let status = "FAILED";
     if (paymentStatus === "SUCCESS") {
       status = "SUCCESS";
+      // Rule 7: Add Payment Debug Logs: Payment Success
+      console.log(`[PAYMENT_DEBUG] Payment Success for Order ID (Mock): ${orderId}`);
     } else if (paymentStatus === "PENDING") {
       status = "PENDING";
-    } else if (paymentStatus === "CANCELLED") {
-      status = "CANCELLED";
+      // Rule 7: Add Payment Debug Logs: Payment Pending
+      console.log(`[PAYMENT_DEBUG] Payment Pending status for Order ID (Mock): ${orderId}`);
+    } else {
+      status = "FAILED";
+      // Rule 7: Add Payment Debug Logs: Payment Failed
+      console.log(`[PAYMENT_DEBUG] Payment Failed for Order ID (Mock): ${orderId}`);
     }
 
     let alreadyProcessed = false;

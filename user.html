@@ -1038,6 +1038,27 @@
           <p id="co-coupon-status-lbl" class="hidden text-5xs font-bold flex items-center gap-1 mt-1"></p>
         </div>
 
+        <!-- Billing Contact Information Segment (Required by Cashfree APIs) -->
+        <div class="space-y-2.5">
+          <label class="block text-4xs font-bold text-slate-450 uppercase tracking-widest"><i class="fa-solid fa-address-card text-orange-500 mr-1 animate-pulse"></i> BILLING CONTACT INFO (REQUIRED)</label>
+          <div class="grid grid-cols-1 gap-2.5">
+            <div class="relative">
+              <span class="absolute left-3 top-2.5 text-slate-450 text-[10px]"><i class="fa fa-user"></i></span>
+              <input type="text" id="co-student-name" placeholder="Billing Full Name (e.g., Harsh Tiwari)" class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-3xs font-extrabold text-slate-800 uppercase focus:outline-none focus:border-orange-500" required>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div class="relative">
+                <span class="absolute left-3 top-2.5 text-slate-450 text-[10px]"><i class="fa fa-envelope"></i></span>
+                <input type="email" id="co-student-email" placeholder="Billing Email Address" class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-3xs font-extrabold text-slate-850 focus:outline-none focus:border-orange-500" required>
+              </div>
+              <div class="relative">
+                <span class="absolute left-3 top-2.5 text-slate-450 text-[10px]"><i class="fa fa-phone"></i></span>
+                <input type="tel" id="co-student-phone" placeholder="10-Digit Mobile" maxlength="10" class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-3xs font-extrabold text-slate-850 focus:outline-none focus:border-orange-500 font-mono" required>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Premium Android Payment Method Selector -->
         <div class="space-y-3">
           <label class="block text-4xs font-bold text-slate-450 uppercase tracking-widest"><i class="fa-solid fa-credit-card text-orange-500 mr-1"></i> SELECT SECURE PAYMENT OPTION</label>
@@ -2354,6 +2375,17 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
         pBtn.innerHTML = `<i class="fas fa-lock"></i> <span>SECURE PAY</span> <i class="fa fa-arrow-right text-[10px]"></i>`;
       }
 
+      // Pre-fill Billing Contact details (for secure Cashfree checkout)
+      const nInp = document.getElementById("co-student-name");
+      const eInp = document.getElementById("co-student-email");
+      const pInp = document.getElementById("co-student-phone");
+
+      if (currentUser) {
+        if (nInp) nInp.value = localStorage.getItem(`edach_name_${currentUser.uid}`) || currentUser.displayName || "";
+        if (eInp) eInp.value = localStorage.getItem(`edach_email_${currentUser.uid}`) || currentUser.email || "";
+        if (pInp) pInp.value = localStorage.getItem(`edach_phone_${currentUser.uid}`) || "";
+      }
+
       // Launch Drawer
       document.getElementById("checkout-drawer-modal").classList.remove("hidden");
     };
@@ -2458,22 +2490,75 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
     };
 
     window.executeOrderCreation = function() {
+      const pBtn = document.getElementById("co-pay-proceed-btn");
+
+      // Rule 4: Verify terms compliance first
       const checkbox = document.getElementById("compliance-terms-checkbox");
       if (checkbox && !checkbox.checked) {
         alert("Compliance Action Required:\nPlease review and check the Terms Acceptance checkbox specifying you agree with Ed Achievers Terms & Conditions and Refunds Policy prior to making any core payments.");
-        const pBtn = document.getElementById("co-pay-proceed-btn");
-        if (pBtn) {
-          pBtn.disabled = false;
-          pBtn.innerHTML = `<i class="fas fa-lock"></i> <span>SECURE PAY</span> <i class="fa fa-arrow-right text-[10px]"></i>`;
-        }
         return;
       }
 
-      const pBtn = document.getElementById("co-pay-proceed-btn");
+      // Rule 4: Validate User logged in
+      if (!currentUser || !currentUser.uid) {
+        alert("Authentication Required: Please login to proceed with your enrollment payment.");
+        document.getElementById("auth-screen").classList.remove("hidden");
+        return;
+      }
+
+      // Rule 4: Retrieve Customer contact values from inputs
+      const studentNameInput = document.getElementById("co-student-name");
+      const studentEmailInput = document.getElementById("co-student-email");
+      const studentPhoneInput = document.getElementById("co-student-phone");
+
+      const studentName = studentNameInput ? studentNameInput.value.trim() : "";
+      const studentEmail = studentEmailInput ? studentEmailInput.value.trim() : "";
+      const studentPhone = studentPhoneInput ? studentPhoneInput.value.trim().replace(/\D/g, "") : "";
+
+      // Rule 4: Validate Course ID exists
+      if (!activeCheckoutCourseId || !localDBInstance.courses[activeCheckoutCourseId]) {
+        alert("Validation Failure: The chosen exam course selection is invalid or does not exist.");
+        return;
+      }
+
+      // Rule 4: Validate Amount > 0
+      if (currentNetPrice <= 0) {
+        alert("Validation Failure: Secure checkout price must be greater than zero.");
+        return;
+      }
+
+      // Rule 4: Validate Customer name available
+      if (!studentName) {
+        alert("Validation Failure: Please enter your Full Name for billing records and course registration.");
+        if (studentNameInput) studentNameInput.focus();
+        return;
+      }
+
+      // Rule 4: Validate Customer email available
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!studentEmail || !emailRegex.test(studentEmail)) {
+        alert("Validation Failure: Please provide a valid email address for receiving invoice confirmation.");
+        if (studentEmailInput) studentEmailInput.focus();
+        return;
+      }
+
+      // Rule 4: Validate Customer phone available
+      if (!studentPhone || studentPhone.length !== 10) {
+        alert("Validation Failure: Please enter a correct 10-digit mobile number to setup contact gateway billing.");
+        if (studentPhoneInput) studentPhoneInput.focus();
+        return;
+      }
+
+      // Enable Loading Button state
       if (pBtn) {
         pBtn.disabled = true;
-        pBtn.innerHTML = `<i class="fas fa-spinner animate-spin"></i> CREATING ENROLMENT PROFILE...`;
+        pBtn.innerHTML = `<i class="fas fa-spinner animate-spin"></i> SECURING SESSION...`;
       }
+
+      // Cache elements in localStorage for seamless repeat purchases
+      localStorage.setItem(`edach_phone_${currentUser.uid}`, studentPhone);
+      localStorage.setItem(`edach_name_${currentUser.uid}`, studentName);
+      localStorage.setItem(`edach_email_${currentUser.uid}`, studentEmail);
 
       const payload = {
         courseId: activeCheckoutCourseId,
@@ -2481,30 +2566,52 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
         price: activeCheckoutCoursePrice,
         couponCode: currentActiveCoupon,
         studentId: currentUser.uid,
-        studentEmail: currentUser.email || "student@edachievers.com",
-        studentPhone: "9876543210"
+        studentName: studentName,
+        studentEmail: studentEmail,
+        studentPhone: studentPhone
       };
 
+      // Rule 7: Add Payment Debug Logs: Order Created
+      console.log("%c[PAYMENT_DEBUG] Order Created Triggered on client size", "color: #f97316; font-weight: bold", payload);
+
+      // Rule 1: Never create Cashfree orders directly from frontend JavaScript. Order creation triggers secure backend API.
       fetch("/api/cashfree/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       })
       .then(res => {
-        if (!res.ok) throw new Error("Order rejected by secure billing gateway");
+        // Rule 11: Show user-friendly messages instead of raw gateway system errors
+        if (!res.ok) {
+          return res.json().then(data => {
+            throw new Error(data.error || "Unable to create payment session. Please try again.");
+          }).catch(() => {
+            throw new Error("Payment gateway is temporarily unavailable. Please try again later.");
+          });
+        }
         return res.json();
       })
       .then(orderData => {
-        if (orderData.paymentUrl) {
-          // Open mock or real checkout portal page url
-          window.location.href = orderData.paymentUrl;
-        } else {
-          throw new Error("Missing secure redirect token URL");
+        // Rule 5: Generate a valid payment_session_id before opening checkout.
+        // Rule 6: If payment_session_id is invalid: Show proper error, Do not open checkout.
+        if (!orderData.paymentSessionId) {
+          throw new Error("Unable to create payment session. Invalid cashfree gateway token.");
         }
+
+        // Rule 7: Add Payment Debug Logs: Session Generated
+        console.log("%c[PAYMENT_DEBUG] Order Created securely: ID = " + orderData.orderId, "color: #10b981; font-weight: bold;");
+        console.log("%c[PAYMENT_DEBUG] Session Generated successfully: SessionId = " + orderData.paymentSessionId, "color: #10b981; font-weight: bold;");
+        console.log("%c[PAYMENT_DEBUG] Checkout Opened: Redirection to payment page initiated.", "color: #f59e0b; font-weight: bold;");
+
+        // Open checkout (hosted/mock) url
+        window.location.href = orderData.paymentUrl;
       })
       .catch(err => {
-        console.error("Secure payment setup failure:", err);
-        alert(err.message || "Failed to reach secure checkout gateway. Try again.");
+        // Rule 7: Add Payment Debug Logs: Payment Failed
+        console.error("%c[PAYMENT_DEBUG] Payment Failed during setup:", "color: #ef4444; font-weight: bold;", err);
+        
+        // Rule 11: Decent user error prompter
+        alert(err.message || "Unable to create payment session. Please try again.");
         if (pBtn) {
           pBtn.disabled = false;
           pBtn.innerHTML = `<i class="fas fa-lock"></i> <span>SECURE PAY</span> <i class="fa fa-arrow-right text-[10px]"></i>`;
@@ -2551,6 +2658,9 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
       .then(res => res.json())
       .then(verifiedData => {
         if (verifiedData.status === "SUCCESS") {
+          // Rule 7: Add Payment Debug Logs: Payment Success
+          console.log("%c[PAYMENT_DEBUG] Payment Success: Verification confirmed for " + orderId, "color: #10b981; font-weight: bold;");
+
           // Clear screens
           document.getElementById("pay-prompter-loading-pane").classList.add("hidden");
           document.getElementById("pay-prompter-pending-pane").classList.add("hidden");
@@ -2604,6 +2714,9 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
             });
           }
         } else if (verifiedData.status === "PENDING") {
+          // Rule 7: Add Payment Debug Logs: Payment Pending
+          console.log("%c[PAYMENT_DEBUG] Payment Pending: Awaiting verification for " + orderId, "color: #f59e0b; font-weight: bold;");
+
           document.getElementById("pay-prompter-loading-pane").classList.add("hidden");
           document.getElementById("pay-prompter-success-pane").classList.add("hidden");
           document.getElementById("pay-prompter-failed-pane").classList.add("hidden");
@@ -2625,6 +2738,9 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
           }, 1000);
 
         } else {
+          // Rule 7: Add Payment Debug Logs: Payment Failed
+          console.log("%c[PAYMENT_DEBUG] Payment Failed / Cancelled for " + orderId + ", state: " + verifiedData.status, "color: #ef4444; font-weight: bold;");
+
           // FAILED or CANCELLED, render Failure pane
           document.getElementById("pay-prompter-loading-pane").classList.add("hidden");
           document.getElementById("pay-prompter-success-pane").classList.add("hidden");
