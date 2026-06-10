@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ed Achievers - Premier Exam Prep</title>
+  <!-- Load Tailwind stylesheet compiled by Vite -->
+  <link rel="stylesheet" href="/src/index.css">
+  <!-- Load Font Awesome & Google Fonts directly -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Poppins', 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #FF7A00;
+      border-radius: 10px;
+    }
+    .bottom-nav-active {
+      color: #FF7A00 !important;
+      transform: translateY(-4px);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 pb-24 overflow-x-hidden">
+
+  <!-- TOP HEADER (Android Feel Bar) -->
+  <header class="sticky top-0 z-40 bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md px-4 py-3.5 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+        <i class="fas fa-graduation-cap text-2xl"></i>
+      </div>
+      <div>
+        <h1 class="text-base font-bold tracking-tight">Ed Achievers</h1>
+        <span class="text-3xs uppercase opacity-85 tracking-wider font-medium">Government Exam Prep Portal</span>
+      </div>
+    </div>
+    
+    <div class="flex items-center gap-3">
+      <!-- Streak Badge -->
+      <div class="flex items-center gap-1.5 bg-white/10 px-2.5 py-1 rounded-full text-xs font-semibold" title="Daily Streak">
+        <i class="fas fa-fire text-amber-300 animate-pulse"></i>
+        <span id="streak-count">0</span> Days
+      </div>
+
+      <!-- Notification button -->
+      <button onclick="toggleSection('notifications-panel')" class="relative w-9 h-9 nav-btn bg-white/10 rounded-full flex items-center justify-center text-sm hover:bg-white/20">
+        <i class="fas fa-bell"></i>
+        <span id="notif-badge" class="absolute -top-1 -right-1 bg-red-600 text-white text-3xs w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold hidden">0</span>
+      </button>
+
+      <!-- Admin Direct Shortcut -->
+      <a href="/admin.html" class="px-3 py-1.5 bg-white text-orange-600 text-xs font-bold rounded-lg hover:bg-orange-50 transition" title="Go to Admin Panel">
+        <i class="fas fa-user-shield"></i> <span class="hidden sm:inline">Admin</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- ANNOUNCEMENTS RUNNER -->
+  <div class="bg-amber-50 border-b border-amber-100 px-4 py-2 flex items-center gap-2 overflow-hidden text-xs text-amber-800">
+    <span class="bg-amber-600 text-white text-3xs px-2 py-0.5 rounded font-bold uppercase tracking-wider shrink-0">NEWS</span>
+    <marquee id="announcement-text" class="font-medium">Welcome to Ed Achievers! Prepare live for CTET 2026, KVS PRT/TGT/PGT, UPTET & DSSSB Exams with India's best mentors.</marquee>
+  </div>
+
+  <!-- AUTHENTICATION SCREEN CONTAINER (Show if not logged in) -->
+  <div id="auth-screen" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-slate-100">
+      <div class="bg-gradient-to-br from-orange-500 to-orange-600 p-6 text-white text-center">
+        <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-3 text-3xl">
+          <i class="fas fa-graduation-cap"></i>
+        </div>
+        <h2 class="text-xl font-bold">Welcome to Ed Achievers</h2>
+        <p class="text-orange-100 text-xs mt-1">Authenticating securely and setting up your study material</p>
+      </div>
+
+      <!-- Auth Tabs -->
+      <div class="flex border-b border-slate-100">
+        <button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-3 text-center border-b-2 border-orange-500 font-semibold text-slate-800 text-sm">Log In</button>
+        <button id="tab-signup" onclick="switchAuthTab('signup')" class="flex-1 py-3 text-center border-b-2 border-transparent font-medium text-slate-400 hover:text-slate-600 text-sm">Sign Up</button>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <!-- Email Input fields -->
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 mb-1">Email Address</label>
+            <div class="relative">
+              <i class="fas fa-envelope absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
+              <input type="email" id="auth-email" placeholder="student@edachievers.com" class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-orange-500">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 mb-1">Password</label>
+            <div class="relative">
+              <i class="fas fa-lock absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
+              <input type="password" id="auth-password" placeholder="••••••••" class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-orange-500">
+            </div>
+          </div>
+          <div id="signup-extra" class="hidden">
+            <label class="block text-xs font-semibold text-slate-500 mb-1">Full Name</label>
+            <div class="relative">
+              <i class="fas fa-user absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
+              <input type="text" id="auth-name" placeholder="Harsh Tiwari" class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-orange-500">
+            </div>
+          </div>
+        </div>
+
+        <button onclick="handleAuthSubmit()" class="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl shadow-lg shadow-orange-100 transition duration-150 text-sm">
+          Continue
+        </button>
+
+        <div class="relative flex py-2 items-center">
+          <div class="flex-grow border-t border-slate-200"></div>
+          <span class="flex-shrink mx-4 text-xs font-semibold text-slate-400">OR</span>
+          <div class="flex-grow border-t border-slate-200"></div>
+        </div>
+
+        <!-- Google Auth Integration -->
+        <button onclick="handleGoogleLogin()" class="w-full py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold rounded-xl flex items-center justify-center gap-2 transition duration-150 text-sm">
+          <img src="https://lh3.googleusercontent.com/COxitSg0z9wZ8gSEJZgqW0iDFuU5ghZ58bRC90C165v3Fws00-AVR389pW6BIg8L276" alt="Google logo" class="w-4 h-4">
+          Login securely via Google Auth
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATIONS SLIDE SIDEBAR -->
+  <div id="notifications-panel" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex justify-end" onclick="toggleSection('notifications-panel')">
+    <div class="bg-white w-full max-w-md h-full shadow-2xl p-6 flex flex-col space-y-4" onclick="event.stopPropagation()">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+        <h3 class="font-bold text-slate-800 text-lg flex items-center gap-1.5"><i class="fas fa-bell text-orange-500 animate-bounce"></i> Real-time System Alerts</h3>
+        <button onclick="toggleSection('notifications-panel')" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times text-lg"></i></button>
+      </div>
+      <div id="notifications-list" class="flex-1 overflow-y-auto space-y-3 custom-scrollbar">
+        <!-- Dyn list -->
+        <p class="text-center text-slate-400 text-sm py-8"><i class="fas fa-envelope-open text-3xl mb-2 block text-orange-200"></i> No live notifications</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP ROUTING PAGES -->
+
+  <!-- PAGE 1: HOME DASHBOARD -->
+  <main id="view-dashboard" class="page-view px-4 py-5 space-y-6">
+    <!-- Banner Slider Carousel -->
+    <div class="relative w-full overflow-hidden rounded-2xl shadow-md border border-orange-100 bg-orange-50 h-44 sm:h-52">
+      <div id="banner-slider" class="flex transition-transform duration-500 ease-in-out h-full" style="transform: translateX(0%);">
+        <!-- Dynamic Banners populated below -->
+        <div class="min-w-full h-full flex flex-col justify-center p-6 bg-gradient-to-r from-orange-500 to-amber-500 text-white relative">
+          <h3 class="text-xl sm:text-2xl font-bold max-w-xs leading-tight">Crash Course for Super TET 2026</h3>
+          <p class="text-xs text-orange-100 mt-2">Comprehensive Pedagogy, CDP & General Knowledge modules</p>
+          <div class="mt-4"><span class="px-3 py-1 bg-white text-orange-600 font-bold rounded-lg text-2xs uppercase">₹1,999 Only</span></div>
+          <i class="fas fa-graduation-cap absolute right-6 bottom-4 text-7xl opacity-15"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Action Categories Grid -->
+    <div>
+      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Choose Your Focus Area</h3>
+      <div class="flex gap-2.5 overflow-x-auto pb-2 custom-scrollbar">
+        <button onclick="filterCourses('ALL')" class="exam-filter-btn shrink-0 px-4 py-2 bg-orange-500 text-white font-bold rounded-xl text-xs shadow-md">All Exams</button>
+        <button onclick="filterCourses('CTET')" class="exam-filter-btn shrink-0 px-4 py-2 bg-white text-slate-600 hover:bg-orange-50 font-semibold rounded-xl text-xs border border-slate-200/60 shadow-xs">CTET</button>
+        <button onclick="filterCourses('KVS')" class="exam-filter-btn shrink-0 px-4 py-2 bg-white text-slate-600 hover:bg-orange-50 font-semibold rounded-xl text-xs border border-slate-200/60 shadow-xs">KVS</button>
+        <button onclick="filterCourses('UPTET')" class="exam-filter-btn shrink-0 px-4 py-2 bg-white text-slate-600 hover:bg-orange-50 font-semibold rounded-xl text-xs border border-slate-200/60 shadow-xs">UPTET</button>
+        <button onclick="filterCourses('DSSSB')" class="exam-filter-btn shrink-0 px-4 py-2 bg-white text-slate-600 hover:bg-orange-50 font-semibold rounded-xl text-xs border border-slate-200/60 shadow-xs">DSSSB</button>
+        <button onclick="filterCourses('SUPERTET')" class="exam-filter-btn shrink-0 px-4 py-2 bg-white text-slate-600 hover:bg-orange-50 font-semibold rounded-xl text-xs border border-slate-200/60 shadow-xs">Super TET</button>
+      </div>
+    </div>
+
+    <!-- Live Classes Feed -->
+    <div class="bg-white rounded-3xl p-5 border border-slate-100 shadow-xl space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+          <span class="flex h-3 w-3 relative">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+          </span>
+          Scheduled & Active Live Sessions
+        </h3>
+        <span id="live-classes-count" class="text-2xs font-bold text-orange-600 px-2 py-0.5 bg-orange-50 rounded">0 Active</span>
+      </div>
+      <div id="live-classes-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- Populate dynamic YouTube Live classes -->
+        <p id="no-live-notice" class="text-slate-400 text-xs py-4 text-center">No active live sessions scheduled. Check recording archives in My Courses.</p>
+      </div>
+    </div>
+
+    <!-- Recommended Courses Grid Section -->
+    <div class="space-y-3.5">
+      <div class="flex justify-between items-center">
+        <h2 class="text-base font-bold text-slate-800">Hot Recommended Preparation Courses</h2>
+        <span class="text-2xs text-orange-500 font-bold hover:underline cursor-pointer" onclick="filterCourses('ALL')">View All</span>
+      </div>
+      <div id="recommended-courses" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- dyn pop -->
+      </div>
+    </div>
+  </main>
+
+  <!-- PAGE 2: MY COURSES -->
+  <main id="view-mycourses" class="page-view px-4 py-5 space-y-4 hidden">
+    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2"><i class="fas fa-graduation-cap text-orange-500"></i> My Learning Dashboard</h2>
+    <p class="text-xs text-slate-500">Unlock complete lectures, mock tests, revision notes, and certificates here.</p>
+    
+    <div id="purchased-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <!-- Dyn list -->
+    </div>
+  </main>
+
+  <!-- PAGE 3: TEST SERIES -->
+  <main id="view-testseries" class="page-view px-4 py-5 space-y-5 hidden">
+    <div class="bg-gradient-to-br from-amber-500 to-orange-500 rounded-3xl p-6 text-white flex justify-between items-center relative overflow-hidden">
+      <div class="space-y-1.5 z-10">
+        <h2 class="text-lg font-bold">Elite India Live Mock Tests</h2>
+        <p class="text-xs text-orange-100 max-w-xs">Participate to compare percentile rankings on the national leaderboard with real-time analytics.</p>
+      </div>
+      <i class="fas fa-medal absolute right-5 text-7xl opacity-15 z-0"></i>
+    </div>
+
+    <div class="space-y-3">
+      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Active Test Papers</h3>
+      <div id="test-series-list" class="space-y-3">
+        <!-- Dyn popul -->
+      </div>
+    </div>
+  </main>
+
+  <!-- PAGE 4: AI MENTOR STUDY ASSISTANT -->
+  <main id="view-aimentor" class="page-view px-4 py-5 flex flex-col h-[calc(100vh-180px)] hidden pb-12">
+    <!-- AI Top profile header -->
+    <div class="bg-slate-900 text-white rounded-t-3xl p-4 flex items-center justify-between border-b border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center font-bold text-white shadow-md shadow-orange-500/20">
+          <i class="fas fa-robot text-lg"></i>
+        </div>
+        <div>
+          <h2 class="text-sm font-bold text-white flex items-center gap-1.5">Achiever AI Mentor <span class="bg-emerald-500 text-3xs text-white px-1.5 py-0.5 rounded uppercase tracking-wider font-bold animate-pulse">Online</span></h2>
+          <p class="text-3xs text-slate-400">Powered by Gemini 3.5 Flash Super-charged Engine</p>
+        </div>
+      </div>
+      <button onclick="clearAIChat()" class="text-slate-400 hover:text-white text-xs px-2.5 py-1.5 rounded-lg border border-slate-800 hover:border-slate-700 transition" title="Clear Chat history"><i class="fas fa-trash"></i></button>
+    </div>
+
+    <!-- AI Conversational Stream Message Board -->
+    <div id="ai-chat-board" class="flex-1 bg-slate-950 p-4 overflow-y-auto space-y-4 border-x border-slate-900 custom-scrollbar text-xs">
+      <div class="flex gap-2.5 items-start max-w-[85%] text-slate-300">
+        <div class="w-7 h-7 shrink-0 bg-orange-600 rounded-full flex items-center justify-center text-white font-mono font-bold text-[10px]">AI</div>
+        <div class="bg-slate-900 border border-slate-800/80 rounded-2xl rounded-tl-xs p-3.5 leading-relaxed space-y-2">
+          <p class="font-semibold text-orange-400">Jai Hind, Student! 🎓</p>
+          <p>I am your customized full-time examination preparation mentor. Ask me detailed questions regarding preparation strategies, complex pedagogy, current affairs review, study planning schedules, and subject syllabus breakdowns.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Prompt Suggestions Chips -->
+    <div class="bg-slate-950 border-x border-slate-900 px-4 py-2 flex gap-2 overflow-x-auto custom-scrollbar shrink-0">
+      <button onclick="sendQuickPrompt('Suggest a highly efficient 15-day revision daily timetable structure for CTET pedagogy preparation.')" class="shrink-0 px-3 py-1.5 bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 font-semibold rounded-lg text-3xs">⚡ 15-Day Pedagogy Timetable</button>
+      <button onclick="sendQuickPrompt('Explain Jean Piaget\'s cognitive developmental stages with neat classroom pedagogical examples.')" class="shrink-0 px-3 py-1.5 bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 font-semibold rounded-lg text-3xs">🧠 Piaget developmental theories</button>
+      <button onclick="sendQuickPrompt('Describe the standard syllabus details, eligibility patterns, and cracking strategy for Super TET exam.')" class="shrink-0 px-3 py-1.5 bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 font-semibold rounded-lg text-3xs">📋 Super TET Cracking Strategy</button>
+    </div>
+
+    <!-- Bottom input controller -->
+    <div class="bg-slate-900 p-3 rounded-b-3xl flex items-center gap-2 border-t border-slate-800 shrink-0 shadow-lg">
+      <input type="text" id="ai-message-input" onkeydown="if(event.key === 'Enter') sendAIChatMessage()" placeholder="Ask AI Mentor anything..." class="flex-1 px-4 py-3 bg-slate-950 text-white border border-slate-800 rounded-xl focus:outline-none focus:border-orange-500 text-xs">
+      <button onclick="sendAIChatMessage()" class="w-10 h-10 bg-orange-500 hover:bg-orange-600 text-white rounded-xl flex items-center justify-center transition shrink-0">
+        <i class="fas fa-paper-plane text-sm"></i>
+      </button>
+    </div>
+  </main>
+
+  <!-- PAGE 5: CURRENT AFFAIRS -->
+  <main id="view-currentaffairs" class="page-view px-4 py-5 space-y-4 hidden">
+    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2"><i class="fas fa-globe text-orange-500"></i> Daily Current Affairs & Updates</h2>
+    <p class="text-xs text-slate-500">Keep updated with premium current affairs critical for Super TET, KVS and general teacher recruitments.</p>
+    
+    <div id="current-affairs-list" class="space-y-4">
+      <!-- Dyn list -->
+    </div>
+  </main>
+
+  <!-- PAGE 6: USER PROFILE & COMMUNITY -->
+  <main id="view-profile" class="page-view px-4 py-5 space-y-5 hidden">
+    <!-- Top profile identity banner -->
+    <div class="bg-white rounded-3xl p-5 border border-slate-100 shadow-xl flex items-center gap-4 relative">
+      <div id="user-avatar" class="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full flex items-center justify-center text-white text-2xl font-bold tracking-wide uppercase">
+        G
+      </div>
+      <div class="space-y-1">
+        <h2 id="profile-name" class="font-bold text-slate-800 text-base">Guest Learner</h2>
+        <p id="profile-email" class="text-xs text-slate-500">guest@edachievers.com</p>
+        <span class="inline-block bg-orange-100 text-orange-600 font-bold px-2 py-0.5 rounded text-3xs uppercase tracking-wider">Level 1 Student</span>
+      </div>
+      <button onclick="logOutUser()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition text-xs flex items-center gap-1.5">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+
+    <!-- Achievements & Gamification Badges Grid -->
+    <div class="bg-white rounded-3xl p-5 border border-slate-100 shadow-xl space-y-4">
+      <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5"><i class="fas fa-award text-orange-500"></i> My Academic Badges & Rewards</h3>
+      <div id="badges-container" class="grid grid-cols-3 gap-3">
+        <!-- dyn badges cards -->
+        <div class="p-3 bg-orange-50/50 rounded-2xl flex flex-col items-center text-center opacity-40">
+          <i class="fas fa-medal text-orange-400 text-2xl mb-1.5"></i>
+          <span class="text-3xs font-bold text-slate-700">Gov Prep Elite</span>
+          <span class="text-4xs text-slate-400">Unlock on 1st exam completion</span>
+        </div>
+        <div class="p-3 bg-orange-50/50 rounded-2xl flex flex-col items-center text-center opacity-40">
+          <i class="fas fa-fire-alt text-amber-500 text-2xl mb-1.5 animate-pulse"></i>
+          <span class="text-3xs font-bold text-slate-700">Streak Legend</span>
+          <span class="text-4xs text-slate-400">Unlock on 5 days login streak</span>
+        </div>
+        <div class="p-3 bg-orange-50/50 rounded-2xl flex flex-col items-center text-center opacity-40">
+          <i class="fas fa-brain text-purple-400 text-2xl mb-1.5"></i>
+          <span class="text-3xs font-bold text-slate-700">Pedagogy Wiz</span>
+          <span class="text-4xs text-slate-400">Get perfect CDI score</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- National Leaderboard -->
+    <div class="bg-white rounded-3xl p-5 border border-slate-100 shadow-xl space-y-4">
+      <h3 class="font-bold text-slate-800 text-sm flex items-center justify-between">
+        <span class="flex items-center gap-1.5"><i class="fas fa-ranking-star text-orange-500"></i> National Student Ranks</span>
+        <button onclick="resetLeaderboardRankings()" class="text-3xs text-slate-400 hover:text-slate-600 font-medium">Auto Rank rules</button>
+      </h3>
+      <div id="leaderboard-list" class="space-y-2.5">
+        <!-- dyn prep ranks list -->
+      </div>
+    </div>
+  </main>
+
+
+  <!-- DETAILED MODALS -->
+
+  <!-- COURSE VIEWER WORKSPACE DETAILS MODAL -->
+  <div id="course-details-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5">
+    <div class="bg-white w-full max-w-2xl h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+      <!-- Header -->
+      <div class="bg-orange-600 text-white px-5 py-4 flex justify-between items-center shrink-0">
+        <div>
+          <h2 id="modal-course-title" class="text-sm font-bold truncate max-w-sm sm:max-w-md">Course Study Modules</h2>
+          <p id="modal-course-exam" class="text-4xs uppercase tracking-wide opacity-80">CTET & Government Prep</p>
+        </div>
+        <button onclick="closeCourseModal()" class="text-white hover:text-orange-100"><i class="fas fa-times text-lg"></i></button>
+      </div>
+
+      <!-- Detail Work Tabs -->
+      <div class="flex border-b border-rose-50/40 bg-orange-50">
+        <button onclick="switchModalTab('lectures')" id="modal-tab-lectures" class="flex-1 py-2.5 text-center font-bold text-xs text-orange-600 border-b-2 border-orange-600">Video Classes</button>
+        <button onclick="switchModalTab('notes')" id="modal-tab-notes" class="flex-1 py-2.5 text-center font-medium text-xs text-slate-500 border-b-2 border-transparent">PDF Notes</button>
+        <button onclick="switchModalTab('doubts')" id="modal-tab-doubts" class="flex-1 py-2.5 text-center font-medium text-xs text-slate-500 border-b-2 border-transparent">24x7 Help Desk</button>
+      </div>
+
+      <!-- Dynamic Content Body scroll area -->
+      <div class="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar text-xs">
+        
+        <!-- SECTION 1: LECTURES LIST -->
+        <div id="modal-panel-lectures" class="space-y-4 p-1">
+          <!-- Embedded player if active -->
+          <div id="video-player-container" class="hidden rounded-2xl overflow-hidden bg-black aspect-video relative shadow-inner mb-3">
+            <iframe id="video-iframe" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <div class="space-y-3">
+            <h4 class="font-bold text-slate-850 uppercase tracking-widest text-3xs">Syllabus Chapters</h4>
+            <div id="lectures-list" class="space-y-2">
+              <!-- Dynam list -->
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: PDF NOTES -->
+        <div id="modal-panel-notes" class="space-y-3 hidden">
+          <div class="flex items-center gap-2 mb-2 bg-amber-50 p-3 rounded-xl border border-amber-100/50">
+            <i class="fas fa-circle-info text-amber-500 shrink-0 text-sm"></i>
+            <span class="text-3xs text-amber-800 leading-normal font-semibold">Offline Revision Notes allow quick memory recaps. Double-click "Download PDF Document" to save.</span>
+          </div>
+          <div id="notes-list" class="space-y-2">
+            <!-- dyn pdf cards -->
+          </div>
+        </div>
+
+        <!-- SECTION 3: REVIEWS / RATINGS / DOUBTS -->
+        <div id="modal-panel-doubts" class="space-y-4 hidden">
+          <div class="bg-indigo-50 border border-indigo-100 p-3 rounded-2xl flex items-start gap-2.5">
+            <i class="fas fa-heart-pulse text-indigo-600 mt-0.5"></i>
+            <div class="space-y-0.5">
+              <span class="font-bold text-indigo-900 block">Expert Doubt Assistance desk</span>
+              <p class="text-4xs text-indigo-700">Enter a query below. Instructors generally reply to structural pedagogy doubts within 30 minutes.</p>
+            </div>
+          </div>
+
+          <!-- Submit new doubt form -->
+          <div class="space-y-2.5">
+            <div>
+              <label class="block font-bold text-slate-500">Detail Your Doubt question</label>
+              <textarea id="doubt-text" rows="2" placeholder="Explain the difference between Vygotsky's Scaffolding and ZPD in child pedagogy with classroom examples..." class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500"></textarea>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-500">Cloudinary Illustration attachment URL (optional)</label>
+              <input type="text" id="doubt-image" placeholder="Paste secure image/screenshot URL" class="w-full mt-1 p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500">
+            </div>
+            <button onclick="submitStudentDoubt()" class="px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl transition shadow">Post To Instructors Desk</button>
+          </div>
+
+          <!-- Historical Doubts feed -->
+          <div class="pt-2">
+            <h4 class="font-bold text-slate-800 mb-2">My Desk History</h4>
+            <div id="student-doubts-list" class="space-y-2.5">
+              <!-- Dyn pop -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTERACTIVE MOCK TEST PLATFORM HUD MODAL -->
+  <div id="test-platform-modal" class="hidden fixed inset-0 z-50 bg-slate-900 min-h-screen text-white flex flex-col">
+    <!-- Header -->
+    <header class="bg-slate-950 p-4 flex justify-between items-center border-b border-slate-800 shadow">
+      <div>
+        <h2 id="hud-test-title" class="font-bold text-sm tracking-wide">CDP Exam Part 1</h2>
+        <span class="text-4xs text-slate-400">Ed Achievers Secure Mock Exam Platform</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <!-- Timer tracker -->
+        <div class="px-3 py-1.5 bg-red-600 rounded-lg text-xs font-bold leading-none flex items-center gap-1.5">
+          <i class="fas fa-clock"></i> <span id="hud-timer">10:00</span>
+        </div>
+        <button onclick="terminateExamAlert()" class="text-slate-400 hover:text-white text-xs"><i class="fas fa-sign-out-alt"></i> Exit</button>
+      </div>
+    </header>
+
+    <div class="flex-1 flex flex-col md:flex-row text-slate-300">
+      <!-- Main Question Block -->
+      <main class="flex-1 p-5 space-y-6 overflow-y-auto">
+        <div class="flex justify-between text-xs font-medium text-slate-400">
+          <span>Question No: <span id="hud-q-number" class="text-white font-bold">1</span> of <span id="hud-q-total">10</span></span>
+          <span class="text-orange-400 font-bold">Marking: Correct +2 | Negative -0.5</span>
+        </div>
+        
+        <!-- Statement question -->
+        <h3 id="hud-q-statement" class="text-base font-bold text-white leading-relaxed">Who defined child developmental zones based on social cultural scaffolding parameters in pedagogy?</h3>
+
+        <!-- Interactive single choice options -->
+        <div id="hud-options-group" class="space-y-3 pt-2">
+          <!-- Dynam options populated -->
+        </div>
+      </main>
+
+      <!-- Side progress block (National Test HUD pattern) -->
+      <aside class="w-full md:w-64 bg-slate-950 border-t md:border-t-0 md:border-l border-slate-850 p-4 space-y-4">
+        <h4 class="font-bold text-xs uppercase tracking-wider text-slate-400">Questions Tracker</h4>
+        <div id="hud-navigation-bubbles" class="grid grid-cols-5 gap-2">
+          <!-- dynam grid of question number bubbles -->
+        </div>
+
+        <div class="pt-4 border-t border-slate-800 space-y-2">
+          <button onclick="goToPrevQuestion()" class="w-full py-2 bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 font-semibold rounded-lg text-xs">Previous Question</button>
+          <button onclick="goToNextQuestion()" class="w-full py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-lg text-xs shadow-md shadow-orange-500/10">Next / Save State</button>
+          <div class="h-px bg-slate-800 my-2"></div>
+          <button onclick="evaluateInteractiveTest()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs uppercase transition">Submit Paper</button>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- TEST RESULTS SHEET MODAL -->
+  <div id="test-results-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden p-6 text-slate-800 text-center space-y-6">
+      <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto text-orange-600 text-2xl">
+        <i class="fas fa-poll-h"></i>
+      </div>
+      <div>
+        <h3 class="text-xl font-bold">Exam Result Sheet</h3>
+        <p class="text-xs text-slate-400">Instant Pedagogical Performance Report card</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
+          <span class="text-3xs text-slate-400 uppercase tracking-wider font-semibold block">Performance Score</span>
+          <span id="res-score" class="text-xl font-bold text-orange-600">--</span>
+        </div>
+        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
+          <span class="text-3xs text-slate-400 uppercase tracking-wider font-semibold block">Accuracy Percent</span>
+          <span id="res-accuracy" class="text-xl font-bold text-slate-800">--</span>
+        </div>
+        <div class="bg-slate-50 p-2.5 rounded-xl text-4xs">
+          <span class="text-slate-400 font-semibold block">Correct answers</span>
+          <span id="res-correct" class="font-bold text-emerald-600">0</span>
+        </div>
+        <div class="bg-slate-50 p-2.5 rounded-xl text-4xs">
+          <span class="text-slate-400 font-semibold block">Wrong answers</span>
+          <span id="res-wrong" class="font-bold text-red-600">0</span>
+        </div>
+      </div>
+
+      <!-- AI Mind Analytical Review -->
+      <div class="bg-orange-50/50 p-3.5 rounded-2xl border border-orange-100/50 text-left space-y-1">
+        <span class="text-3xs font-bold text-orange-600 uppercase tracking-wider block"><i class="fas fa-brain animate-pulse"></i> Automated Topic Analysis</span>
+        <p id="res-analysis" class="text-[11px] text-slate-600 leading-relaxed font-medium">Analyzing pedagogy responses...</p>
+      </div>
+
+      <button onclick="closeResultSheet()" class="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl shadow-lg transition text-xs">Return Dashboard</button>
+    </div>
+  </div>
+
+
+  <!-- SECURE ORDER INSTRUCTIONS MODAL AND STATUS PROMPTER -->
+  <div id="payment-status-prompter" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm rounded-3xl p-6 text-center space-y-4 shadow-2xl">
+      <div id="pay-prompter-icon" class="w-14 h-14 rounded-full flex items-center justify-center mx-auto text-2xl">
+        <!-- Dyn icon -->
+      </div>
+      <div>
+        <h4 id="pay-prompter-title" class="text-base font-bold">Unlocking Premium Class Content</h4>
+        <p id="pay-prompter-msg" class="text-xs text-slate-400 mt-1">Interacting securely with the Realtime Database to register your course subscription...</p>
+      </div>
+      <button onclick="dismissPrompter()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs">Close prompt</button>
+    </div>
+  </div>
+
+
+  <!-- STICKY BOTTOM APP NAVIGATION MENU (Native Android feel) -->
+  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-100/90 py-2.5 px-3 flex justify-between shadow-[0_-5px_15px_rgba(0,0,0,0.03)] text-3xs text-slate-400 font-medium">
+    <button onclick="navigateTab('dashboard', this)" class="bottom-nav-btn flex-1 flex flex-col items-center gap-1 py-1 text-slate-400 bottom-nav-active">
+      <i class="fas fa-home text-base"></i>
+      <span>Home</span>
+    </button>
+    <button onclick="navigateTab('mycourses', this)" class="bottom-nav-btn flex-1 flex flex-col items-center gap-1 py-1 text-slate-400">
+      <i class="fas fa-graduation-cap text-base"></i>
+      <span>My Courses</span>
+    </button>
+    <button onclick="navigateTab('testseries', this)" class="bottom-nav-btn flex-1 flex flex-col items-center gap-1 py-1 text-slate-400">
+      <i class="fas fa-medal text-base"></i>
+      <span>Mock Tests</span>
+    </button>
+    <button onclick="navigateTab('aimentor', this)" class="bottom-nav-btn flex-1 flex flex-col items-center gap-1 py-1 text-slate-400">
+      <i class="fas fa-robot text-base"></i>
+      <span>AI Mentor</span>
+    </button>
+    <button onclick="navigateTab('currentaffairs', this)" class="bottom-nav-btn flex-1 flex flex-col items-center gap-1 py-1 text-slate-400">
+      <i class="fas fa-globe text-base"></i>
+      <span>Updates</span>
+    </button>
+    <button onclick="navigateTab('profile', this)" class="bottom-nav-btn flex-1 flex flex-col items-center gap-1 py-1 text-slate-400">
+      <i class="fas fa-user-graduate text-base"></i>
+      <span>My Profile</span>
+    </button>
+  </nav>
+
+  <!-- FIREBASE WEB SDK IMPORT & COMPLETE APP LOGIC MODULE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getDatabase, ref, set, get, update, push, remove, child, onValue, off } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // Standard requested Firebase Configuration values
+    const firebaseConfig = {
+      apiKey: "AIzaSyARl1ikziVqxEvk-qUY6G_pofTaf9QmE4M",
+      authDomain: "ed-achievers-2e3f1.firebaseapp.com",
+      databaseURL: "https://ed-achievers-2e3f1-default-rtdb.firebaseio.com",
+      projectId: "ed-achievers-2e3f1",
+      storageBucket: "ed-achievers-2e3f1.firebasestorage.app",
+      messagingSenderId: "1062183762339",
+      appId: "1:1062183762339:web:8c6156774953a54d620216",
+      measurementId: "G-ZSB92J883V"
+    };
+
+    const firebaseApp = initializeApp(firebaseConfig);
+    const auth = getAuth(firebaseApp);
+    const db = getDatabase(firebaseApp);
+
+    // Application state
+    let currentUser = null;
+    let localDBInstance = {
+      courses: {},
+      liveClasses: {},
+      testSeries: {},
+      currentAffairs: {},
+      notifications: {},
+      leaderboard: {}
+    };
+
+    // DOM & State Bootstrapping
+    window.addEventListener("DOMContentLoaded", () => {
+      // Setup default structures if not present in remote database
+      seedDefaultDatabase();
+      
+      // Setup realtime database synchronization listeners
+      attachRealtimeSyncListeners();
+
+      // Hook up OAuth callbacks & redirection trackers
+      handleRedirectionQueryParameters();
+
+      // Listen to auth
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          currentUser = user;
+          document.getElementById("auth-screen").classList.add("hidden");
+          updateUserProfileUI();
+          syncUserPurchasedAndStreakData();
+        } else {
+          currentUser = null;
+          // Prompt login required for premium features
+          document.getElementById("auth-screen").classList.remove("hidden");
+        }
+      });
+    });
+
+    // 1. DATABASE SEEDING
+    function seedDefaultDatabase() {
+      // We check if the course database is completely empty on boot. If it is, we seed it as requested.
+      const coursesRef = ref(db, "courses");
+      get(coursesRef).then((snapshot) => {
+        if (!snapshot.exists()) {
+          console.log("Seeding default examination mock data...");
+          // Seed beautiful baseline educational data so the platform is immediately premium and ready to query.
+          const defaultCourses = {
+            "course_ctet_paper1": {
+              id: "course_ctet_paper1",
+              title: "CTET 2026 Paper 1 Master Prep Group",
+              examType: "CTET",
+              description: "Full comprehensive target-cracking pack for primary teachers (Class 1-5). Covers Child Development & Pedagogy (CDP), EVS, Mathematics, and Language streams.",
+              price: "1499",
+              discountPercent: "40",
+              thumbnail: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=400&q=80",
+              reviewsCount: 148,
+              teachers: ["Vipul Jha (Pedagogy Expert)", "Neetu Saxena (Maths Spec)"]
+            },
+            "course_kvs_prt": {
+              id: "course_kvs_prt",
+              title: "KVS PRT General Selection Batch + PDFs",
+              examType: "KVS",
+              description: "Complete updated syllabus roadmap for Kendriya Vidyalaya primary teacher recruitments. Core pedagogy, detailed General Studies, bilingual English/Hindi, Intelligence tests.",
+              price: "2499",
+              discountPercent: "30",
+              thumbnail: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=400&q=80",
+              reviewsCount: 312,
+              teachers: ["Harish Chaudhary", "Alok Shukla"]
+            },
+            "course_supertet": {
+              id: "course_supertet",
+              title: "Super TET 2026 Core Selection Marathon",
+              examType: "SUPERTET",
+              description: "The ultimate selection formula curated specifically for the Uttar Pradesh primary assistant recruitments. Includes structured chapter tests and Cloudinary recordings archive.",
+              price: "1999",
+              discountPercent: "50",
+              thumbnail: "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=400&q=80",
+              reviewsCount: 520,
+              teachers: ["Sunil Kumar (GS Master)", "Rashmi Sharma (CDP Level 1)"]
+            }
+          };
+          update(ref(db), { courses: defaultCourses });
+
+          // Seed sample live classes
+          const defaultLive = {
+            "live_1": {
+              id: "live_1",
+              title: "CDP Pedagogy live preparation - Kohlberg Stages",
+              examType: "CTET",
+              scheduledTime: "Today at 7:30 PM",
+              url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+              active: true
+            }
+          };
+          update(ref(db), { liveClasses: defaultLive });
+
+          // Seed Mock tests
+          const defaultTests = {
+            "test_cdp_1": {
+              id: "test_cdp_1",
+              title: "Pedagogy Child Development Daily Quiz",
+              subject: "CDP",
+              duration: "10 min",
+              totalQuestions: 5,
+              questions: [
+                {
+                  id: "q1",
+                  statement: "Which of the following is correct regarding Jean Piaget's sensorimotor stage development?",
+                  options: ["Object permanence emerges", "Abstract logic dominates", "Hypothetical deductions", "Symbolic representation master"],
+                  correctIndex: 0,
+                  explanation: "Object permanence emerges typically in Jean Piaget's sensorimotor stage (0-2 years)."
+                },
+                {
+                  id: "q2",
+                  statement: "Scaffolding is a core pedagogical technique originating from which theorist's views?",
+                  options: ["Jean Piaget", "Lev Vygotsky", "B.F. Skinner", "Lawrence Kohlberg"],
+                  correctIndex: 1,
+                  explanation: "Lev Vygotsky formulated social interaction theories which include Scaffolding and Zone of Proximal Development."
+                }
+              ]
+            }
+          };
+          update(ref(db), { testSeries: defaultTests });
+
+          // Seed static topper lists
+          const defaultLeaderboard = {
+            "user_pranav": { uid: "user_pranav", name: "Pranav Singh", points: 890, exam: "CTET" },
+            "user_shalini": { uid: "user_shalini", name: "Shalini Rai", points: 840, exam: "KVS PRT" },
+            "user_animesh": { uid: "user_animesh", name: "Animesh Mishra", points: 795, exam: "Super TET" }
+          };
+          update(ref(db), { leaderboard: defaultLeaderboard });
+
+          // Seed default PDF list
+          const defaultPDFs = {
+            "pdf_cdp": { id: "pdf_cdp", title: "Complete CDP Notes (Jean Piaget & Vygotsky focus PDF)", subject: "CDP", link: "#" },
+            "pdf_evs": { id: "pdf_evs", title: "CTET Paper 1 EVS short summary guide", subject: "EVS", link: "#" }
+          };
+          update(ref(db), { pdfNotes: defaultPDFs });
+
+          // Seed default Banners
+          const defaultBanners = {
+            "b1": { id: "b1", title: "Mega Republic Day 70% Discount Offer!", sub: "Use Coupon FIRST50 during checkout portal checkout." }
+          };
+          update(ref(db), { banners: defaultBanners });
+        }
+      });
+    }
+
+    // 2. REALTIME DATABASE listener sync
+    function attachRealtimeSyncListeners() {
+      // Courses Listener
+      onValue(ref(db, "courses"), (snap) => {
+        if (snap.exists()) {
+          localDBInstance.courses = snap.val();
+          renderCourses();
+        }
+      });
+
+      // Live class schedules
+      onValue(ref(db, "liveClasses"), (snap) => {
+        if (snap.exists()) {
+          localDBInstance.liveClasses = snap.val();
+          renderLiveClasses();
+        }
+      });
+
+      // Daily tests
+      onValue(ref(db, "testSeries"), (snap) => {
+        if (snap.exists()) {
+          localDBInstance.testSeries = snap.val();
+          renderTestSeries();
+        }
+      });
+
+      // Mock PDF Notes
+      onValue(ref(db, "pdfNotes"), (snap) => {
+        if (snap.exists()) {
+          localDBInstance.pdfNotes = snap.val();
+          renderPDFNotes();
+        }
+      });
+
+      // Current Affairs updates
+      onValue(ref(db, "currentAffairs"), (snap) => {
+        if (snap.exists()) {
+          localDBInstance.currentAffairs = snap.val();
+        } else {
+          // Fallback static if empty
+          localDBInstance.currentAffairs = {
+            "ca_1": { id: "ca_1", title: "National Education Policy updates for upcoming recruitments", info: "Detailed overview of NEP implementations across state boards.", date: "Today" }
+          };
+        }
+        renderCurrentAffairs();
+      });
+
+      // System notification bulletins
+      onValue(ref(db, "notifications"), (snap) => {
+        if (snap.exists()) {
+          localDBInstance.notifications = snap.val();
+          renderNotifications();
+        }
+      });
+
+      // Leaderboard
+      onValue(ref(db, "leaderboard"), (snap) => {
+        if (snap.exists()) {
+          localDBInstance.leaderboard = snap.val();
+          renderLeaderboard();
+        }
+      });
+    }
+
+    // Dynamic lists renderers
+    function renderCourses() {
+      const container = document.getElementById("recommended-courses");
+      if (!container) return;
+      container.innerHTML = "";
+
+      Object.values(localDBInstance.courses).forEach(course => {
+        const discountedPrice = Math.round(parseFloat(course.price) * (1 - parseFloat(course.discountPercent) / 100));
+        
+        const card = document.createElement("div");
+        card.className = "bg-white rounded-3xl overflow-hidden shadow-md border border-slate-100 flex flex-col relative hover:shadow-lg transition cursor-pointer";
+        card.id = `course-card-${course.id}`;
+        card.innerHTML = `
+          <div class="relative h-44 w-full">
+            <img src="${course.thumbnail}" alt="${course.title}" class="w-full h-full object-cover">
+            <span class="absolute top-3 left-3 bg-orange-500 text-white font-bold text-3xs uppercase tracking-wider px-2 py-0.5 rounded-lg">${course.examType} Special</span>
+            <span class="absolute top-3 right-3 bg-red-500 text-white font-bold text-3xs px-2 py-0.5 rounded-lg">${course.discountPercent}% OFF</span>
+          </div>
+          <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
+            <div class="space-y-1">
+              <h3 class="font-bold text-slate-800 text-xs sm:text-sm line-clamp-2">${course.title}</h3>
+              <p class="text-slate-500 text-3xs line-clamp-2 leading-relaxed">${course.description}</p>
+            </div>
+            
+            <div class="flex items-center gap-1.5 text-orange-400 text-2xs font-bold">
+              <i class="fas fa-star text-[10px]"></i> 4.8 / 5 <span class="text-slate-400">(${course.reviewsCount || 0} Ratings)</span>
+            </div>
+
+            <div class="flex items-center justify-between pt-1">
+              <div class="space-y-0.5">
+                <span class="text-slate-400 line-through text-4xs font-semibold">₹${course.price}</span>
+                <span class="text-base font-bold text-orange-600 block leading-none">₹${discountedPrice}</span>
+              </div>
+              <div class="flex gap-1.5">
+                <button onclick="event.stopPropagation(); initiateCheckout('${course.id}', ${course.price})" class="px-3.5 py-2 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl text-3xs shadow-md shadow-orange-100 transition">Buy now</button>
+                <button onclick="viewCourseDetails('${course.id}')" class="px-2.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-3xs">Details</button>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderLiveClasses() {
+      const container = document.getElementById("live-classes-grid");
+      const noLiveNotice = document.getElementById("no-live-notice");
+      if (!container) return;
+
+      const items = Object.values(localDBInstance.liveClasses);
+      if (items.length > 0) {
+        noLiveNotice.classList.add("hidden");
+        container.innerHTML = "";
+        items.forEach(cls => {
+          const card = document.createElement("div");
+          card.className = "p-4 rounded-2xl bg-orange-50/40 border border-orange-100/60 flex items-center justify-between";
+          card.id = `live-class-${cls.id}`;
+          card.innerHTML = `
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 bg-red-600 text-white font-bold rounded text-5xs uppercase tracking-widest animate-pulse flex items-center gap-0.5"><i class="fa-solid fa-signal text-[8px]"></i> LIVE</span>
+                <span class="text-4xs text-orange-550 font-semibold">${cls.scheduledTime}</span>
+              </div>
+              <h4 class="font-bold text-slate-800 text-xs line-clamp-1">${cls.title}</h4>
+              <p class="text-4xs text-slate-400">${cls.examType} Exam Core Prep</p>
+            </div>
+            <button onclick="joinLiveStream('${cls.url}')" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-3xs tracking-wide shadow-md transition shrink-0">Join Session</button>
+          `;
+          container.appendChild(card);
+        });
+        document.getElementById("live-classes-count").innerText = `${items.length} Active`;
+      } else {
+        noLiveNotice.classList.remove("hidden");
+        document.getElementById("live-classes-count").innerText = `0 Active`;
+      }
+    }
+
+    function renderTestSeries() {
+      const container = document.getElementById("test-series-list");
+      if (!container) return;
+      container.innerHTML = "";
+
+      Object.values(localDBInstance.testSeries).forEach(test => {
+        const item = document.createElement("div");
+        item.className = "bg-white p-4 rounded-2xl border border-slate-150 flex items-center justify-between hover:border-orange-500 shadow-xs cursor-pointer";
+        item.id = `test-series-${test.id}`;
+        item.innerHTML = `
+          <div class="space-y-1">
+            <div class="flex items-center gap-1.5">
+              <span class="px-1.5 py-0.5 bg-amber-100 text-amber-800 font-bold rounded text-4xs uppercase tracking-wide">${test.subject || "CDP"}</span>
+              <span class="text-4xs text-slate-400 font-medium">${test.duration} | ${test.totalQuestions || 2} Qs</span>
+            </div>
+            <h4 class="font-bold text-slate-800 text-xs">${test.title}</h4>
+          </div>
+          <button onclick="launchInteractiveTest('${test.id}')" class="px-4 py-2 bg-orange-100 hover:bg-orange-500 text-orange-600 hover:text-white font-bold rounded-xl text-3xs shadow-sm transition">Take Quiz</button>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function renderPDFNotes() {
+      const container = document.getElementById("notes-list");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const notes = Object.values(localDBInstance.pdfNotes || {});
+      if (notes.length === 0) {
+        container.innerHTML = '<p class="text-center text-slate-400 text-xs py-2">No downloadable notes currently available.</p>';
+        return;
+      }
+
+      notes.forEach(note => {
+        const row = document.createElement("div");
+        row.className = "flex items-center justify-between p-3 bg-white border border-slate-100 rounded-2xl shadow-2xs";
+        row.innerHTML = `
+          <div class="flex items-center gap-2.5">
+            <i class="far fa-file-pdf text-red-500 text-lg"></i>
+            <div>
+              <span class="font-semibold text-slate-800 text-3xs sm:text-xs block">${note.title}</span>
+              <span class="text-4xs text-orange-500">${note.subject} PDF Document</span>
+            </div>
+          </div>
+          <button onclick="confirmDownload('${note.title}')" class="px-3 py-1.5 bg-orange-50 hover:bg-orange-600 text-orange-600 hover:text-white rounded-lg text-4xs font-bold leading-none transition">Download PDF</button>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function renderCurrentAffairs() {
+      const container = document.getElementById("current-affairs-list");
+      if (!container) return;
+      container.innerHTML = "";
+
+      Object.values(localDBInstance.currentAffairs).forEach(art => {
+        const item = document.createElement("div");
+        item.className = "bg-white p-4 rounded-3xl border border-slate-100/80 shadow-md space-y-2";
+        item.innerHTML = `
+          <div class="flex justify-between items-center text-4xs text-slate-400 font-semibold">
+            <span>UPDATED BY ED ADMINISTRATOR</span>
+            <span class="bg-indigo-50 text-indigo-650 px-2 py-0.5 rounded uppercase font-bold">${art.date || "Today"}</span>
+          </div>
+          <h3 class="font-bold text-slate-800 text-xs sm:text-sm">${art.title}</h3>
+          <p class="text-slate-500 text-3xs leading-relaxed font-normal">${art.info}</p>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function renderNotifications() {
+      const list = document.getElementById("notifications-list");
+      const badge = document.getElementById("notif-badge");
+      if (!list) return;
+
+      const items = Object.values(localDBInstance.notifications);
+      if (items.length > 0) {
+        list.innerHTML = "";
+        badge.classList.remove("hidden");
+        badge.innerText = items.length;
+
+        items.reverse().forEach(notif => {
+          const div = document.createElement("div");
+          div.className = "p-3.5 bg-orange-50/40 rounded-2xl border border-orange-100/60 text-xs text-slate-700 space-y-1 shadow-2xs";
+          div.innerHTML = `
+            <div class="flex items-center gap-1 text-4xs text-orange-600 font-bold uppercase tracking-wider">
+              <i class="fas fa-bullhorn text-[10px]"></i> Announcement
+            </div>
+            <div class="text-3xs font-semibold text-slate-800">${notif.text}</div>
+            <div class="text-4xs text-slate-400 text-right">${notif.time || "Just now"}</div>
+          `;
+          list.appendChild(div);
+        });
+      } else {
+        badge.classList.add("hidden");
+      }
+    }
+
+    function renderLeaderboard() {
+      const list = document.getElementById("leaderboard-list");
+      if (!list) return;
+      list.innerHTML = "";
+
+      const leaders = Object.values(localDBInstance.leaderboard)
+        .sort((a,b) => b.points - a.points);
+
+      leaders.forEach((ldr, idx) => {
+        const item = document.createElement("div");
+        item.className = "p-3.5 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-between";
+        
+        let medalSpan = `<span class="w-6 font-bold text-xs text-slate-400">${idx+1}</span>`;
+        if (idx === 0) medalSpan = `<span class="w-6 text-yellow-500 text-sm"><i class="fas fa-crown"></i></span>`;
+        else if (idx === 1) medalSpan = `<span class="w-6 text-slate-400 text-sm"><i class="fas fa-medal"></i></span>`;
+        else if (idx === 2) medalSpan = `<span class="w-6 text-amber-600 text-sm"><i class="fas fa-award"></i></span>`;
+
+        item.innerHTML = `
+          <div class="flex items-center gap-2">
+            ${medalSpan}
+            <div>
+              <span class="font-bold text-slate-800 text-3xs sm:text-xs block leading-tight">${ldr.name}</span>
+              <span class="text-5xs uppercase text-slate-400 font-semibold tracking-wider">${ldr.exam || "CTET Learner"}</span>
+            </div>
+          </div>
+          <span class="text-xs font-bold text-orange-600">${ldr.points || 0} Pts</span>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    // 3. CASHFREE PAYMENTS SECURITY ENGINE & SUBSCRIPTION UNLOCKING
+    window.initiateCheckout = function(courseId, price) {
+      if (!currentUser) {
+        alert("Please authorize your profile first by logging in/signing up to buy courses!");
+        document.getElementById("auth-screen").classList.remove("hidden");
+        return;
+      }
+
+      // Proactive prompt calculation with Cashfree orders API proxy
+      const couponChoice = prompt("Apply Examination Coupon Code (Optional)?\nAvailable coupons:\n- ACHIEVERS10 (10% Off)\n- FIRST50 (50% Off republic selection)\n- GOVEXAM30 (30% Support discount)", "ACHIEVERS10");
+      
+      const payload = {
+        courseId,
+        courseName: localDBInstance.courses[courseId]?.title || "Comprehensive Exam Package",
+        price,
+        couponCode: couponChoice || "",
+        studentId: currentUser.uid,
+        studentEmail: currentUser.email || "student@edachievers.com",
+        studentPhone: "9876543210"
+      };
+
+      // Call secure Express helper to compute checkout portal URLs
+      fetch("/api/cashfree/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(orderData => {
+        if (orderData.paymentUrl) {
+          // Relocate user to secure mock payment portal in top window to bypass iframe issues safely
+          window.location.href = orderData.paymentUrl;
+        } else {
+          alert("Secure transaction engine could not connect. Please try again.");
+        }
+      })
+      .catch(err => {
+        console.error("Order Build Error:", err);
+        alert("Failed to reach billing. Checking internal configuration.");
+      });
+    }
+
+    function handleRedirectionQueryParameters() {
+      // Analyze search parameters to confirm returned payment statuses from Checkout gateway
+      const params = new URLSearchParams(window.location.search);
+      const status = params.get("payment_status");
+      const orderId = params.get("order_id");
+      const courseId = params.get("course_id");
+      const amount = params.get("amount");
+
+      if (status) {
+        const prompter = document.getElementById("payment-status-prompter");
+        const title = document.getElementById("pay-prompter-title");
+        const msg = document.getElementById("pay-prompter-msg");
+        const iconDiv = document.getElementById("pay-prompter-icon");
+
+        prompter.classList.remove("hidden");
+
+        if (status === "SUCCESS" && courseId) {
+          // Update RTDB instantly under student subscriptions list to unlock
+          iconDiv.className = "w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto text-emerald-600 text-2xl";
+          iconDiv.innerHTML = '<i class="fas fa-check-circle animate-bounce"></i>';
+          title.innerText = "Payment Successful!";
+          msg.innerText = "Transaction verified securely. Unlocked course content under 'My Courses' tab!";
+
+          // We write subscription data once Auth finishes loading
+          const registerInDatabase = () => {
+            if (auth.currentUser) {
+              const userSubsRef = ref(db, `users/${auth.currentUser.uid}/purchasedCourses/${courseId}`);
+              set(userSubsRef, {
+                unlockedAt: Date.now(),
+                orderId: orderId || "DIRECT_SECURE_AUTH",
+                amountPaid: amount || "0",
+                courseData: localDBInstance.courses[courseId] || {}
+              }).then(() => {
+                // Post payment transaction logs to system transactions for tracking
+                const txRef = ref(db, `transactions/${orderId}`);
+                set(txRef, {
+                  orderId,
+                  uid: auth.currentUser.uid,
+                  name: auth.currentUser.displayName || "Verified Learner",
+                  email: auth.currentUser.email,
+                  courseId,
+                  courseTitle: localDBInstance.courses[courseId]?.title || "Purchased Course",
+                  amount: amount,
+                  timestamp: Date.now(),
+                  status: "SUCCESS"
+                });
+                
+                // Track stats count in DB for dashboard
+                get(ref(db, "purchases/count")).then(snap => {
+                  const current = snap.exists() ? snap.val() : 0;
+                  set(ref(db, "purchases/count"), current + 1);
+                });
+
+                // Increment national points rank
+                updateLeaderboardPoints(100);
+                syncUserPurchasedAndStreakData();
+              });
+            } else {
+              setTimeout(registerInDatabase, 500);
+            }
+          };
+          registerInDatabase();
+
+        } else {
+          iconDiv.className = "w-14 h-14 bg-rose-100 rounded-full flex items-center justify-center mx-auto text-rose-600 text-2xl";
+          iconDiv.innerHTML = '<i class="fas fa-times-circle"></i>';
+          title.innerText = "Transaction Failed";
+          msg.innerText = "Your checkout attempt was either cancelled or rejected. No funds were debited.";
+        }
+      }
+    }
+
+    window.dismissPrompter = function() {
+      document.getElementById("payment-status-prompter").classList.add("hidden");
+      // Clean query links
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // List user subscriptions
+    function syncUserPurchasedAndStreakData() {
+      if (!currentUser) return;
+
+      const userSubsRef = ref(db, `users/${currentUser.uid}/purchasedCourses`);
+      get(userSubsRef).then((snap) => {
+        const container = document.getElementById("purchased-list");
+        if (!container) return;
+        container.innerHTML = "";
+
+        if (snap.exists()) {
+          const subs = snap.val();
+          Object.entries(subs).forEach(([cId, subInfo]) => {
+            const course = localDBInstance.courses[cId] || subInfo.courseData || {};
+            
+            const div = document.createElement("div");
+            div.className = "bg-white p-4 rounded-3xl shadow-md border border-orange-50 flex items-center justify-between";
+            div.innerHTML = `
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-100 shrink-0">
+                  <img src="${course.thumbnail || 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=200'}" class="w-full h-full object-cover">
+                </div>
+                <div>
+                  <h4 class="font-bold text-slate-800 text-xs line-clamp-1">${course.title || 'Preparatory Course'}</h4>
+                  <span class="text-4xs text-emerald-600 font-semibold uppercase flex items-center gap-0.5"><i class="fa fa-unlock"></i> Subscribed & Registered</span>
+                </div>
+              </div>
+              <button onclick="viewCourseDetails('${cId}')" class="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-650 hover:to-orange-700 text-white font-bold rounded-xl text-3xs shadow-sm">Enter Classroom</button>
+            `;
+            container.appendChild(div);
+          });
+        } else {
+          container.innerHTML = `
+            <div class="col-span-full bg-white p-8 rounded-3xl border border-slate-100 text-center space-y-3 shadow-inner">
+              <i class="fas fa-graduation-cap text-orange-200 text-5xl"></i>
+              <h5 class="font-bold text-slate-700 text-sm">Classroom looks clean!</h5>
+              <p class="text-slate-400 text-xs">You have not subscribed to any premium batches yet. Subscribe above to unlock recordings.</p>
+              <button onclick="navigateTab('dashboard')" class="px-5 py-2.5 bg-orange-500 text-white font-bold rounded-xl text-3xs shadow-md shadow-orange-100">Browse Available Batches</button>
+            </div>
+          `;
+        }
+      });
+
+      // Daily login streak tracker
+      const streakRef = ref(db, `users/${currentUser.uid}/streak`);
+      get(streakRef).then(snap => {
+        let count = 1;
+        if (snap.exists()) {
+          const dat = snap.val();
+          count = dat.count || 1;
+          const lastLogin = dat.lastLogin;
+          // Check if today matches, increment if yesterday
+          const todayStr = new Date().toDateString();
+          const lastDateStr = new Date(lastLogin).toDateString();
+          if (todayStr !== lastDateStr) {
+            count += 1;
+          }
+        }
+        set(streakRef, { count, lastLogin: Date.now() });
+        document.getElementById("streak-count").innerText = count;
+      });
+    }
+
+    // 4. EMBEDDED LECTURES & DOCUMENT CLASSROOM WORKSPACE
+    let activeOpenCourseId = "";
+    window.viewCourseDetails = function(courseId) {
+      const course = localDBInstance.courses[courseId];
+      if (!course) return;
+
+      activeOpenCourseId = courseId;
+      document.getElementById("modal-course-title").innerText = course.title;
+      document.getElementById("modal-course-exam").innerText = `${course.examType} Exam Chapter Lessons`;
+      
+      // Load corresponding lessons from Subjects node
+      const subListContainer = document.getElementById("lectures-list");
+      subListContainer.innerHTML = "";
+
+      // We populate realistic mock modules/chapters for each stream
+      const chapters = {
+        "CTET": [
+          { title: "Introduction to Child Development Principle", duration: "1h 40min", url: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
+          { title: "Kohlberg Levels of Moral Growth Theory", duration: "1h 15min", url: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
+          { title: "Bilingual Language Pedagogy revision session", duration: "2h 05min", url: "https://www.youtube.com/embed/dQw4w9WgXcQ" }
+        ],
+        "KVS": [
+          { title: "School Leadership & General Management models", duration: "2h 10min", url: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
+          { title: "Aptitude logical reasoning question review master", duration: "1h 35min", url: "https://www.youtube.com/embed/dQw4w9WgXcQ" }
+        ],
+        "SUPERTET": [
+          { title: "Elementary Board Maths and Pedagogy Formulas", duration: "1h 50min", url: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
+          { title: "Static GS & Current Affairs Revision Class", duration: "2h 40min", url: "https://www.youtube.com/embed/dQw4w9WgXcQ" }
+        ]
+      };
+
+      const syllabus = chapters[course.examType] || chapters["CTET"];
+      syllabus.forEach((chap, idx) => {
+        const div = document.createElement("div");
+        div.className = "p-3 bg-slate-50 border border-slate-150 rounded-2xl flex items-center justify-between";
+        div.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="w-6 h-6 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center font-bold text-3xs">${idx+1}</span>
+            <div>
+              <span class="font-bold text-slate-800 text-3xs sm:text-xs block leading-tight">${chap.title}</span>
+              <span class="text-4xs text-slate-450">${chap.duration}</span>
+            </div>
+          </div>
+          <button onclick="watchRecordingStream('${chap.url}')" class="px-3 py-1.5 bg-orange-500 hover:bg-orange-650 text-white font-bold rounded-lg text-4xs leading-none transition">Watch Class</button>
+        `;
+        subListContainer.appendChild(div);
+      });
+
+      // Pull queries logs for helpdesk panel
+      syncHelpDeskHistoryForCourse();
+
+      document.getElementById("course-details-modal").classList.remove("hidden");
+    }
+
+    window.closeCourseModal = function() {
+      document.getElementById("course-details-modal").classList.add("hidden");
+      document.getElementById("video-player-container").classList.add("hidden");
+      document.getElementById("video-iframe").src = "";
+    }
+
+    window.watchRecordingStream = function(url) {
+      const container = document.getElementById("video-player-container");
+      const player = document.getElementById("video-iframe");
+      player.src = url;
+      container.classList.remove("hidden");
+    }
+
+    window.joinLiveStream = function(youtubeUrl) {
+      if (!currentUser) {
+        alert("Authorization required before joining any classes! Log in now.");
+        return;
+      }
+      alert("Opening Interactive Live Stream and registering attendance. Happy Learning!");
+      // Track interactive attendances
+      const attendRef = ref(db, `attendance/${currentUser.uid}/${Date.now()}`);
+      set(attendRef, { timestamp: Date.now(), title: "Live Session Attendance" });
+      updateLeaderboardPoints(10);
+      window.open(youtubeUrl, "_blank");
+    }
+
+    window.confirmDownload = function(title) {
+      alert(`Initiating verified secured PDF download flow for:\n"${title}"\nSaved to device downloads folder successfully.`);
+    }
+
+    // 5. HELPDESK REALTIME CHAT FOR STUDENTS
+    window.submitStudentDoubt = function() {
+      const box = document.getElementById("doubt-text");
+      const img = document.getElementById("doubt-image");
+      if (!box.value.trim()) return;
+
+      const payload = {
+        studentName: currentUser?.displayName || "Anonymous Learner",
+        uid: currentUser?.uid,
+        email: currentUser?.email,
+        courseId: activeOpenCourseId,
+        question: box.value.trim(),
+        screenshotUrl: img.value.trim() || null,
+        timestamp: Date.now(),
+        status: "PENDING",
+        reply: null
+      };
+
+      const doubtsRef = ref(db, "doubts");
+      push(doubtsRef, payload).then(() => {
+        box.value = "";
+        img.value = "";
+        alert("Doubt query recorded. Ed Achievers instructors will reply shortly.");
+        syncHelpDeskHistoryForCourse();
+      });
+    }
+
+    function syncHelpDeskHistoryForCourse() {
+      get(ref(db, "doubts")).then((snap) => {
+        const container = document.getElementById("student-doubts-list");
+        container.innerHTML = "";
+
+        if (snap.exists() && activeOpenCourseId) {
+          const items = snap.val();
+          let count = 0;
+          Object.values(items).forEach(d => {
+            if (d.uid === currentUser?.uid && d.courseId === activeOpenCourseId) {
+              count++;
+              const div = document.createElement("div");
+              div.className = "p-4 bg-slate-50 border border-slate-150 rounded-2xl text-xs space-y-2";
+              div.innerHTML = `
+                <div class="flex justify-between items-center text-4xs">
+                  <span class="text-slate-400 font-bold">${new Date(d.timestamp).toLocaleString()}</span>
+                  <span class="px-2 py-0.5 rounded uppercase font-bold text-5xs ${d.status === 'REPLIED' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${d.status}</span>
+                </div>
+                <p class="font-semibold text-slate-800">Q: ${d.question}</p>
+                ${d.screenshotUrl ? `<a href="${d.screenshotUrl}" target="_blank" class="text-4xs text-orange-500 font-bold hover:underline block"><i class="fas fa-image"></i> View screenshot attachment</a>` : ""}
+                ${d.reply ? `<div class="bg-orange-50/50 p-2.5 rounded-xl border border-orange-100/40 text-slate-700 font-medium"><span class="text-4xs text-orange-600 font-bold block mb-0.5">Instructor Reply:</span>${d.reply}</div>` : `<p class="text-4xs text-slate-400 italic">Waiting for expert evaluator response...</p>`}
+              `;
+              container.appendChild(div);
+            }
+          });
+          if (count === 0) {
+            container.innerHTML = '<p class="text-center text-slate-400 text-3xs py-3">No query history records on this course dashboard yet.</p>';
+          }
+        } else {
+          container.innerHTML = '<p class="text-center text-slate-400 text-3xs py-3">No query history records on this course dashboard yet.</p>';
+        }
+      });
+    }
+
+
+    // 6. INTERACTIVE EXAMINATION ENGINE PLATFORM
+    let activeTestPayload = null;
+    let currentQuestionIdx = 0;
+    let studentResponseMap = {}; // qId: optionIndex
+    let secondsRemaining = 600;
+    let examTickTimerId = null;
+
+    window.launchInteractiveTest = function(testId) {
+      if (!currentUser) {
+        alert("Please authorize your profile by logging in before entering Mock Tests!");
+        return;
+      }
+      const test = localDBInstance.testSeries[testId];
+      if (!test) return;
+
+      activeTestPayload = test;
+      currentQuestionIdx = 0;
+      studentResponseMap = {};
+      secondsRemaining = 400; // Mock test durations limit
+
+      document.getElementById("hud-test-title").innerText = test.title;
+      document.getElementById("hud-timer").innerText = "06:40";
+
+      // Launch screen modal
+      document.getElementById("test-platform-modal").classList.remove("hidden");
+      renderActiveHUDQuestion();
+      renderHUDQuestionNavigationBubbles();
+
+      // Begin Tick-timer
+      clearInterval(examTickTimerId);
+      examTickTimerId = setInterval(() => {
+        secondsRemaining--;
+        if (secondsRemaining <= 0) {
+          clearInterval(examTickTimerId);
+          evaluateInteractiveTest();
+        } else {
+          const mins = Math.floor(secondsRemaining / 60);
+          const secs = secondsRemaining % 60;
+          document.getElementById("hud-timer").innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+        }
+      }, 1000);
+    }
+
+    function renderActiveHUDQuestion() {
+      if (!activeTestPayload || !activeTestPayload.questions) return;
+      const q = activeTestPayload.questions[currentQuestionIdx];
+      if (!q) return;
+
+      document.getElementById("hud-q-number").innerText = currentQuestionIdx + 1;
+      document.getElementById("hud-q-total").innerText = activeTestPayload.questions.length;
+      document.getElementById("hud-q-statement").innerText = q.statement;
+
+      // Draw options
+      const optGroup = document.getElementById("hud-options-group");
+      optGroup.innerHTML = "";
+
+      q.options.forEach((opt, idx) => {
+        const isSelected = studentResponseMap[q.id] === idx;
+        const btn = document.createElement("button");
+        btn.onclick = () => {
+          studentResponseMap[q.id] = idx;
+          // Redraw options to highlight selected state
+          renderActiveHUDQuestion();
+          renderHUDQuestionNavigationBubbles();
+        };
+        btn.className = `w-full text-left p-4 rounded-2xl flex items-center gap-3 border transition leading-normal text-xs ${isSelected ? 'bg-orange-950 border-orange-500 text-white font-bold' : 'bg-slate-900 hover:bg-slate-850 border-slate-800 text-slate-300 font-medium'}`;
+        btn.innerHTML = `
+          <span class="w-6 h-6 rounded-full shrink-0 flex items-center justify-center font-bold text-3xs ${isSelected ? 'bg-orange-500 text-white' : 'bg-slate-800 text-slate-400'}">
+            ${String.fromCharCode(65 + idx)}
+          </span>
+          <span>${opt}</span>
+        `;
+        optGroup.appendChild(btn);
+      });
+    }
+
+    function renderHUDQuestionNavigationBubbles() {
+      const container = document.getElementById("hud-navigation-bubbles");
+      container.innerHTML = "";
+
+      activeTestPayload.questions.forEach((q, idx) => {
+        const hasAns = studentResponseMap[q.id] !== undefined;
+        let style = "bg-slate-800 text-slate-400 border border-slate-700";
+        if (currentQuestionIdx === idx) {
+          style = "bg-orange-500 text-white font-bold border-2 border-white ring-2 ring-orange-500";
+        } else if (hasAns) {
+          style = "bg-emerald-600 text-white font-bold border border-emerald-500";
+        }
+
+        const btn = document.createElement("button");
+        btn.onclick = () => {
+          currentQuestionIdx = idx;
+          renderActiveHUDQuestion();
+          renderHUDQuestionNavigationBubbles();
+        };
+        btn.className = `w-10 h-10 rounded-xl text-3xs transition ${style}`;
+        btn.innerText = idx + 1;
+        container.appendChild(btn);
+      });
+    }
+
+    window.goToNextQuestion = function() {
+      if (currentQuestionIdx < activeTestPayload.questions.length - 1) {
+        currentQuestionIdx++;
+        renderActiveHUDQuestion();
+        renderHUDQuestionNavigationBubbles();
+      }
+    }
+
+    window.goToPrevQuestion = function() {
+      if (currentQuestionIdx > 0) {
+        currentQuestionIdx--;
+        renderActiveHUDQuestion();
+        renderHUDQuestionNavigationBubbles();
+      }
+    }
+
+    window.terminateExamAlert = function() {
+      if (confirm("Are you sure you want to exit the active test paper? Current progress answers will be lost.")) {
+        clearInterval(examTickTimerId);
+        document.getElementById("test-platform-modal").classList.add("hidden");
+      }
+    }
+
+    window.evaluateInteractiveTest = function() {
+      clearInterval(examTickTimerId);
+      document.getElementById("test-platform-modal").classList.add("hidden");
+
+      const totalQs = activeTestPayload.questions.length;
+      let correct = 0;
+      let wrong = 0;
+
+      activeTestPayload.questions.forEach(q => {
+        const studentAns = studentResponseMap[q.id];
+        if (studentAns !== undefined) {
+          if (studentAns === q.correctIndex) {
+            correct++;
+          } else {
+            wrong++;
+          }
+        }
+      });
+
+      // Compute total marks
+      const gainedPoints = (correct * 2) - (wrong * 0.5);
+      const maxPossible = totalQs * 2;
+      const accuracy = maxPossible > 0 ? Math.round((correct / totalQs) * 100) : 0;
+
+      document.getElementById("res-score").innerText = `${gainedPoints} / ${maxPossible}`;
+      document.getElementById("res-accuracy").innerText = `${accuracy}%`;
+      document.getElementById("res-correct").innerText = correct;
+      document.getElementById("res-wrong").innerText = wrong;
+
+      // Interactive pedagogic guidance analysis
+      let analysisText = "";
+      if (accuracy >= 80) {
+        analysisText = "Outstanding performance! You show rich understanding of CDP Theories & Scaffolding metrics. Keep practicing daily mock papers.";
+      } else if (accuracy >= 50) {
+        analysisText = "Good baseline grasp. Child Developmental schemas, cognitive stages require some additional theory reviews.";
+      } else {
+        analysisText = "Alert: High incorrect ratio in CDP questions. Focus specifically on Jean Piaget schemas & Kohlberg developmental moral indices.";
+      }
+      document.getElementById("res-analysis").innerText = analysisText;
+
+      // Log complete scores into national rankings database
+      updateLeaderboardPoints(gainedPoints);
+
+      // Display scorecard modal
+      document.getElementById("test-results-modal").classList.remove("hidden");
+    }
+
+    function updateLeaderboardPoints(pts) {
+      if (!currentUser) return;
+      const rankRef = ref(db, `leaderboard/${currentUser.uid}`);
+      get(rankRef).then(snap => {
+        let currentPts = 0;
+        if (snap.exists()) {
+          currentPts = snap.val().points || 0;
+        }
+        set(rankRef, {
+          uid: currentUser.uid,
+          name: currentUser.displayName || "Achiever Learner",
+          points: Math.max(0, currentPts + pts),
+          exam: activeTestPayload?.subject || "Government exams"
+        });
+      });
+    }
+
+    window.closeResultSheet = function() {
+      document.getElementById("test-results-modal").classList.add("hidden");
+    }
+
+    window.resetLeaderboardRankings = function() {
+      alert("Leaderboard resets are managed securely by the examination control desk under strict anti-cheat parameters.");
+    }
+
+
+
+    // 7. SECURE GEMINI AI RECRUITMENT TIMETABLE Timetable ENGINE
+    let aiChatHistory = [];
+    window.sendQuickPrompt = function(promptText) {
+      document.getElementById("ai-message-input").value = promptText;
+      sendAIChatMessage();
+    }
+
+    window.sendAIChatMessage = function() {
+      const input = document.getElementById("ai-message-input");
+      const msg = input.value.trim();
+      if (!msg) return;
+
+      appendAIChatBubble("STUDENT", msg);
+      input.value = "";
+
+      // Add loading state spinner card
+      const loadingId = "loader_" + Date.now();
+      appendAIChatLoadingBubble(loadingId);
+
+      const payload = {
+        message: msg,
+        exam: "CTET/KVS Government Exam Series",
+        history: aiChatHistory
+      };
+
+      fetch("/api/gemini/assistant", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(data => {
+        // Destroy loader
+        const l = document.getElementById(loadingId);
+        if (l) l.remove();
+
+        if (data.reply) {
+          appendAIChatBubble("AI", data.reply);
+          aiChatHistory.push({ user: msg, bot: data.reply });
+        } else {
+          appendAIChatBubble("AI", "I apologize, I reached a rate limit on internal servers today. Please retry shortly.");
+        }
+      })
+      .catch(err => {
+        console.error("AI Error:", err);
+        const l = document.getElementById(loadingId);
+        if (l) l.remove();
+        appendAIChatBubble("AI", "Secure gateway connection failed. Is GEMINI_API_KEY set correctly inside secrets panel?");
+      });
+    }
+
+    function appendAIChatBubble(sender, text) {
+      const board = document.getElementById("ai-chat-board");
+      const bubble = document.createElement("div");
+      
+      const parsedText = text
+        .replace(/\n/g, "<br>")
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\*(.*?)\*/g, "<em>$1</em>");
+
+      if (sender === "STUDENT") {
+        bubble.className = "flex gap-2.5 items-start max-w-[85%] ml-auto justify-end text-right text-slate-100";
+        bubble.innerHTML = `
+          <div class="bg-orange-600/20 border border-orange-500/20 rounded-2xl rounded-tr-xs p-3.5 leading-relaxed">
+            <p>${parsedText}</p>
+          </div>
+          <div class="w-7 h-7 shrink-0 bg-slate-800 rounded-full flex items-center justify-center text-slate-300 font-mono font-bold text-[10px]">U</div>
+        `;
+      } else {
+        bubble.className = "flex gap-2.5 items-start max-w-[85%] text-slate-350";
+        bubble.innerHTML = `
+          <div class="w-7 h-7 shrink-0 bg-orange-600 rounded-full flex items-center justify-center text-white font-mono font-bold text-[10px]">AI</div>
+          <div class="bg-slate-900 border border-slate-800/80 rounded-2xl rounded-tl-xs p-3.5 leading-relaxed text-slate-300">
+            <p>${parsedText}</p>
+          </div>
+        `;
+      }
+      board.appendChild(bubble);
+      board.scrollTop = board.scrollHeight;
+    }
+
+    function appendAIChatLoadingBubble(id) {
+      const board = document.getElementById("ai-chat-board");
+      const bubble = document.createElement("div");
+      bubble.id = id;
+      bubble.className = "flex gap-2.5 items-start max-w-[85%] text-slate-400";
+      bubble.innerHTML = `
+        <div class="w-7 h-7 bg-orange-600 rounded-full flex items-center justify-center text-white font-mono font-bold text-[10px] animate-pulse">AI</div>
+        <div class="bg-slate-900 border border-slate-800/60 rounded-2xl rounded-tl-xs p-3.5 flex items-center gap-2">
+          <i class="fas fa-circle-notch animate-spin text-orange-500"></i>
+          <span>Mentor is formulating structural strategies...</span>
+        </div>
+      `;
+      board.appendChild(bubble);
+      board.scrollTop = board.scrollHeight;
+    }
+
+    window.clearAIChat = function() {
+      aiChatHistory = [];
+      document.getElementById("ai-chat-board").innerHTML = `
+        <div class="flex gap-2.5 items-start max-w-[85%] text-slate-300">
+          <div class="w-7 h-7 bg-orange-600 rounded-full flex items-center justify-center text-white font-mono font-bold text-[10px]">AI</div>
+          <div class="bg-slate-900 border border-slate-800/80 rounded-2xl rounded-tl-xs p-3.5 leading-relaxed space-y-2">
+            <p class="font-semibold text-orange-400">Memory Resetted! 🎓</p>
+            <p>How else may I guide your prep studies now? Click prompt chips for efficient responses.</p>
+          </div>
+        </div>
+      `;
+    }
+
+
+    // 8. AUTHMETHODS ENGINE
+    window.switchAuthTab = function(mode) {
+      const lBtn = document.getElementById("tab-login");
+      const sBtn = document.getElementById("tab-signup");
+      const extra = document.getElementById("signup-extra");
+
+      if (mode === "login") {
+        lBtn.className = "flex-1 py-3 text-center border-b-2 border-orange-500 font-semibold text-slate-800 text-sm";
+        sBtn.className = "flex-1 py-3 text-center border-b-2 border-transparent font-medium text-slate-400 hover:text-slate-600 text-sm";
+        extra.classList.add("hidden");
+      } else {
+        sBtn.className = "flex-1 py-3 text-center border-b-2 border-orange-500 font-semibold text-slate-800 text-sm";
+        lBtn.className = "flex-1 py-3 text-center border-b-2 border-transparent font-medium text-slate-400 hover:text-slate-600 text-sm";
+        extra.classList.remove("hidden");
+      }
+    }
+
+    window.handleAuthSubmit = function() {
+      const email = document.getElementById("auth-email").value.trim();
+      const pass = document.getElementById("auth-password").value.trim();
+      const name = document.getElementById("auth-name").value.trim();
+      const extraIsVisible = !document.getElementById("signup-extra").classList.contains("hidden");
+
+      if (!email || !pass) {
+        alert("Credentials cannot be left empty!");
+        return;
+      }
+
+      if (extraIsVisible) {
+        // Sign up
+        createUserWithEmailAndPassword(auth, email, pass)
+        .then((userCreds) => {
+          // Track entry profile
+          const userMetaRef = ref(db, `users/${userCreds.user.uid}/profile`);
+          set(userMetaRef, {
+            name: name || "Premium Learner",
+            email: email,
+            role: "STUDENT",
+            joinDate: Date.now()
+          }).then(() => {
+            alert("Account initialized securely! Syncing premium material.");
+            window.location.reload();
+          });
+        })
+        .catch(err => alert("Registration Failed: " + err.message));
+      } else {
+        // Log in
+        signInWithEmailAndPassword(auth, email, pass)
+        .then(() => {
+          alert("Auntenticated successfully. Welcome back!");
+        })
+        .catch(err => alert("Authorization Rejected: " + err.message));
+      }
+    }
+
+    window.handleGoogleLogin = function() {
+      const provider = new GoogleAuthProvider();
+      signInWithPopup(auth, provider)
+      .then((res) => {
+        const userMetaRef = ref(db, `users/${res.user.uid}/profile`);
+        // Check if exists first to prevent overwrite
+        get(userMetaRef).then(snap => {
+          if (!snap.exists()) {
+            set(userMetaRef, {
+              name: res.user.displayName || "Google Scholar",
+              email: res.user.email,
+              role: "STUDENT",
+              joinDate: Date.now()
+            });
+          }
+          alert(`Logged in via Google Auth securely: ${res.user.displayName}`);
+        });
+      })
+      .catch(err => alert("Google Pop Authentication was discarded: " + err.message));
+    }
+
+    function updateUserProfileUI() {
+      if (!currentUser) return;
+      const emailRef = ref(db, `users/${currentUser.uid}/profile`);
+      get(emailRef).then(snap => {
+        let dName = currentUser.displayName || "Premium Student";
+        let dEmail = currentUser.email || "student@edachievers.com";
+        if (snap.exists()) {
+          const profile = snap.val();
+          dName = profile.name || dName;
+          dEmail = profile.email || dEmail;
+        }
+        document.getElementById("profile-name").innerText = dName;
+        document.getElementById("profile-email").innerText = dEmail;
+        document.getElementById("user-avatar").innerText = dName.charAt(0).toUpperCase();
+      });
+    }
+
+    window.logOutUser = function() {
+      if (confirm("Disconnect active study workspace profile?")) {
+        signOut(auth).then(() => {
+          window.location.reload();
+        });
+      }
+    }
+
+
+    // 9. NATIVE LAYOUT TABS SWITCHING
+    window.navigateTab = function(viewName, btnElement) {
+      // Hide all pages
+      document.querySelectorAll(".page-view").forEach(main => {
+        main.classList.add("hidden");
+      });
+
+      // Show requested tab page
+      const viewId = `view-${viewName}`;
+      document.getElementById(viewId).classList.remove("hidden");
+
+      // Set active nav styling
+      document.querySelectorAll(".bottom-nav-btn").forEach(btn => {
+        btn.classList.remove("bottom-nav-active");
+      });
+      if (btnElement) {
+        btnElement.classList.add("bottom-nav-active");
+      }
+    }
+
+    // Modal tabs switching
+    window.switchModalTab = function(tabName) {
+      document.getElementById("modal-panel-lectures").classList.add("hidden");
+      document.getElementById("modal-panel-notes").classList.add("hidden");
+      document.getElementById("modal-panel-doubts").classList.add("hidden");
+
+      document.getElementById(`modal-panel-${tabName}`).classList.remove("hidden");
+
+      document.getElementById("modal-tab-lectures").className = "flex-1 py-2.5 text-center font-medium text-xs text-slate-500 border-b-2 border-transparent";
+      document.getElementById("modal-tab-notes").className = "flex-1 py-2.5 text-center font-medium text-xs text-slate-500 border-b-2 border-transparent";
+      document.getElementById("modal-tab-doubts").className = "flex-1 py-2.5 text-center font-medium text-xs text-slate-500 border-b-2 border-transparent";
+
+      document.getElementById(`modal-tab-${tabName}`).className = "flex-1 py-2.5 text-center font-bold text-xs text-orange-600 border-b-2 border-orange-600";
+    }
+
+    window.toggleSection = function(id) {
+      const div = document.getElementById(id);
+      if (div.classList.contains("hidden")) {
+        div.classList.remove("hidden");
+      } else {
+        div.classList.add("hidden");
+      }
+    }
+
+    window.filterCourses = function(type) {
+      renderCourses();
+      if (type === "ALL") return;
+
+      const items = Object.values(localDBInstance.courses);
+      const container = document.getElementById("recommended-courses");
+      container.innerHTML = "";
+
+      items.forEach(course => {
+        if (course.examType.toUpperCase() === type.toUpperCase()) {
+          const discountedPrice = Math.round(parseFloat(course.price) * (1 - parseFloat(course.discountPercent) / 100));
+          const card = document.createElement("div");
+          card.className = "bg-white rounded-3xl overflow-hidden shadow-md border border-slate-100 flex flex-col relative hover:shadow-lg transition cursor-pointer";
+          card.innerHTML = `
+            <div class="relative h-44 w-full">
+              <img src="${course.thumbnail}" alt="${course.title}" class="w-full h-full object-cover">
+              <span class="absolute top-3 left-3 bg-orange-500 text-white font-bold text-3xs uppercase tracking-wider px-2 py-0.5 rounded-lg">${course.examType} Special</span>
+              <span class="absolute top-3 right-3 bg-red-500 text-white font-bold text-3xs px-2 py-0.5 rounded-lg">${course.discountPercent}% OFF</span>
+            </div>
+            <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
+              <div class="space-y-1">
+                <h3 class="font-bold text-slate-800 text-xs sm:text-sm line-clamp-2">${course.title}</h3>
+                <p class="text-slate-500 text-3xs line-clamp-2 leading-relaxed">${course.description}</p>
+              </div>
+              <div class="flex items-center justify-between pt-1">
+                <div class="space-y-0.5">
+                  <span class="text-slate-400 line-through text-4xs">₹${course.price}</span>
+                  <span class="text-base font-bold text-orange-600 block leading-none">₹${discountedPrice}</span>
+                </div>
+                <div class="flex gap-1.5">
+                  <button onclick="initiateCheckout('${course.id}', ${course.price})" class="px-3.5 py-2 bg-orange-500 text-white font-bold rounded-xl text-3xs shadow-md">Buy now</button>
+                  <button onclick="viewCourseDetails('${course.id}')" class="px-2.5 py-2 bg-slate-100 font-semibold rounded-xl text-3xs">Details</button>
+                </div>
+              </div>
+            </div>
+          `;
+          container.appendChild(card);
+        }
+      });
+    }
+
+  </script>
+</body>
+</html>

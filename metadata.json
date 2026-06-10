@@ -1,0 +1,6 @@
+{
+  "name": "Ed Achievers",
+  "description": "Government Exam Preparation Platform for CTET, KVS, UPTET, DSSSB, and Super TET.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

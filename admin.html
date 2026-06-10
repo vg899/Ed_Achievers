@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ed Achievers - Enterprise Admin Console</title>
+  <!-- Compiled Tailwind -->
+  <link rel="stylesheet" href="/src/index.css">
+  <!-- Fonts & Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet font-sans">
+  
+  <style>
+    body {
+      font-family: 'Poppins', 'Inter', sans-serif;
+    }
+    .admin-menu-active {
+      background-color: #FF7A00;
+      color: white !important;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col md:flex-row pb-12">
+
+  <!-- LEFT ADMIN SIDEBAR PANEL -->
+  <aside class="w-full md:w-64 bg-slate-900 text-slate-350 flex flex-col shrink-0 border-r border-slate-800">
+    <!-- Brand Logo header -->
+    <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-9 h-9 bg-orange-500 rounded-xl flex items-center justify-center text-white">
+          <i class="fas fa-user-shield text-lg"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-white text-sm">Achiever Admin</h1>
+          <span class="text-4xs text-orange-400 font-bold tracking-wider block uppercase">Control Dashboard</span>
+        </div>
+      </div>
+      <a href="/user.html" class="text-slate-400 hover:text-white" title="Launch User View"><i class="fas fa-external-link-alt text-xs"></i></a>
+    </div>
+
+    <!-- Quick Auth Panel status -->
+    <div class="p-4 bg-slate-950/40 border-b border-slate-800/60 flex items-center gap-2.5 text-xs">
+      <div class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></div>
+      <div>
+        <span id="admin-status-email" class="font-semibold text-white block text-3xs truncate max-w-[130px]">Checking Access...</span>
+        <span class="text-4xs text-slate-400 block mt-0.5">Role: Head Instructor</span>
+      </div>
+    </div>
+
+    <!-- Main side menu navigation links -->
+    <nav class="flex-1 p-3.5 space-y-1.5 overflow-y-auto text-xs">
+      <button onclick="navigateAdminTab('dashboard', this)" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white font-semibold transition admin-menu-active">
+        <i class="fas fa-chart-line w-4"></i> Dashboard Stats
+      </button>
+      <button onclick="navigateAdminTab('courses', this)" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white font-semibold transition">
+        <i class="fas fa-graduation-cap w-4"></i> Course Manager
+      </button>
+      <button onclick="navigateAdminTab('live', this)" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white font-semibold transition">
+        <i class="fas fa-video w-4"></i> Live Class Scheduler
+      </button>
+      <button onclick="navigateAdminTab('test', this)" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white font-semibold transition">
+        <i class="fas fa-file-pen w-4"></i> Mock Test Creator
+      </button>
+      <button onclick="navigateAdminTab('doubts', this)" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white font-semibold transition justify-between">
+        <span class="flex items-center gap-3"><i class="fas fa-comments w-4"></i> Help Desk Replies</span>
+        <span id="admin-pending-doubts-badge" class="bg-red-650 text-white rounded-full font-bold px-1.5 py-0.5 text-5xs hidden">0</span>
+      </button>
+      <button onclick="navigateAdminTab('notes', this)" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white font-semibold transition">
+        <i class="fas fa-file-pdf w-4"></i> Revision Notes PDF
+      </button>
+      <button onclick="navigateAdminTab('notifications', this)" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white font-semibold transition">
+        <i class="fas fa-bullhorn w-4"></i> Announcements
+      </button>
+    </nav>
+
+    <!-- Side bottom actions -->
+    <div class="p-4 border-t border-slate-800 text-xs">
+      <button onclick="triggerLogout()" class="w-full py-2.5 bg-slate-800 hover:bg-red-600 hover:text-white text-slate-300 font-bold rounded-xl flex items-center justify-center gap-1.5 transition">
+        <i class="fas fa-sign-out-alt"></i> Logout System
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN ADMIN ACTION SCREENS -->
+  <main class="flex-1 p-4 sm:p-6 space-y-6 overflow-x-hidden">
+    
+    <!-- SUB-VIEW 1: METRICS DASHBOARD -->
+    <div id="admin-view-dashboard" class="admin-tab-view space-y-6">
+      
+      <!-- Top header strip -->
+      <div class="flex justify-between items-center bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
+        <div>
+          <h2 class="text-base font-bold text-slate-800">Operational Overview</h2>
+          <p class="text-3xs text-slate-400">Total registered database counts and real-time ledger records</p>
+        </div>
+        <button onclick="syncAllAdminData()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition"><i class="fas fa-rotate mr-1.5"></i> Refresh System</button>
+      </div>
+
+      <!-- Performance scorecard grid -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center text-orange-600 text-lg shrink-0"><i class="fas fa-users"></i></div>
+          <div>
+            <span class="text-4xs text-slate-400 uppercase tracking-wider font-semibold block">Active Scholars</span>
+            <span id="stat-students" class="text-xl font-black text-slate-800 block leading-tight">--</span>
+          </div>
+        </div>
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 text-lg shrink-0"><i class="fas fa-indian-rupee-sign"></i></div>
+          <div>
+            <span class="text-4xs text-slate-400 uppercase tracking-wider font-semibold block">Total Revenue</span>
+            <span id="stat-revenue" class="text-xl font-black text-emerald-600 block leading-tight">₹0</span>
+          </div>
+        </div>
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600 text-lg shrink-0"><i class="fas fa-graduation-cap"></i></div>
+          <div>
+            <span class="text-4xs text-slate-400 uppercase tracking-wider font-semibold block">Published Batches</span>
+            <span id="stat-courses" class="text-xl font-black text-slate-800 block leading-tight">--</span>
+          </div>
+        </div>
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 bg-rose-100 rounded-2xl flex items-center justify-center text-rose-600 text-lg shrink-0"><i class="fas fa-comments"></i></div>
+          <div>
+            <span class="text-4xs text-slate-400 uppercase tracking-wider font-semibold block">Doubt Queries</span>
+            <span id="stat-doubts" class="text-xl font-black text-slate-800 block leading-tight">--</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Financial Transaction logs ledger -->
+      <div class="bg-white rounded-3xl p-5 border border-slate-100 shadow-xl space-y-4">
+        <h3 class="font-bold text-slate-850 text-xs uppercase tracking-widest"><i class="fas fa-file-invoice-dollar text-emerald-600 mr-1.5"></i> Secure Payment Transaction Ledger</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-slate-150 text-slate-400 font-semibold uppercase text-3xs">
+                <th class="py-3 px-2">Order ID</th>
+                <th class="py-3 px-2">Learner info</th>
+                <th class="py-3 px-2">Course Purchased</th>
+                <th class="py-3 px-2">Revenue Gained</th>
+                <th class="py-3 px-2">Checkout Status</th>
+              </tr>
+            </thead>
+            <tbody id="transaction-log-rows">
+              <!-- populate dynam pay logs from RTDB -->
+              <tr>
+                <td colspan="5" class="text-center text-slate-400 py-8 italic font-light">No cashfree orders initiated yet. Complete mock payments from public dashboard.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUB-VIEW 2: COURSE CRUD MANAGER -->
+    <div id="admin-view-courses" class="admin-tab-view space-y-6 hidden">
+      <div class="flex justify-between items-center">
+        <div>
+          <h2 class="text-base font-bold text-slate-800">Batch Course Creator</h2>
+          <p class="text-3xs text-slate-400">Launch premium CTET, KVS, or auxiliary exam course bundles</p>
+        </div>
+        <button onclick="toggleSection('course-create-panel')" class="px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl text-xs shadow-md transition"><i class="fa fa-plus mr-1.5"></i> Create Course</button>
+      </div>
+
+      <!-- Add course form card droparea -->
+      <div id="course-create-panel" class="hidden bg-white p-5 rounded-3xl border border-slate-100 shadow-xl space-y-4 text-xs">
+        <h3 class="font-bold text-slate-800 text-sm">Create New Training Course Pack</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-500">Course Identifier key (Unique, e.g. ctet_2026_CDP)</label>
+            <input type="text" id="add-course-id" placeholder="ctet_25_advance" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Full Course Title</label>
+            <input type="text" id="add-course-title" placeholder="CTET Paper 2 complete Child Psychology master batch" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Exam Category Group</label>
+            <select id="add-course-exam" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+              <option value="CTET">CTET Prep</option>
+              <option value="KVS">KVS Central</option>
+              <option value="UPTET">UPTET Exams</option>
+              <option value="DSSSB">DSSSB Boards</option>
+              <option value="SUPERTET">UP State Super TET</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Secure Cloudinary Thumbnail Link</label>
+            <input type="text" id="add-course-thumb" placeholder="https://res.cloudinary.com/demo/image/upload/sample.jpg" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Price tag (₹ INR)</label>
+            <input type="number" id="add-course-price" placeholder="1999" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Percent Discount Promo (%)</label>
+            <input type="number" id="add-course-disc" placeholder="40" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div class="col-span-full">
+            <label class="block font-semibold text-slate-500">Detailed Syllabus Description</label>
+            <textarea id="add-course-desc" rows="3" placeholder="Explain lessons schedule, pedagogical scope, pdf notes access features..." class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"></textarea>
+          </div>
+        </div>
+        <div class="flex gap-2 justify-end pt-2">
+          <button onclick="toggleSection('course-create-panel')" class="px-4 py-2 bg-slate-100 rounded-lg font-semibold">Discard</button>
+          <button onclick="publishNewCourseAction()" class="px-5 py-2 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl transition">Publish Course Bundle</button>
+        </div>
+      </div>
+
+      <!-- Published courses logs table -->
+      <div id="published-courses-admin-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- dyn items render below -->
+      </div>
+    </div>
+
+    <!-- SUB-VIEW 3: LIVE CLASS SCHEDULER -->
+    <div id="admin-view-live" class="admin-tab-view space-y-6 hidden text-xs">
+      <div>
+        <h2 class="text-base font-bold text-slate-850">Live YouTube Lecture Schedules</h2>
+        <p class="text-3xs text-slate-400">Deploy live streams linked to YouTube live channels instantly under student boards</p>
+      </div>
+
+      <div class="bg-white p-5 rounded-3xl border border-slate-105 shadow-md space-y-4 max-w-xl">
+        <h3 class="font-bold text-slate-800 text-sm">Schedule New Video Session</h3>
+        <div class="space-y-3">
+          <div>
+            <label class="block font-medium text-slate-500">Lecture Session Title</label>
+            <input type="text" id="add-live-title" placeholder="CDP Moral developmental stages by Piaget" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-medium text-slate-500">Exam Target Stream</label>
+              <select id="add-live-exam" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+                <option value="CTET">CTET</option>
+                <option value="KVS">KVS</option>
+                <option value="UPTET">UPTET</option>
+                <option value="DSSSB">DSSSB</option>
+                <option value="SUPERTET">Super TET</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-medium text-slate-500">Scheduled timing label</label>
+              <input type="text" id="add-live-time" placeholder="Today at 4:30 PM" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+          </div>
+          <div>
+            <label class="block font-medium text-slate-500">YouTube Watch URL (Embed link format, e.g. https://www.youtube.com/embed/XXXX)</label>
+            <input type="text" id="add-live-url" placeholder="https://www.youtube.com/embed/dQw4w9WgXcQ" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <button onclick="publishLiveClassAction()" class="w-full py-3 bg-orange-500 text-white font-bold rounded-xl shadow-lg transition">Push Stream Schedule Live</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUB-VIEW 4: MOCK TEST CREATOR MCQ -->
+    <div id="admin-view-test" class="admin-tab-view space-y-6 hidden text-xs">
+      <div>
+        <h2 class="text-base font-bold text-slate-800">Mock Quiz Exam Builder</h2>
+        <p class="text-3xs text-slate-400">Launch standard single choice MCQ test questionnaire libraries for student analytics</p>
+      </div>
+
+      <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-md space-y-4 max-w-xl">
+        <h3 class="font-bold text-slate-800 text-sm">Add New Question Paper Capsule</h3>
+        <div class="space-y-3">
+          <div>
+            <label class="block font-medium text-slate-500">Paper unique ID key (e.g. quiz_pedagogy_3)</label>
+            <input type="text" id="add-test-id" placeholder="quiz_pedagogy_2" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-medium text-slate-500">Test Title name</label>
+              <input type="text" id="add-test-title" placeholder="Kohlberg Morals Daily Test" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-medium text-slate-500">Subject Tag</label>
+              <input type="text" id="add-test-sub" placeholder="CDP" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+          </div>
+          <div class="h-px bg-slate-200 my-2"></div>
+          
+          <!-- Sample single question block -->
+          <h4 class="font-bold text-orange-600 block uppercase tracking-wide text-5xs">MCQ Statement & Options</h4>
+          <div>
+            <label class="block font-medium text-slate-500">Question Formulation</label>
+            <textarea id="add-test-q" rows="2" placeholder="Which theory correlates schemas developmental models directly?" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"></textarea>
+          </div>
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-4xs font-bold text-slate-400">Option A</label>
+              <input type="text" id="add-test-op0" placeholder="Jean Piaget theory" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-4xs font-bold text-slate-400">Option B</label>
+              <input type="text" id="add-test-op1" placeholder="Vygotsky scaffolding" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-4xs font-bold text-slate-400">Option C</label>
+              <input type="text" id="add-test-op2" placeholder="Ivan Pavlov" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-4xs font-bold text-slate-400">Option D</label>
+              <input type="text" id="add-test-op3" placeholder="BF Skinner rewards" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-550">Correct Option index (0-3)</label>
+              <input type="number" id="add-test-correct" placeholder="0" min="0" max="3" class="w-full mt-1 p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-550">Explanatory Guide details</label>
+              <input type="text" id="add-test-exp" placeholder="Piaget formulated schema principles based on biological structures." class="w-full mt-1 p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+          </div>
+
+          <button onclick="publishMockQuizAction()" class="w-full py-3 bg-slate-900 hover:bg-slate-950 text-white font-bold rounded-xl transition">Publish Exam Paper Capsule</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUB-VIEW 5: HELPDESK CHAT CONSOLE FOR DOUBTS -->
+    <div id="admin-view-doubts" class="admin-tab-view space-y-6 hidden text-xs">
+      <div>
+        <h2 class="text-base font-bold text-slate-800">Secure Doubt Support Center</h2>
+        <p class="text-3xs text-slate-400">Reply directly to pedagogical queries and doubts posted by registered students bimonthly</p>
+      </div>
+
+      <div id="admin-doubts-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- dyn list of dudas -->
+        <p class="text-slate-400 text-center py-6 block col-span-full italic font-light">No queries or doubt logs registered on student profiles currently.</p>
+      </div>
+    </div>
+
+    <!-- SUB-VIEW 6: PDF REVISION LIBRARIAN -->
+    <div id="admin-view-notes" class="admin-tab-view space-y-6 hidden text-xs">
+      <div>
+        <h2 class="text-base font-bold text-slate-850">Revision PDF Organizer</h2>
+        <p class="text-3xs text-slate-400">Publish study guides and concise reference notebooks directly into student vaults</p>
+      </div>
+
+      <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-md space-y-4 max-w-xl">
+        <h3 class="font-bold text-slate-800 text-sm">Upload Revision Guide Doc</h3>
+        <div class="space-y-3">
+          <div>
+            <label class="block font-semibold text-slate-500">Document Title</label>
+            <input type="text" id="add-pdf-title" placeholder="KVS Child Psychology 2026 Special notes" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-500">Subject Tag (e.g. GS, Maths, CDP, EVS)</label>
+              <input type="text" id="add-pdf-sub" placeholder="CDP" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-500">Secure Download Link (or # placeholder)</label>
+              <input type="text" id="add-pdf-link" placeholder="#" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+          </div>
+          <button onclick="publishPDFNotesAction()" class="w-full py-3 bg-orange-500 text-white font-bold rounded-xl shadow-lg transition">Publish Document Note</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUB-VIEW 7: BULLETIN ANNOUNCEMENTS RUNNER -->
+    <div id="admin-view-notifications" class="admin-tab-view space-y-6 hidden text-xs">
+      <div>
+        <h2 class="text-base font-bold text-slate-800">Central Bulletin Announcements</h2>
+        <p class="text-3xs text-slate-400">Broadcast scrolling marquee notices and real-time alerts to logged-in user app headers</p>
+      </div>
+
+      <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-md space-y-4 max-w-xl">
+        <h3 class="font-bold text-slate-850 text-sm">Send New Broadcasting Bulletin</h3>
+        <div class="space-y-3">
+          <div>
+            <label class="block font-semibold text-slate-500">Announcement Headline Text</label>
+            <textarea id="add-notif-text" rows="3" placeholder="Admissions open for Super TET 2026 Batch! Use code FIRST50 for special 50% checkout discount today." class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"></textarea>
+          </div>
+          <button onclick="publishAnnouncementAction()" class="w-full py-3 bg-orange-500 text-white font-bold rounded-xl shadow-lg transition">Broadcast Marquee Announcement</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- JS CONTROLLERS -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getDatabase, ref, set, get, update, push, remove, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // Same configuration values
+    const firebaseConfig = {
+      apiKey: "AIzaSyARl1ikziVqxEvk-qUY6G_pofTaf9QmE4M",
+      authDomain: "ed-achievers-2e3f1.firebaseapp.com",
+      databaseURL: "https://ed-achievers-2e3f1-default-rtdb.firebaseio.com",
+      projectId: "ed-achievers-2e3f1",
+      storageBucket: "ed-achievers-2e3f1.firebasestorage.app",
+      messagingSenderId: "1062183762339",
+      appId: "1:1062183762339:web:8c6156774953a54d620216",
+      measurementId: "G-ZSB92J883V"
+    };
+
+    const firebaseApp = initializeApp(firebaseConfig);
+    const auth = getAuth(firebaseApp);
+    const db = getDatabase(firebaseApp);
+
+    let localDB = {
+      courses: {},
+      doubts: {},
+      transactions: {}
+    };
+
+    window.addEventListener("DOMContentLoaded", () => {
+      // Connect Auth listener
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          document.getElementById("admin-status-email").innerText = user.email;
+          syncAllAdminData();
+        } else {
+          document.getElementById("admin-status-email").innerText = "Not authorized";
+          alert("Authorization required! Redirecting to setup portal.");
+          window.location.href = "/user.html";
+        }
+      });
+    });
+
+    // Sync metrics dashboard & lists
+    function syncAllAdminData() {
+      // Synchronize Student registry metric
+      get(ref(db, "users")).then((snap) => {
+        if (snap.exists()) {
+          const usrs = snap.val();
+          document.getElementById("stat-students").innerText = Object.keys(usrs).length;
+        } else {
+          document.getElementById("stat-students").innerText = "1";
+        }
+      });
+
+      // Synchronize Course Counts metric
+      get(ref(db, "courses")).then((snap) => {
+        if (snap.exists()) {
+          localDB.courses = snap.val();
+          document.getElementById("stat-courses").innerText = Object.keys(localDB.courses).length;
+          renderAdminCoursesList();
+        } else {
+          document.getElementById("stat-courses").innerText = "0";
+        }
+      });
+
+      // Synchronize doubts console replies
+      get(ref(db, "doubts")).then((snap) => {
+        if (snap.exists()) {
+          localDB.doubts = snap.val();
+          let pendingCount = 0;
+          Object.values(localDB.doubts).forEach(d => {
+            if (d.status === "PENDING") pendingCount++;
+          });
+          document.getElementById("stat-doubts").innerText = Object.keys(localDB.doubts).length;
+
+          const doubtsBadge = document.getElementById("admin-pending-doubts-badge");
+          if (pendingCount > 0) {
+            doubtsBadge.classList.remove("hidden");
+            doubtsBadge.innerText = pendingCount;
+          } else {
+            doubtsBadge.classList.add("hidden");
+          }
+
+          renderAdminDoubtsConsole();
+        } else {
+          document.getElementById("stat-doubts").innerText = "0";
+        }
+      });
+
+      // Synchronize billing revenue logs & stats from Realtime Database
+      onValue(ref(db, "transactions"), (snap) => {
+        const rows = document.getElementById("transaction-log-rows");
+        const revStat = document.getElementById("stat-revenue");
+        if (snap.exists()) {
+          localDB.transactions = snap.val();
+          rows.innerHTML = "";
+          
+          let totalRevenueSum = 0;
+          Object.values(localDB.transactions).forEach(tx => {
+            const row = document.createElement("tr");
+            row.className = "border-b border-slate-100 hover:bg-slate-50 text-[11px] font-medium";
+            row.innerHTML = `
+              <td class="py-3 px-2 font-mono text-slate-500">${tx.orderId}</td>
+              <td class="py-3 px-2">
+                <span class="font-bold text-slate-850 block">${tx.name || 'Verified Scholar'}</span>
+                <span class="text-4xs text-slate-400 block">${tx.email}</span>
+              </td>
+              <td class="py-3 px-2 font-semibold text-slate-700">${tx.courseTitle}</td>
+              <td class="py-3 px-2 font-black text-rose-600">₹${tx.amount}</td>
+              <td class="py-3 px-2"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded-full text-5xs">PAID SECURE</span></td>
+            `;
+            rows.appendChild(row);
+
+            totalRevenueSum += parseFloat(tx.amount || 0);
+          });
+
+          revStat.innerText = "₹" + Math.round(totalRevenueSum);
+        } else {
+          revStat.innerText = "₹0";
+        }
+      });
+    }
+
+    // RENDER COURSE CRUD MANAGER Cards
+    function renderAdminCoursesList() {
+      const container = document.getElementById("published-courses-admin-list");
+      if (!container) return;
+      container.innerHTML = "";
+
+      Object.values(localDB.courses).forEach(c => {
+        const div = document.createElement("div");
+        div.className = "bg-white p-4 rounded-3xl border border-slate-100 shadow flex items-center justify-between";
+        div.id = `admin-course-row-${c.id}`;
+        div.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-550 shrink-0">
+              <img src="${c.thumbnail}" class="w-full h-full object-cover">
+            </div>
+            <div>
+              <span class="px-1.5 py-0.5 bg-orange-150 text-orange-650 rounded font-bold text-5xs block w-max uppercase tracking-wider mb-0.5">${c.examType} Category</span>
+              <h4 class="font-bold text-slate-800 text-xs line-clamp-1">${c.title}</h4>
+              <span class="text-4xs font-bold text-orange-600">₹${c.price} (Discounted -${c.discountPercent}%)</span>
+            </div>
+          </div>
+          <button onclick="deletePublishedCourseAction('${c.id}')" class="px-3 py-1.5 bg-red-50 hover:bg-red-650 text-red-500 hover:text-white rounded-lg text-4xs transition" title="Delete Course file"><i class="fas fa-trash-can"></i></button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // COURSE MANAGER SUBMIT ACTIONS
+    window.publishNewCourseAction = function() {
+      const cId = document.getElementById("add-course-id").value.trim();
+      const title = document.getElementById("add-course-title").value.trim();
+      const exam = document.getElementById("add-course-exam").value;
+      const thumb = document.getElementById("add-course-thumb").value.trim();
+      const price = document.getElementById("add-course-price").value.trim();
+      const disc = document.getElementById("add-course-disc").value.trim();
+      const desc = document.getElementById("add-course-desc").value.trim();
+
+      if (!cId || !title || !price) {
+        alert("Must input Course ID, Title name, and Base pricing tags.");
+        return;
+      }
+
+      const payload = {
+        id: cId,
+        title,
+        examType: exam,
+        thumbnail: thumb || "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=200",
+        price,
+        discountPercent: disc || "0",
+        description: desc || "Updated educational prep module description logs.",
+        reviewsCount: 1,
+        teachers: ["Achiever Expert Faculty"]
+      };
+
+      set(ref(db, `courses/${cId}`), payload)
+      .then(() => {
+        alert("Course structure published to Realtime Database successfully!");
+        document.getElementById("add-course-id").value = "";
+        document.getElementById("add-course-title").value = "";
+        document.getElementById("add-course-price").value = "";
+        document.getElementById("add-course-desc").value = "";
+        document.getElementById("course-create-panel").classList.add("hidden");
+        syncAllAdminData();
+      })
+      .catch(err => alert("Fail: " + err.message));
+    }
+
+    window.deletePublishedCourseAction = function(cId) {
+      if (confirm(`Remove course ${cId} completely from database inventory?`)) {
+        remove(ref(db, `courses/${cId}`)).then(() => {
+          alert("Course package removed successfully.");
+          syncAllAdminData();
+        });
+      }
+    }
+
+
+    // LIVE CLASS PUBLISH SCHEDULERS
+    window.publishLiveClassAction = function() {
+      const t = document.getElementById("add-live-title").value.trim();
+      const exam = document.getElementById("add-live-exam").value;
+      const timing = document.getElementById("add-live-time").value.trim();
+      const url = document.getElementById("add-live-url").value.trim();
+
+      if (!t || !url) {
+        alert("Must enter lecture title and YouTube web player links.");
+        return;
+      }
+
+      const liveId = "live_" + Date.now();
+      const payload = {
+        id: liveId,
+        title: t,
+        examType: exam,
+        scheduledTime: timing || "Scheduled Live",
+        url,
+        active: true
+      };
+
+      set(ref(db, `liveClasses/${liveId}`), payload)
+      .then(() => {
+        alert("YouTube stream details published bimonthly!");
+        document.getElementById("add-live-title").value = "";
+        document.getElementById("add-live-url").value = "";
+        syncAllAdminData();
+      });
+    }
+
+
+    // MOCK QUIZ BUILDERS
+    window.publishMockQuizAction = function() {
+      const tId = document.getElementById("add-test-id").value.trim();
+      const title = document.getElementById("add-test-title").value.trim();
+      const sub = document.getElementById("add-test-sub").value.trim();
+      const question = document.getElementById("add-test-q").value.trim();
+
+      const ops = [
+        document.getElementById("add-test-op0").value.trim(),
+        document.getElementById("add-test-op1").value.trim(),
+        document.getElementById("add-test-op2").value.trim(),
+        document.getElementById("add-test-op3").value.trim()
+      ];
+      const correctIdx = parseInt(document.getElementById("add-test-correct").value || 0);
+      const explanation = document.getElementById("add-test-exp").value.trim();
+
+      if (!tId || !title || !question || !ops[0]) {
+        alert("Syllabus details, statements, and Option parameters are critical inputs.");
+        return;
+      }
+
+      const payload = {
+        id: tId,
+        title,
+        subject: sub || "CDP",
+        duration: "15 min",
+        totalQuestions: 1,
+        questions: [
+          {
+            id: "q_custom",
+            statement: question,
+            options: ops,
+            correctIndex: correctIdx,
+            explanation: explanation || "Explanation verified by Ed Achievers instructors."
+          }
+        ]
+      };
+
+      set(ref(db, `testSeries/${tId}`), payload)
+      .then(() => {
+        alert("Question Exam paper published!");
+        document.getElementById("add-test-id").value = "";
+        document.getElementById("add-test-title").value = "";
+        document.getElementById("add-test-q").value = "";
+        syncAllAdminData();
+      });
+    }
+
+
+    // HELPDESK REPLIES SCREEN CONSOLE
+    function renderAdminDoubtsConsole() {
+      const container = document.getElementById("admin-doubts-list");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const entries = Object.entries(localDB.doubts || {});
+      if (entries.length === 0) {
+        container.innerHTML = '<p class="text-slate-400 text-center py-6 block col-span-full italic">No queries or doubt logs currently compiled on database.</p>';
+        return;
+      }
+
+      entries.reverse().forEach(([dId, d]) => {
+        const card = document.createElement("div");
+        card.className = `p-4 rounded-3xl bg-white border shadow flex flex-col justify-between space-y-3 ${d.status === 'PENDING' ? 'border-orange-500 bg-orange-50/10' : 'border-slate-105'}`;
+        card.innerHTML = `
+          <div class="space-y-1.5">
+            <div class="flex justify-between items-center text-4xs">
+              <span class="text-slate-400 font-bold">${d.studentName} (${d.email})</span>
+              <span class="px-2 py-0.5 rounded font-black ${d.status === 'REPLIED' ? 'bg-emerald-100 text-emerald-800' : 'bg-orange-100 text-orange-850'}">${d.status}</span>
+            </div>
+            <p class="font-bold text-slate-800 text-xs leading-normal">Q: ${d.question}</p>
+            ${d.screenshotUrl ? `<a href="${d.screenshotUrl}" target="_blank" class="text-4xs text-orange-500 font-bold hover:underline mb-1 w-max block"><i class="fas fa-image"></i> View layout screenshot proof</a>` : ""}
+            ${d.reply ? `<p class="p-2.5 rounded-xl border bg-slate-50 text-[11px] leading-relaxed"><span class="text-4xs font-bold text-slate-400 block">Instructor Reply:</span>${d.reply}</p>` : ""}
+          </div>
+
+          ${d.status === 'PENDING' ? `
+            <div class="space-y-2 pt-1 border-t border-slate-100">
+              <input type="text" id="reply-input-${dId}" placeholder="Type secure helpful reply explanation guidelines..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+              <button onclick="submitAdminDoubtReply('${dId}')" class="px-4 py-2 bg-orange-500 hover:bg-orange-650 text-white font-bold rounded-xl transition shadow-sm w-full sm:w-auto">Transmit Reply</button>
+            </div>
+          ` : ""}
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    window.submitAdminDoubtReply = function(dId) {
+      const field = document.getElementById(`reply-input-${dId}`);
+      if (!field || !field.value.trim()) return;
+
+      const replyRef = ref(db, `doubts/${dId}`);
+      update(replyRef, {
+        reply: field.value.trim(),
+        status: "REPLIED"
+      }).then(() => {
+        alert("Doubt reply synced to database! Transmitting real-time update to user app.");
+        syncAllAdminData();
+      });
+    }
+
+
+    // PDF NOTES PUBLISHER
+    window.publishPDFNotesAction = function() {
+      const t = document.getElementById("add-pdf-title").value.trim();
+      const sub = document.getElementById("add-pdf-sub").value.trim();
+      const link = document.getElementById("add-pdf-link").value.trim();
+
+      if (!t) {
+        alert("Provide clear PDF guide title name.");
+        return;
+      }
+
+      const pdfId = "pdf_" + Date.now();
+      const payload = {
+        id: pdfId,
+        title: t,
+        subject: sub || "General",
+        link: link || "#"
+      };
+
+      set(ref(db, `pdfNotes/${pdfId}`), payload)
+      .then(() => {
+        alert("PDF document published! Students can recal notes instantly.");
+        document.getElementById("add-pdf-title").value = "";
+        syncAllAdminData();
+      });
+    }
+
+
+    // BULLETIN ANNOUNCEMENT WORKFLOW
+    window.publishAnnouncementAction = function() {
+      const t = document.getElementById("add-notif-text").value.trim();
+      if (!t) return;
+
+      const notifId = "notif_" + Date.now();
+      const payload = {
+        id: notifId,
+        text: t,
+        time: "Today"
+      };
+
+      set(ref(db, `notifications/${notifId}`), payload)
+      .then(() => {
+        alert("Notice bulletin transmitted to user app!");
+        document.getElementById("add-notif-text").value = "";
+        syncAllAdminData();
+      });
+    }
+
+
+
+    // LOGOUT & TABS NAVIGATORS
+    window.triggerLogout = function() {
+      if (confirm("Disconnect administrative access profiles?")) {
+        signOut(auth).then(() => {
+          window.location.href = "/user.html";
+        });
+      }
+    }
+
+    window.navigateAdminTab = function(tabName, btnElement) {
+      document.querySelectorAll(".admin-tab-view").forEach(v => {
+        v.classList.add("hidden");
+      });
+
+      const elementId = `admin-view-${tabName}`;
+      document.getElementById(elementId).classList.remove("hidden");
+
+      document.querySelectorAll(".admin-nav-item").forEach(item => {
+        item.classList.remove("admin-menu-active");
+      });
+
+      if (btnElement) {
+        btnElement.classList.add("admin-menu-active");
+      }
+    }
+
+    window.toggleSection = function(id) {
+      const div = document.getElementById(id);
+      if (div.classList.contains("hidden")) {
+        div.classList.remove("hidden");
+      } else {
+        div.classList.add("hidden");
+      }
+    }
+
+  </script>
+</body>
+</html>
