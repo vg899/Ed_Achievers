@@ -151,6 +151,9 @@
       <button onclick="navigateAdminTab('notifications', this)" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white font-semibold transition">
         <i class="fas fa-bullhorn w-4"></i> Announcements
       </button>
+      <button onclick="navigateAdminTab('revenue', this)" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white font-semibold transition">
+        <i class="fas fa-indian-rupee-sign w-4 text-emerald-500 animate-pulse"></i> Revenue & Finance
+      </button>
     </nav>
 
     <!-- Side bottom actions -->
@@ -248,6 +251,142 @@
               <!-- populate dynam pay logs from RTDB -->
               <tr>
                 <td colspan="5" class="text-center text-slate-400 py-8 italic font-light">No cashfree orders initiated yet. Complete mock payments from public dashboard.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUB-VIEW 9: REVENUE ANALYTICS & BILLING ENGINE -->
+    <div id="admin-view-revenue" class="admin-tab-view space-y-6 hidden">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-3xl border border-slate-100 shadow-sm gap-4">
+        <div>
+          <h2 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+            <span>Enterprise Billing & Financial Center</span>
+            <span class="text-5xs bg-emerald-100 text-emerald-800 font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Live RTDB Logs</span>
+          </h2>
+          <p class="text-3xs text-slate-400 mt-0.5">Track live student cashfree payments, daily payouts, billing reports, and product revenue splits</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="downloadFinancialCSV()" class="py-2.5 px-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-3xs flex items-center gap-1.5 transition">
+            <i class="fas fa-file-csv text-emerald-600"></i> Export CSV Report
+          </button>
+        </div>
+      </div>
+
+      <!-- Prime Financial Metre Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 p-5 rounded-3xl text-white shadow-md shadow-emerald-500/10 space-y-2">
+          <div class="flex justify-between items-center text-emerald-100">
+            <span class="text-4xs font-bold uppercase tracking-wider">Total Gross Revenue</span>
+            <i class="fas fa-wallet text-sm"></i>
+          </div>
+          <p id="adv-stat-total-rev" class="text-2xl font-black font-mono">₹0.00</p>
+          <div class="text-5xs text-emerald-150 flex items-center gap-1">
+            <i class="fa fa-triangle-exclamation"></i> Fully-cleared verified ledger payments
+          </div>
+        </div>
+
+        <div class="bg-slate-900 p-5 rounded-3xl text-white shadow-md space-y-2 border border-slate-800">
+          <div class="flex justify-between items-center text-slate-400">
+            <span class="text-4xs font-bold uppercase tracking-wider">Today's Revenue</span>
+            <i class="far fa-calendar-check text-sm"></i>
+          </div>
+          <p id="adv-stat-today-rev" class="text-2xl font-black font-mono text-orange-450">₹0.00</p>
+          <div class="text-5xs text-slate-500 flex items-center gap-1">
+            <i class="fa-regular fa-clock text-orange-450"></i> Local operational day-boundary
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-3xl text-slate-800 border border-slate-100 shadow-sm space-y-2">
+          <div class="flex justify-between items-center text-slate-400">
+            <span class="text-4xs font-bold uppercase tracking-wider">Monthly Revenue Split</span>
+            <i class="fas fa-chart-line text-sm"></i>
+          </div>
+          <p id="adv-stat-month-rev" class="text-2xl font-black font-mono text-slate-900">₹0.00</p>
+          <div class="text-5xs text-slate-400 flex items-center gap-1">
+            <i class="fa fa-chart-bar text-emerald-500"></i> Active dynamic billing period
+          </div>
+        </div>
+      </div>
+
+      <!-- Gateway Status Stats Meter Block -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-white p-5 rounded-3xl border border-slate-150 shadow-xs">
+        <div class="p-3 bg-slate-50 rounded-2xl text-center">
+          <span class="text-4xs text-slate-450 uppercase tracking-wider font-extrabold block">Success Rate</span>
+          <span id="adv-stat-success-pct" class="text-base font-black text-emerald-600 block mt-1">100%</span>
+        </div>
+        <div class="p-3 bg-slate-50 rounded-2xl text-center">
+          <span class="text-4xs text-slate-450 uppercase tracking-wider font-extrabold block">Success Paid</span>
+          <span id="adv-stat-count-success" class="text-base font-black text-slate-800 block mt-1">0</span>
+        </div>
+        <div class="p-3 bg-slate-50 rounded-2xl text-center">
+          <span class="text-4xs text-slate-450 uppercase tracking-wider font-extrabold block">Pending Held</span>
+          <span id="adv-stat-count-pending" class="text-base font-bold text-amber-500 block mt-1">0</span>
+        </div>
+        <div class="p-3 bg-slate-50 rounded-2xl text-center">
+          <span class="text-4xs text-slate-450 uppercase tracking-wider font-extrabold block">Failed/Declined</span>
+          <span id="adv-stat-count-failed" class="text-base font-bold text-rose-500 block mt-1">0</span>
+        </div>
+      </div>
+
+      <!-- Course Wise Revenue Split Matrix -->
+      <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+        <div class="p-5 border-b border-slate-50 flex justify-between items-center">
+          <div>
+            <h3 class="text-xs font-bold text-slate-800">Course-Wise Gross Yield</h3>
+            <p class="text-5xs text-slate-400 mt-0.5">Net sales volume, discounts applied and revenue splits by specific courses</p>
+          </div>
+          <span class="text-5xs bg-blue-50 text-blue-600 font-bold px-2 py-0.5 rounded-full uppercase">Dynamic Index</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50/70 border-b border-slate-100 text-slate-400 font-bold uppercase text-[9px] tracking-wider">
+                <th class="py-3.5 px-4">Course Info</th>
+                <th class="py-3.5 px-4 text-center">Sales Volume</th>
+                <th class="py-3.5 px-4 text-right">Total Applied Discount</th>
+                <th class="py-3.5 px-4 text-right">Gross Receipts</th>
+              </tr>
+            </thead>
+            <tbody id="course-revenue-rows">
+              <tr>
+                <td colspan="4" class="text-center py-6 text-slate-400 italic font-light text-3xs">Accumulating billing details...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Advanced Ledger Registry with Search -->
+      <div class="bg-white rounded-3xl border border-slate-150 shadow-xs overflow-hidden">
+        <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div>
+            <h3 class="text-xs font-bold text-slate-800">Detailed Financial Reports & Ledger Logs</h3>
+            <p class="text-5xs text-slate-450 mt-0.5">PCI-compliant unified transaction audit ledger with real-time state query</p>
+          </div>
+          <div class="w-full sm:w-64 relative shrink-0">
+            <span class="absolute left-3 top-2.5 text-slate-400 text-3xs"><i class="fas fa-search"></i></span>
+            <input type="text" id="ledger-search-box" oninput="filterLedgerRows()" placeholder="Search Reference, Student, Code..." class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 focus:outline-none focus:border-orange-500 rounded-xl text-3xs">
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-150 text-slate-400 font-bold uppercase text-[9px] tracking-wider">
+                <th class="py-3 px-4">Date/Time</th>
+                <th class="py-3 px-4">Order ID</th>
+                <th class="py-3 px-4">Student Details</th>
+                <th class="py-3 px-4">Purchased Product</th>
+                <th class="py-3 px-4 text-right">Coupon / Saved</th>
+                <th class="py-3 px-4 text-right">Net Value Paid</th>
+                <th class="py-3 px-4 text-center">Process Status</th>
+              </tr>
+            </thead>
+            <tbody id="adv-ledger-rows">
+              <tr>
+                <td colspan="7" class="text-center py-8 text-slate-400 italic font-light text-3xs">No recorded Cashfree logs matching current filter profiles.</td>
               </tr>
             </tbody>
           </table>
@@ -919,35 +1058,273 @@
       // Synchronize billing revenue logs & stats from Realtime Database
       onValue(ref(db, "transactions"), (snap) => {
         const rows = document.getElementById("transaction-log-rows");
-        const revStat = document.getElementById("stat-revenue");
         if (snap.exists()) {
           localDB.transactions = snap.val();
-          rows.innerHTML = "";
           
-          let totalRevenueSum = 0;
-          Object.values(localDB.transactions).forEach(tx => {
-            const row = document.createElement("tr");
-            row.className = "border-b border-slate-100 hover:bg-slate-50 text-[11px] font-medium";
-            row.innerHTML = `
-              <td class="py-3 px-2 font-mono text-slate-500">${tx.orderId}</td>
-              <td class="py-3 px-2">
-                <span class="font-bold text-slate-850 block">${tx.name || 'Verified Scholar'}</span>
-                <span class="text-4xs text-slate-400 block">${tx.email}</span>
-              </td>
-              <td class="py-3 px-2 font-semibold text-slate-700">${tx.courseTitle}</td>
-              <td class="py-3 px-2 font-black text-rose-600">₹${tx.amount}</td>
-              <td class="py-3 px-2"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded-full text-5xs">PAID SECURE</span></td>
-            `;
-            rows.appendChild(row);
+          if (rows) {
+            rows.innerHTML = "";
+            Object.values(localDB.transactions).forEach(tx => {
+              const status = (tx.status || "SUCCESS").toUpperCase();
+              if (status !== "SUCCESS") return; // Keep operational summary to successful payments
 
-            totalRevenueSum += parseFloat(tx.amount || 0);
-          });
+              const row = document.createElement("tr");
+              row.className = "border-b border-slate-100 hover:bg-slate-50 text-[11px] font-medium";
+              row.innerHTML = `
+                <td class="py-3 px-2 font-mono text-slate-500">${tx.orderId}</td>
+                <td class="py-3 px-2">
+                  <span class="font-bold text-slate-850 block">${tx.name || 'Verified Scholar'}</span>
+                  <span class="text-4xs text-slate-400 block">${tx.email}</span>
+                </td>
+                <td class="py-3 px-2 font-semibold text-slate-700">${tx.courseTitle || tx.courseName || 'Premium Course'}</td>
+                <td class="py-3 px-2 font-black text-rose-600">₹${tx.amount}</td>
+                <td class="py-3 px-2"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded-full text-5xs">PAID SECURE</span></td>
+              `;
+              rows.appendChild(row);
+            });
+          }
 
-          revStat.innerText = "₹" + Math.round(totalRevenueSum);
+          // Trigger advanced ledger calculations
+          window.recomputeFinancialDashboard();
         } else {
-          revStat.innerText = "₹0";
+          localDB.transactions = {};
+          if (rows) {
+            rows.innerHTML = `
+              <tr>
+                <td colspan="5" class="text-center text-slate-400 py-8 italic font-light">No cashfree orders initiated yet. Complete mock payments from public dashboard.</td>
+              </tr>
+            `;
+          }
+          window.recomputeFinancialDashboard();
         }
       });
+
+      // Advanced financial accounting pipeline & analytics reporting
+      window.recomputeFinancialDashboard = function() {
+        const txArray = Object.values(localDB.transactions || {});
+        
+        let totalRevenue = 0;
+        let todayRevenue = 0;
+        let monthlyRevenue = 0;
+        
+        let countSuccess = 0;
+        let countPending = 0;
+        let countFailed = 0;
+        let countCancelled = 0;
+        
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+        
+        const courseSplit = {}; // courseId -> { name, sales, revenue, discount }
+        
+        txArray.forEach(tx => {
+          const amt = parseFloat(tx.amount || 0);
+          const disc = parseFloat(tx.discount || 0);
+          const tStatus = (tx.status || "SUCCESS").toUpperCase();
+          const tTime = tx.timestamp ? new Date(tx.timestamp).getTime() : Date.now();
+          
+          if (tStatus === "SUCCESS") {
+            countSuccess++;
+            totalRevenue += amt;
+            
+            if (tTime >= startOfToday) {
+              todayRevenue += amt;
+            }
+            if (tTime >= startOfMonth) {
+              monthlyRevenue += amt;
+            }
+            
+            // Course split computations
+            const cId = tx.courseId || "unknown";
+            const cTitle = tx.courseTitle || tx.courseName || "Premium Batch";
+            if (!courseSplit[cId]) {
+              courseSplit[cId] = { name: cTitle, sales: 0, revenue: 0, discount: 0 };
+            }
+            courseSplit[cId].sales++;
+            courseSplit[cId].revenue += amt;
+            courseSplit[cId].discount += disc;
+          } else if (tStatus === "PENDING") {
+            countPending++;
+          } else if (tStatus === "FAILED") {
+            countFailed++;
+          } else if (tStatus === "CANCELLED") {
+            countCancelled++;
+          }
+        });
+        
+        // Display dashboard summary counter
+        const revStat = document.getElementById("stat-revenue");
+        if (revStat) revStat.innerText = "₹" + Math.round(totalRevenue);
+        
+        // Advanced metrics display
+        const totalRevEl = document.getElementById("adv-stat-total-rev");
+        const todayRevEl = document.getElementById("adv-stat-today-rev");
+        const monthRevEl = document.getElementById("adv-stat-month-rev");
+        
+        if (totalRevEl) totalRevEl.innerText = "₹" + totalRevenue.toLocaleString("en-IN", { minimumFractionDigits: 2 });
+        if (todayRevEl) todayRevEl.innerText = "₹" + todayRevenue.toLocaleString("en-IN", { minimumFractionDigits: 2 });
+        if (monthRevEl) monthRevEl.innerText = "₹" + monthlyRevenue.toLocaleString("en-IN", { minimumFractionDigits: 2 });
+        
+        // Status counts
+        const successCountEl = document.getElementById("adv-stat-count-success");
+        const pendingCountEl = document.getElementById("adv-stat-count-pending");
+        const failedCountEl = document.getElementById("adv-stat-count-failed");
+        const successPctEl = document.getElementById("adv-stat-success-pct");
+        
+        if (successCountEl) successCountEl.innerText = countSuccess;
+        if (pendingCountEl) pendingCountEl.innerText = countPending;
+        if (failedCountEl) failedCountEl.innerText = countFailed + countCancelled;
+        
+        const totalAttempts = countSuccess + countPending + countFailed + countCancelled;
+        const successRate = totalAttempts > 0 ? Math.round((countSuccess / totalAttempts) * 100) : 100;
+        if (successPctEl) successPctEl.innerText = successRate + "%";
+        
+        // Render Course Wise Analytics split
+        const courseBody = document.getElementById("course-revenue-rows");
+        if (courseBody) {
+          courseBody.innerHTML = "";
+          const coursesList = Object.entries(courseSplit);
+          if (coursesList.length === 0) {
+            courseBody.innerHTML = `
+              <tr>
+                <td colspan="4" class="text-center py-6 text-slate-405 italic text-2xs">No courses sold yet under Cashfree secure payments.</td>
+              </tr>
+            `;
+          } else {
+            coursesList.forEach(([cid, data]) => {
+              const tr = document.createElement("tr");
+              tr.className = "border-b border-slate-100 hover:bg-slate-50 text-xs text-slate-700";
+              tr.innerHTML = `
+                <td class="py-3.5 px-4">
+                  <span class="font-extrabold text-slate-900 block">${data.name}</span>
+                  <span class="text-5xs text-slate-400 block font-mono">ID: ${cid}</span>
+                </td>
+                <td class="py-3.5 px-4 text-center font-bold text-slate-600">${data.sales} Enrollments</td>
+                <td class="py-3.5 px-4 text-right text-rose-500 font-medium">-₹${data.discount.toFixed(2)}</td>
+                <td class="py-3.5 px-4 text-right font-black text-emerald-600 font-mono">₹${data.revenue.toFixed(2)}</td>
+              `;
+              courseBody.appendChild(tr);
+            });
+          }
+        }
+        
+        // Render detailed audit ledger rows
+        window.renderDetailedLedger();
+      };
+
+      window.renderDetailedLedger = function() {
+        const searchBox = document.getElementById("ledger-search-box");
+        const query = (searchBox ? searchBox.value : "").toLowerCase().trim();
+        const dest = document.getElementById("adv-ledger-rows");
+        if (!dest) return;
+        dest.innerHTML = "";
+        
+        const txArray = Object.values(localDB.transactions || {});
+        // Sort transactions chronologically desc (most recent first)
+        txArray.sort((a, b) => {
+          const tA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+          const tB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+          return tB - tA;
+        });
+        
+        let renderedCount = 0;
+        
+        txArray.forEach(tx => {
+          const orderId = tx.orderId || "";
+          const name = tx.name || "Verified Learner";
+          const email = tx.email || "";
+          const courseTitle = tx.courseTitle || tx.courseName || "Premium Course";
+          const status = (tx.status || "SUCCESS").toUpperCase();
+          const coupon = tx.coupon || tx.couponCode || "None";
+          const disc = parseFloat(tx.discount || 0);
+          const amt = parseFloat(tx.amount || 0);
+          const timeStr = tx.timestamp ? new Date(tx.timestamp).toLocaleString("en-IN") : "Recent Date";
+          
+          const matchInput = orderId.toLowerCase().includes(query) ||
+                             name.toLowerCase().includes(query) ||
+                             email.toLowerCase().includes(query) ||
+                             courseTitle.toLowerCase().includes(query) ||
+                             status.toLowerCase().includes(query) ||
+                             coupon.toLowerCase().includes(query);
+                             
+          if (!matchInput) return;
+          
+          let statusBadge = "";
+          if (status === "SUCCESS") {
+            statusBadge = `<span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 font-extrabold rounded-full text-[10px] uppercase tracking-wide flex items-center justify-center gap-1 w-max mx-auto"><span class="w-1.5 h-1.5 bg-emerald-550 rounded-full animate-ping"></span> SUCCESS</span>`;
+          } else if (status === "PENDING") {
+            statusBadge = `<span class="px-2.5 py-0.5 bg-amber-100 text-amber-800 font-extrabold rounded-full text-[10px] uppercase tracking-wide flex items-center justify-center gap-1 w-max mx-auto"><span class="w-1.5 h-1.5 bg-amber-500 rounded-full"></span> PENDING</span>`;
+          } else if (status === "FAILED") {
+            statusBadge = `<span class="px-2.5 py-0.5 bg-rose-100 text-rose-800 font-extrabold rounded-full text-[10px] uppercase tracking-wide flex items-center justify-center gap-1 w-max mx-auto"><span class="w-1.5 h-1.5 bg-rose-500 rounded-full"></span> FAILED</span>`;
+          } else {
+            statusBadge = `<span class="px-2.5 py-0.5 bg-slate-100 text-slate-500 font-extrabold rounded-full text-[10px] uppercase tracking-wide flex items-center justify-center gap-1 w-max mx-auto"><i class="fa fa-circle-xmark"></i> CANCELLED</span>`;
+          }
+          
+          renderedCount++;
+          const row = document.createElement("tr");
+          row.className = "border-b border-slate-100 hover:bg-slate-50 text-[11px] text-slate-700 font-medium";
+          row.innerHTML = `
+            <td class="py-3 px-4 text-slate-400 font-mono text-3xs whitespace-nowrap">${timeStr}</td>
+            <td class="py-3 px-4 font-mono font-bold text-orange-600 whitespace-nowrap">${orderId}</td>
+            <td class="py-3 px-4 text-[11px]">
+              <span class="font-extrabold text-slate-850 block">${name}</span>
+              <span class="text-4xs text-slate-450 block">${email}</span>
+            </td>
+            <td class="py-3 px-4 font-extrabold text-slate-700 max-w-[160px] truncate" title="${courseTitle}">${courseTitle}</td>
+            <td class="py-3 px-4 text-right">
+              <span class="font-bold text-slate-800 block text-3xs font-mono">${coupon}</span>
+              <span class="text-5xs text-rose-500 block font-semibold">-₹${disc.toFixed(2)}</span>
+            </td>
+            <td class="py-3 px-4 text-right font-black text-slate-900 font-mono">₹${amt.toFixed(2)}</td>
+            <td class="py-3 px-4 text-center">${statusBadge}</td>
+          `;
+          dest.appendChild(row);
+        });
+        
+        if (renderedCount === 0) {
+          dest.innerHTML = `
+            <tr>
+              <td colspan="7" class="text-center py-8 text-slate-450 italic text-2xs">No recorded Cashfree logs matched search criteria. Type another query.</td>
+            </tr>
+          `;
+        }
+      };
+
+      window.filterLedgerRows = function() {
+        window.renderDetailedLedger();
+      };
+
+      window.downloadFinancialCSV = function() {
+        const txArray = Object.values(localDB.transactions || {});
+        if (txArray.length === 0) {
+          alert("No transactions available to export.");
+          return;
+        }
+        
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Timestamp,Order ID,Student Name,Student Email,Course Title,Discount (INR),Net Paid (INR),Status\n";
+        
+        txArray.forEach(tx => {
+          const time = tx.timestamp ? new Date(tx.timestamp).toISOString() : "N/A";
+          const order = tx.orderId || "";
+          const name = (tx.name || "Verified Learner").replace(/,/g, " ");
+          const email = tx.email || "";
+          const title = (tx.courseTitle || tx.courseName || "Premium Course").replace(/,/g, " ");
+          const disc = (tx.discount || 0).toString();
+          const amt = (tx.amount || 0).toString();
+          const status = tx.status || "SUCCESS";
+          
+          csvContent += `"${time}","${order}","${name}","${email}","${title}",${disc},${amt},"${status}"\n`;
+        });
+        
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `Ed_Achievers_Financial_Statement_${Date.now()}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
     }
 
     // ----------------------------------------------------

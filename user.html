@@ -548,17 +548,243 @@
   </div>
 
 
+  <!-- INTERACTIVE ANDROID-STYLE SECURE CHECKOUT DRAWER AND PORTAL -->
+  <div id="checkout-drawer-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <!-- Sliding Bottom-Sheet style container -->
+    <div class="bg-white w-full sm:max-w-md rounded-t-[36px] sm:rounded-3xl shadow-2xl overflow-hidden animate-slide-up sm:animate-fade-in border border-slate-100 flex flex-col max-h-[92vh] sm:max-h-none">
+      
+      <!-- Top dragging visual handle for Native Android Feel -->
+      <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto my-3 shrink-0 sm:hidden"></div>
+
+      <!-- Secure Header Info -->
+      <div class="px-6 pb-4 pt-1 sm:pt-5 border-b border-slate-50 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600"><i class="fas fa-shield-halved text-sm"></i></div>
+          <div>
+            <h3 class="text-sm font-extrabold text-slate-800 leading-none">Secured Checkout</h3>
+            <span class="text-5xs text-emerald-600 font-bold tracking-wider uppercase block mt-1"><i class="fas fa-circle text-[6px] mr-1 animate-pulse"></i> REST API Gateway</span>
+          </div>
+        </div>
+        <button onclick="closeCheckoutDrawer()" class="w-7 h-7 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-550 transition text-xs"><i class="fa fa-times"></i></button>
+      </div>
+
+      <!-- Drawer Content Scroll -->
+      <div class="p-6 space-y-5 overflow-y-auto flex-1">
+        
+        <!-- Course Meta Preview Banner -->
+        <div class="flex gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100/80">
+          <div class="w-16 h-12 bg-orange-600 rounded-lg flex flex-col items-center justify-center text-white font-mono text-[11px] font-bold shrink-0 shadow-sm shadow-orange-500/10">
+            <i class="fas fa-graduation-cap text-[10px] mb-0.5"></i>
+            <span id="co-meta-id" class="text-4xs scale-90 tracking-tighter">CTET</span>
+          </div>
+          <div class="space-y-1">
+            <span class="text-[9px] bg-orange-100 text-orange-700 font-black px-2 py-0.5 rounded-full uppercase tracking-wider">Premium Prep Unit</span>
+            <h4 id="co-meta-title" class="text-xs font-black text-slate-800 line-clamp-1">Exam preparation pack</h4>
+            <p id="co-meta-price" class="text-4xs font-medium text-slate-400">Default Catalog Value: ₹0.00</p>
+          </div>
+        </div>
+
+        <!-- Interactive Coupon Apply Section -->
+        <div class="space-y-2.5">
+          <label class="block text-4xs font-bold text-slate-450 uppercase tracking-widest"><i class="fa-solid fa-tags text-orange-500 mr-1 animate-bounce"></i> PROMOTIONAL EXAM COUPON</label>
+          <div class="flex gap-2">
+            <div class="relative flex-1">
+              <span class="absolute left-3 top-2.5 text-slate-400 text-xs"><i class="fa fa-tag"></i></span>
+              <input type="text" id="co-coupon-input" placeholder="Type coupon code manually..." class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs uppercase font-extrabold focus:outline-none focus:border-orange-500">
+            </div>
+            <button onclick="applyManualCoupon()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-extrabold rounded-xl text-3xs uppercase tracking-wide transition leading-none">Apply</button>
+          </div>
+
+          <!-- Quick click coupon pill tags -->
+          <div class="flex flex-wrap gap-1.5 pt-1">
+            <button onclick="quickApplyCoupon('FIRST50')" class="text-4xs font-extrabold px-2.5 py-1 bg-orange-50 hover:bg-orange-100/80 text-orange-650 border border-orange-250/30 rounded-full transition relative overflow-hidden group">
+              FIRST50 <span class="font-normal text-slate-450 text-[8px]">(50% OFF)</span>
+            </button>
+            <button onclick="quickApplyCoupon('GOVEXAM30')" class="text-4xs font-extrabold px-2.5 py-1 bg-orange-50 hover:bg-orange-100/80 text-orange-650 border border-orange-250/30 rounded-full transition relative overflow-hidden group">
+              GOVEXAM30 <span class="font-normal text-slate-450 text-[8px]">(30% OFF)</span>
+            </button>
+            <button onclick="quickApplyCoupon('ACHIEVERS10')" class="text-4xs font-extrabold px-2.5 py-1 bg-orange-50 hover:bg-orange-100/80 text-orange-650 border border-orange-250/30 rounded-full transition relative overflow-hidden group">
+              ACHIEVERS10 <span class="font-normal text-slate-450 text-[8px]">(10% OFF)</span>
+            </button>
+            <button onclick="quickApplyCoupon('FIXED500')" class="text-4xs font-extrabold px-2.5 py-1 bg-orange-50 hover:bg-orange-100/80 text-orange-650 border border-orange-250/30 rounded-full transition relative overflow-hidden group">
+              FIXED500 <span class="font-normal text-slate-450 text-[8px]">(₹500 OFF)</span>
+            </button>
+          </div>
+
+          <!-- Coupon apply state helper label -->
+          <p id="co-coupon-status-lbl" class="hidden text-5xs font-bold flex items-center gap-1 mt-1"></p>
+        </div>
+
+        <!-- Premium Android Payment Method Selector -->
+        <div class="space-y-3">
+          <label class="block text-4xs font-bold text-slate-450 uppercase tracking-widest"><i class="fa-solid fa-credit-card text-orange-500 mr-1"></i> SELECT SECURE PAYMENT OPTION</label>
+          <div class="grid grid-cols-1 gap-2">
+            <!-- UPI Option -->
+            <label class="co-pm-option flex items-center justify-between p-3.5 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50 transition active:scale-99" id="co-pm-upi-label">
+              <div class="flex items-center gap-3">
+                <input type="radio" name="checkoutPaymentMethod" value="UPI" checked onclick="highlightPaymentChoice('upi')" class="accent-orange-500">
+                <div>
+                  <span class="text-xs font-bold text-slate-800 block">Unified Payments Interface (UPI)</span>
+                  <span class="text-5xs text-slate-400 block mt-0.5">Google Pay, PhonePe, Paytm, BHIM unified billing portal</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <i class="fa-brands fa-google-pay text-lg text-blue-600"></i>
+                <i class="fas fa-qrcode text-slate-400 text-xs"></i>
+              </div>
+            </label>
+
+            <!-- Cards Option -->
+            <label class="co-pm-option flex items-center justify-between p-3.5 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50 transition active:scale-99" id="co-pm-card-label">
+              <div class="flex items-center gap-3">
+                <input type="radio" name="checkoutPaymentMethod" value="CARD" onclick="highlightPaymentChoice('card')" class="accent-orange-500">
+                <div>
+                  <span class="text-xs font-bold text-slate-800 block">Credit / Debit Cards</span>
+                  <span class="text-5xs text-slate-400 block mt-0.5">Instant checkout clearance with Visa, MasterCard & RuPay</span>
+                </div>
+              </div>
+              <i class="fas fa-credit-card text-slate-500 text-xs"></i>
+            </label>
+
+            <!-- Netbanking Option -->
+            <label class="co-pm-option flex items-center justify-between p-3.5 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50 transition active:scale-99" id="co-pm-netbanking-label">
+              <div class="flex items-center gap-3">
+                <input type="radio" name="checkoutPaymentMethod" value="NETBANK" onclick="highlightPaymentChoice('netbanking')" class="accent-orange-500">
+                <div>
+                  <span class="text-xs font-bold text-slate-800 block">Indian Nationalized Net Banking</span>
+                  <span class="text-5xs text-slate-400 block mt-0.5">All authorized private & public banking institutions</span>
+                </div>
+              </div>
+              <i class="fas fa-building-columns text-slate-500 text-xs"></i>
+            </label>
+          </div>
+        </div>
+
+        <!-- Detailed Breakdown Invoice Ticket -->
+        <div class="bg-orange-50/20 rounded-2xl p-4 border border-orange-100/50 space-y-2 text-[11px] font-medium text-slate-600 relative overflow-hidden">
+          <!-- Visual invoice watermark -->
+          <div class="absolute right-3 bottom-1.5 text-orange-500/5 text-4xl font-extrabold tracking-widest pointer-events-none uppercase">BILLING</div>
+          
+          <div class="flex justify-between">
+            <span>Dynamic Classroom Catalog Price</span>
+            <span class="font-semibold text-slate-800" id="inv-raw-price">₹0.00</span>
+          </div>
+          <div class="flex justify-between text-rose-500" id="inv-row-discount" style="display: none;">
+            <span class="flex items-center gap-1">Applied Coupon Reduction (<span id="inv-coupon-code">NONE</span>)</span>
+            <span class="font-bold font-mono">-₹0.00</span>
+          </div>
+          <div class="flex justify-between text-slate-500 text-4xs">
+            <span>Gateway Transaction Processing Fees</span>
+            <span class="font-bold uppercase text-emerald-600">FREE</span>
+          </div>
+          <div class="h-px bg-slate-200/80 my-2"></div>
+          <div class="flex justify-between items-center text-slate-800">
+            <span class="font-bold">Total Net Amount Payable</span>
+            <span class="text-lg font-black text-orange-600 font-mono" id="inv-net-price">₹0.00</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Proceed Action Sticky Bar -->
+      <div class="p-6 bg-slate-50 border-t border-slate-100 flex items-center justify-between shrink-0 gap-4">
+        <div class="space-y-0.5">
+          <span class="text-4xs text-slate-400 font-extrabold uppercase">Net Amount</span>
+          <p id="co-sticky-net-price" class="text-base font-black text-slate-900 font-mono">₹0.00</p>
+        </div>
+        <button id="co-pay-proceed-btn" onclick="executeOrderCreation()" class="flex-1 py-3.5 bg-orange-500 hover:bg-orange-650 text-white font-black rounded-2xl shadow-lg hover:shadow-orange-200 transition duration-150 text-xs uppercase tracking-wide flex items-center justify-center gap-1.5 cursor-pointer">
+          <i class="fas fa-lock"></i> <span>SECURE PAY</span> <i class="fa fa-arrow-right text-[10px]"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
   <!-- SECURE ORDER INSTRUCTIONS MODAL AND STATUS PROMPTER -->
-  <div id="payment-status-prompter" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-sm rounded-3xl p-6 text-center space-y-4 shadow-2xl">
-      <div id="pay-prompter-icon" class="w-14 h-14 rounded-full flex items-center justify-center mx-auto text-2xl">
-        <!-- Dyn icon -->
+  <div id="payment-status-prompter" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+    <!-- Overlay Card -->
+    <div class="bg-white w-full max-w-sm rounded-[32px] p-6 text-center space-y-5 shadow-2xl border border-slate-100 flex flex-col items-center">
+      
+      <!-- Stage 1: Loading verification -->
+      <div id="pay-prompter-loading-pane" class="space-y-5 w-full flex flex-col items-center py-4">
+        <div class="relative w-16 h-16 flex items-center justify-center">
+          <div class="absolute inset-0 border-4 border-slate-100 rounded-full"></div>
+          <div class="absolute inset-0 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+          <i class="fas fa-shield-halved text-orange-500 text-xl animate-pulse"></i>
+        </div>
+        <div class="space-y-2">
+          <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-tight">Verifying Payment Token</h3>
+          <p class="text-[11px] text-slate-450 leading-relaxed font-medium">Interacting with Cashfree central gateway router logs to confirm cleared transaction balances...</p>
+        </div>
+        <!-- Live loader status pipeline logs -->
+        <div class="w-full bg-slate-50 p-3 rounded-2xl border border-slate-100 text-[10px] font-mono text-slate-500 text-left space-y-1 block">
+          <div class="flex items-center gap-1.5"><i class="fas fa-circle-notch animate-spin text-orange-400"></i> <span id="pay-pipeline-log">Establishing audit connection...</span></div>
+        </div>
       </div>
-      <div>
-        <h4 id="pay-prompter-title" class="text-base font-bold">Unlocking Premium Class Content</h4>
-        <p id="pay-prompter-msg" class="text-xs text-slate-400 mt-1">Interacting securely with the Realtime Database to register your course subscription...</p>
+
+      <!-- Stage 2: Successful verification -->
+      <div id="pay-prompter-success-pane" class="hidden space-y-5 w-full flex flex-col items-center py-4">
+        <div class="w-16 h-16 bg-emerald-50 border border-emerald-100 text-emerald-500 text-3xl rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/15 animate-bounce">
+          <i class="fas fa-circle-check"></i>
+        </div>
+        <div class="space-y-1.5">
+          <h3 class="text-sm font-black text-slate-800">Transaction Approved</h3>
+          <p class="text-[11px] text-slate-400 font-medium px-2">Secure transaction clearance verified successfully. Your course is unlocked instantly.</p>
+        </div>
+        <!-- Receipt table card -->
+        <div class="w-full bg-emerald-50/20 border border-emerald-100 rounded-2xl p-3 text-[11px] text-left space-y-2 text-slate-600 font-medium">
+          <div class="flex justify-between"><span class="text-slate-400">Secure Order Reference</span><span class="font-mono text-slate-900 font-bold" id="rcpt-order-id">ORD_---</span></div>
+          <div class="flex justify-between"><span class="text-slate-400">Cleared Cash Receipts</span><span class="font-mono text-emerald-600 font-black" id="rcpt-amount">₹0.00</span></div>
+          <div class="flex justify-between"><span class="text-slate-400">Leaderboard point split</span><span class="text-slate-900 font-bold text-emerald-600 font-black">+100 XP <i class="fa fa-trophy mr-0.5 text-[9px]"></i></span></div>
+        </div>
+        <button onclick="dismissPrompter()" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold rounded-2xl shadow-xl hover:shadow-emerald-100/60 transition duration-150 text-xs uppercase tracking-wide cursor-pointer flex items-center justify-center gap-1.5">
+          <span>Start Learning Now</span> <i class="fa fa-arrow-right"></i>
+        </button>
       </div>
-      <button onclick="dismissPrompter()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs">Close prompt</button>
+
+      <!-- Stage 3: Pending verification check -->
+      <div id="pay-prompter-pending-pane" class="hidden space-y-5 w-full flex flex-col items-center py-4">
+        <div class="w-16 h-16 bg-amber-50 border border-amber-100 text-amber-500 text-2xl rounded-full flex items-center justify-center shadow-lg shadow-amber-500/15 animate-pulse">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="space-y-1.5">
+          <h3 class="text-xs font-black text-slate-800 uppercase tracking-tight">Payment Status is Pending</h3>
+          <p class="text-[11px] text-slate-450 font-medium px-2">Awaiting bank notification callback. The network is checking the ledger automatically. Keep this screen open.</p>
+        </div>
+        <!-- Timer checker countdown progress -->
+        <div class="text-3xs font-extrabold text-orange-500 uppercase tracking-widest">Rechecking automatically in <span id="pending-timer-cnt">5</span>s</div>
+        
+        <div class="grid grid-cols-2 gap-2.5 w-full">
+          <button onclick="forceManualRecheck()" class="py-3 bg-amber-500 hover:bg-amber-600 text-white font-extrabold rounded-2xl transition text-2xs cursor-pointer uppercase flex items-center justify-center gap-1">
+            <i class="fa fa-arrows-rotate"></i> Recheck Status
+          </button>
+          <button onclick="dismissPrompter()" class="py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-2xl transition text-2xs cursor-pointer uppercase">
+            Close Screen
+          </button>
+        </div>
+      </div>
+
+      <!-- Stage 4: Failed or Cancelled check -->
+      <div id="pay-prompter-failed-pane" class="hidden space-y-5 w-full flex flex-col items-center py-4">
+        <div class="w-16 h-16 bg-rose-550/15 border border-rose-100 text-rose-500 text-3xl rounded-full flex items-center justify-center shadow-lg shadow-rose-500/15">
+          <i class="fas fa-circle-xmark"></i>
+        </div>
+        <div class="space-y-1.5">
+          <h3 class="text-xs font-black text-rose-500 uppercase tracking-tight">Checkout Terminated</h3>
+          <p id="pay-failed-reason" class="text-[11px] text-slate-400 font-medium px-3 leading-relaxed">Your bank payment was unsuccessful or cancelled. No cash assets were debited.</p>
+        </div>
+        
+        <div class="grid grid-cols-1 gap-2 w-full">
+          <button id="pay-co-retry-btn" onclick="retryPaymentCheckout()" class="py-3.5 bg-orange-500 hover:bg-orange-650 text-white font-extrabold rounded-2xl shadow-md transition text-xs cursor-pointer uppercase tracking-wide flex items-center justify-center gap-1.5">
+            <i class="fa fa-rotate"></i> Retry Payment Attempt
+          </button>
+          <button onclick="dismissPrompter()" class="py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium rounded-2xl transition text-2xs cursor-pointer uppercase">
+            Go to dashboard
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -1044,6 +1270,15 @@
     }
 
     // 3. CASHFREE PAYMENTS SECURITY ENGINE & SUBSCRIPTION UNLOCKING
+    let activeCheckoutCourseId = "";
+    let activeCheckoutCoursePrice = 0;
+    let currentNetPrice = 0;
+    let currentActiveDiscount = 0;
+    let currentActiveCoupon = "";
+    let lastFailedCourseId = "";
+    let lastFailedPrice = 0;
+    let pendingTimerInterval = null;
+
     window.initiateCheckout = function(courseId, price) {
       if (!currentUser) {
         alert("Please authorize your profile first by logging in/signing up to buy courses!");
@@ -1051,115 +1286,376 @@
         return;
       }
 
-      // Proactive prompt calculation with Cashfree orders API proxy
-      const couponChoice = prompt("Apply Examination Coupon Code (Optional)?\nAvailable coupons:\n- ACHIEVERS10 (10% Off)\n- FIRST50 (50% Off republic selection)\n- GOVEXAM30 (30% Support discount)", "ACHIEVERS10");
+      // Prevent duplicate purchases check
+      if (localDBInstance.purchasedCourses && localDBInstance.purchasedCourses[courseId]) {
+        alert("Awesome! You already hold active premium access to this classroom under 'My Courses'!");
+        navigateTab('mycourses', document.querySelector('[onclick*="mycourses"]'));
+        return;
+      }
+
+      activeCheckoutCourseId = courseId;
+      activeCheckoutCoursePrice = parseFloat(price);
+      currentNetPrice = activeCheckoutCoursePrice;
+      currentActiveDiscount = 0;
+      currentActiveCoupon = "";
+
+      const courseObj = localDBInstance.courses[courseId];
+      if (!courseObj) return;
+
+      // Populate Checkout Sheet fields
+      const metaIdEl = document.getElementById("co-meta-id");
+      const metaTitleEl = document.getElementById("co-meta-title");
+      const metaPriceEl = document.getElementById("co-meta-price");
+      const couponInput = document.getElementById("co-coupon-input");
+      const statusLabel = document.getElementById("co-coupon-status-lbl");
+
+      if (metaIdEl) metaIdEl.innerText = courseObj.examType || "EXAM";
+      if (metaTitleEl) metaTitleEl.innerText = courseObj.title;
+      if (metaPriceEl) metaPriceEl.innerText = `Catalog Base Value: ₹${activeCheckoutCoursePrice.toFixed(2)}`;
       
+      if (couponInput) couponInput.value = "";
+      if (statusLabel) statusLabel.classList.add("hidden");
+
+      // Set default payment choice
+      highlightPaymentChoice("upi");
+
+      // Compute and refresh billing ticket
+      recomputeDrawerInvoice();
+
+      // Reset button loading state
+      const pBtn = document.getElementById("co-pay-proceed-btn");
+      if (pBtn) {
+        pBtn.disabled = false;
+        pBtn.innerHTML = `<i class="fas fa-lock"></i> <span>SECURE PAY</span> <i class="fa fa-arrow-right text-[10px]"></i>`;
+      }
+
+      // Launch Drawer
+      document.getElementById("checkout-drawer-modal").classList.remove("hidden");
+    };
+
+    window.closeCheckoutDrawer = function() {
+      document.getElementById("checkout-drawer-modal").classList.add("hidden");
+    };
+
+    window.recomputeDrawerInvoice = function() {
+      const rawPriceEl = document.getElementById("inv-raw-price");
+      const discountRow = document.getElementById("inv-row-discount");
+      const discountValEl = discountRow ? discountRow.querySelector("span.font-bold") : null;
+      const couponCodeEl = document.getElementById("inv-coupon-code");
+      const netValEl = document.getElementById("inv-net-price");
+      const stickyNetValEl = document.getElementById("co-sticky-net-price");
+
+      if (rawPriceEl) rawPriceEl.innerText = "₹" + activeCheckoutCoursePrice.toFixed(2);
+      if (currentActiveDiscount > 0) {
+        if (discountRow) discountRow.style.display = "flex";
+        if (discountValEl) discountValEl.innerText = "-₹" + currentActiveDiscount.toFixed(2);
+        if (couponCodeEl) couponCodeEl.innerText = currentActiveCoupon;
+      } else {
+        if (discountRow) discountRow.style.display = "none";
+      }
+
+      const displayedNet = Math.max(0, currentNetPrice);
+      if (netValEl) netValEl.innerText = "₹" + displayedNet.toFixed(2);
+      if (stickyNetValEl) stickyNetValEl.innerText = "₹" + displayedNet.toFixed(2);
+    };
+
+    window.quickApplyCoupon = function(code) {
+      const input = document.getElementById("co-coupon-input");
+      if (input) input.value = code;
+      window.applyManualCoupon();
+    };
+
+    window.applyManualCoupon = function() {
+      const input = document.getElementById("co-coupon-input");
+      const statusLbl = document.getElementById("co-coupon-status-lbl");
+      if (!input) return;
+
+      const code = input.value.toUpperCase().trim();
+      if (!code) {
+        currentNetPrice = activeCheckoutCoursePrice;
+        currentActiveDiscount = 0;
+        currentActiveCoupon = "";
+        window.recomputeDrawerInvoice();
+        if (statusLbl) statusLbl.classList.add("hidden");
+        return;
+      }
+
+      let discount = 0;
+      let isValid = false;
+
+      if (code === "ACHIEVERS10") {
+        discount = activeCheckoutCoursePrice * 0.10;
+        isValid = true;
+      } else if (code === "FIRST50") {
+        discount = activeCheckoutCoursePrice * 0.50;
+        isValid = true;
+      } else if (code === "GOVEXAM30") {
+        discount = activeCheckoutCoursePrice * 0.30;
+        isValid = true;
+      } else if (code === "FIXED500") {
+        discount = Math.min(activeCheckoutCoursePrice, 500);
+        isValid = true;
+      }
+
+      if (isValid) {
+        currentActiveDiscount = discount;
+        currentNetPrice = activeCheckoutCoursePrice - discount;
+        currentActiveCoupon = code;
+        window.recomputeDrawerInvoice();
+
+        if (statusLbl) {
+          statusLbl.className = "text-5xs font-black text-emerald-600 flex items-center gap-1 mt-1";
+          statusLbl.innerHTML = `<i class="fa fa-circle-check"></i> Code ${code} applied! Saved ₹${discount.toFixed(2)}`;
+          statusLbl.classList.remove("hidden");
+        }
+      } else {
+        currentNetPrice = activeCheckoutCoursePrice;
+        currentActiveDiscount = 0;
+        currentActiveCoupon = "";
+        window.recomputeDrawerInvoice();
+
+        if (statusLbl) {
+          statusLbl.className = "text-5xs font-black text-rose-500 flex items-center gap-1 mt-1";
+          statusLbl.innerHTML = `<i class="fa fa-circle-xmark"></i> Invalid or expired coupon code`;
+          statusLbl.classList.remove("hidden");
+        }
+      }
+    };
+
+    window.highlightPaymentChoice = function(id) {
+      document.querySelectorAll(".co-pm-option").forEach(el => {
+        el.className = "co-pm-option flex items-center justify-between p-3.5 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50 transition active:scale-99";
+      });
+      const targetLabel = document.getElementById(`co-pm-${id}-label`);
+      if (targetLabel) {
+        targetLabel.className = "co-pm-option flex items-center justify-between p-3.5 border-2 border-orange-500 bg-orange-50/10 rounded-2xl cursor-pointer transition active:scale-99";
+      }
+    };
+
+    window.executeOrderCreation = function() {
+      const pBtn = document.getElementById("co-pay-proceed-btn");
+      if (pBtn) {
+        pBtn.disabled = true;
+        pBtn.innerHTML = `<i class="fas fa-spinner animate-spin"></i> CREATING ENROLMENT PROFILE...`;
+      }
+
       const payload = {
-        courseId,
-        courseName: localDBInstance.courses[courseId]?.title || "Comprehensive Exam Package",
-        price,
-        couponCode: couponChoice || "",
+        courseId: activeCheckoutCourseId,
+        courseName: localDBInstance.courses[activeCheckoutCourseId]?.title || "Premium Selection Course",
+        price: activeCheckoutCoursePrice,
+        couponCode: currentActiveCoupon,
         studentId: currentUser.uid,
         studentEmail: currentUser.email || "student@edachievers.com",
         studentPhone: "9876543210"
       };
 
-      // Call secure Express helper to compute checkout portal URLs
       fetch("/api/cashfree/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error("Order rejected by secure billing gateway");
+        return res.json();
+      })
       .then(orderData => {
         if (orderData.paymentUrl) {
-          // Relocate user to secure mock payment portal in top window to bypass iframe issues safely
+          // Open mock or real checkout portal page url
           window.location.href = orderData.paymentUrl;
         } else {
-          alert("Secure transaction engine could not connect. Please try again.");
+          throw new Error("Missing secure redirect token URL");
         }
       })
       .catch(err => {
-        console.error("Order Build Error:", err);
-        alert("Failed to reach billing. Checking internal configuration.");
+        console.error("Secure payment setup failure:", err);
+        alert(err.message || "Failed to reach secure checkout gateway. Try again.");
+        if (pBtn) {
+          pBtn.disabled = false;
+          pBtn.innerHTML = `<i class="fas fa-lock"></i> <span>SECURE PAY</span> <i class="fa fa-arrow-right text-[10px]"></i>`;
+        }
+      });
+    };
+
+    window.retryPaymentCheckout = function() {
+      document.getElementById("payment-status-prompter").classList.add("hidden");
+      if (lastFailedCourseId && lastFailedPrice) {
+        window.initiateCheckout(lastFailedCourseId, lastFailedPrice);
+      }
+    };
+
+    window.forceManualRecheck = function() {
+      if (pendingTimerInterval) clearInterval(pendingTimerInterval);
+      const params = new URLSearchParams(window.location.search);
+      const orderId = params.get("order_id");
+      const courseId = params.get("course_id");
+      const amount = params.get("amount");
+      const discount = params.get("discount") || "0";
+      const coupon = params.get("coupon") || "";
+      
+      runSecurityValidationCheck(orderId, "SUCCESS", courseId, amount, discount, coupon, 99);
+    };
+
+    function runSecurityValidationCheck(orderId, responseStatus, courseId, amount, discount, coupon, autoCount) {
+      if (pendingTimerInterval) clearInterval(pendingTimerInterval);
+      
+      const logEl = document.getElementById("pay-pipeline-log");
+      if (logEl) {
+        const logs = [
+          "Authenticating secure transaction token with billing relays...",
+          "Checking bank ledger updates for cleared funds...",
+          "Validating transaction signature checksum with central server...",
+          "Syncing course entitlement matrices..."
+        ];
+        logEl.innerHTML = `<i class="fas fa-circle-notch animate-spin text-orange-450 mr-1"></i> ${logs[Math.min(autoCount, logs.length - 1)]}`;
+      }
+
+      const uid = currentUser ? currentUser.uid : "anonymous";
+      
+      fetch(`/api/cashfree/verify-payment?orderId=${orderId}&paymentStatus=${responseStatus}&courseId=${courseId}&amount=${amount}&uid=${uid}`)
+      .then(res => res.json())
+      .then(verifiedData => {
+        if (verifiedData.status === "SUCCESS") {
+          // Clear screens
+          document.getElementById("pay-prompter-loading-pane").classList.add("hidden");
+          document.getElementById("pay-prompter-pending-pane").classList.add("hidden");
+          document.getElementById("pay-prompter-failed-pane").classList.add("hidden");
+          
+          document.getElementById("pay-prompter-success-pane").classList.remove("hidden");
+          
+          document.getElementById("rcpt-order-id").innerText = orderId;
+          document.getElementById("rcpt-amount").innerText = "₹" + parseFloat(amount || 0).toFixed(2);
+
+          // Write entitlement changes to Firebase database if not already indexed
+          if (!verifiedData.alreadyProcessed) {
+            const courseTitle = localDBInstance.courses[courseId]?.title || "Premium Live Prep Special";
+            const userSubsRef = ref(db, `users/${currentUser.uid}/purchasedCourses/${courseId}`);
+            
+            set(userSubsRef, {
+              unlockedAt: Date.now(),
+              orderId: orderId,
+              amountPaid: amount || "0",
+              discountApplied: discount || "0",
+              couponCode: coupon || "None",
+              courseTitle: courseTitle
+            }).then(() => {
+              // Post unified transaction record
+              const txRef = ref(db, `transactions/${orderId}`);
+              set(txRef, {
+                orderId,
+                uid: currentUser.uid,
+                name: currentUser.displayName || "Verified Scholar",
+                email: currentUser.email,
+                courseId,
+                courseTitle,
+                amount: parseFloat(amount || 0),
+                discount: parseFloat(discount || 0),
+                coupon: coupon || "None",
+                timestamp: Date.now(),
+                status: "SUCCESS"
+              });
+
+              // Increment leader points for achievements
+              updateLeaderboardPoints(100);
+              
+              // Increment stats
+              get(ref(db, "purchases/count")).then(snap => {
+                const current = snap.exists() ? snap.val() : 0;
+                set(ref(db, "purchases/count"), current + 1);
+              });
+
+              // Sync dynamic modules
+              syncUserPurchasedAndStreakData();
+            });
+          }
+        } else if (verifiedData.status === "PENDING") {
+          document.getElementById("pay-prompter-loading-pane").classList.add("hidden");
+          document.getElementById("pay-prompter-success-pane").classList.add("hidden");
+          document.getElementById("pay-prompter-failed-pane").classList.add("hidden");
+          
+          document.getElementById("pay-prompter-pending-pane").classList.remove("hidden");
+
+          // Start automatic recheck down-timer countdown
+          let cdSeconds = 5;
+          const label = document.getElementById("pending-timer-cnt");
+          if (label) label.innerText = cdSeconds;
+
+          pendingTimerInterval = setInterval(() => {
+            cdSeconds--;
+            if (label) label.innerText = cdSeconds;
+            if (cdSeconds <= 0) {
+              clearInterval(pendingTimerInterval);
+              runSecurityValidationCheck(orderId, "SUCCESS", courseId, amount, discount, coupon, autoCount + 1);
+            }
+          }, 1000);
+
+        } else {
+          // FAILED or CANCELLED, render Failure pane
+          document.getElementById("pay-prompter-loading-pane").classList.add("hidden");
+          document.getElementById("pay-prompter-success-pane").classList.add("hidden");
+          document.getElementById("pay-prompter-pending-pane").classList.add("hidden");
+          
+          const failPane = document.getElementById("pay-prompter-failed-pane");
+          failPane.classList.remove("hidden");
+          
+          const reasonEl = document.getElementById("pay-failed-reason");
+          if (reasonEl) {
+            if (verifiedData.status === "CANCELLED") {
+              reasonEl.innerText = "Checkout was terminated by the user. No transaction was recorded or debited.";
+            } else {
+              reasonEl.innerText = "The bank card, netbanking secure portal or UPI app verification was declined or timed out. Please retry below.";
+            }
+          }
+          
+          // Save parameters for easy instant retry
+          lastFailedCourseId = courseId;
+          lastFailedPrice = parseFloat(amount || 0) + parseFloat(discount || 0); // original catalog base price before coupons
+        }
+      })
+      .catch(err => {
+        console.error("Payment status verification query failure:", err);
+        const logEl = document.getElementById("pay-pipeline-log");
+        if (logEl) logEl.innerHTML = `<span class="text-rose-500 font-bold"><i class="fa fa-triangle-exclamation"></i> Network latency alert. Rechecking...</span>`;
+        
+        setTimeout(() => {
+          runSecurityValidationCheck(orderId, responseStatus, courseId, amount, discount, coupon, autoCount + 1);
+        }, 3000);
       });
     }
 
     function handleRedirectionQueryParameters() {
-      // Analyze search parameters to confirm returned payment statuses from Checkout gateway
       const params = new URLSearchParams(window.location.search);
       const status = params.get("payment_status");
       const orderId = params.get("order_id");
       const courseId = params.get("course_id");
       const amount = params.get("amount");
+      const discount = params.get("discount") || "0";
+      const coupon = params.get("coupon") || "";
 
-      if (status) {
-        const prompter = document.getElementById("payment-status-prompter");
-        const title = document.getElementById("pay-prompter-title");
-        const msg = document.getElementById("pay-prompter-msg");
-        const iconDiv = document.getElementById("pay-prompter-icon");
+      if (status && orderId && courseId) {
+        document.getElementById("payment-status-prompter").classList.remove("hidden");
+        
+        // Hide static panes, activate loading spinner state
+        document.getElementById("pay-prompter-loading-pane").classList.remove("hidden");
+        document.getElementById("pay-prompter-success-pane").classList.add("hidden");
+        document.getElementById("pay-prompter-pending-pane").classList.add("hidden");
+        document.getElementById("pay-prompter-failed-pane").classList.add("hidden");
 
-        prompter.classList.remove("hidden");
-
-        if (status === "SUCCESS" && courseId) {
-          // Update RTDB instantly under student subscriptions list to unlock
-          iconDiv.className = "w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto text-emerald-600 text-2xl";
-          iconDiv.innerHTML = '<i class="fas fa-check-circle animate-bounce"></i>';
-          title.innerText = "Payment Successful!";
-          msg.innerText = "Transaction verified securely. Unlocked course content under 'My Courses' tab!";
-
-          // We write subscription data once Auth finishes loading
-          const registerInDatabase = () => {
-            if (auth.currentUser) {
-              const userSubsRef = ref(db, `users/${auth.currentUser.uid}/purchasedCourses/${courseId}`);
-              set(userSubsRef, {
-                unlockedAt: Date.now(),
-                orderId: orderId || "DIRECT_SECURE_AUTH",
-                amountPaid: amount || "0",
-                courseData: localDBInstance.courses[courseId] || {}
-              }).then(() => {
-                // Post payment transaction logs to system transactions for tracking
-                const txRef = ref(db, `transactions/${orderId}`);
-                set(txRef, {
-                  orderId,
-                  uid: auth.currentUser.uid,
-                  name: auth.currentUser.displayName || "Verified Learner",
-                  email: auth.currentUser.email,
-                  courseId,
-                  courseTitle: localDBInstance.courses[courseId]?.title || "Purchased Course",
-                  amount: amount,
-                  timestamp: Date.now(),
-                  status: "SUCCESS"
-                });
-                
-                // Track stats count in DB for dashboard
-                get(ref(db, "purchases/count")).then(snap => {
-                  const current = snap.exists() ? snap.val() : 0;
-                  set(ref(db, "purchases/count"), current + 1);
-                });
-
-                // Increment national points rank
-                updateLeaderboardPoints(100);
-                syncUserPurchasedAndStreakData();
-              });
-            } else {
-              setTimeout(registerInDatabase, 500);
-            }
-          };
-          registerInDatabase();
-
-        } else {
-          iconDiv.className = "w-14 h-14 bg-rose-100 rounded-full flex items-center justify-center mx-auto text-rose-600 text-2xl";
-          iconDiv.innerHTML = '<i class="fas fa-times-circle"></i>';
-          title.innerText = "Transaction Failed";
-          msg.innerText = "Your checkout attempt was either cancelled or rejected. No funds were debited.";
-        }
+        // Wait for profile verification before database set triggers
+        const triggerSequence = () => {
+          if (currentUser) {
+            runSecurityValidationCheck(orderId, status, courseId, amount, discount, coupon, 0);
+          } else {
+            setTimeout(triggerSequence, 350);
+          }
+        };
+        triggerSequence();
       }
     }
 
     window.dismissPrompter = function() {
+      if (pendingTimerInterval) clearInterval(pendingTimerInterval);
       document.getElementById("payment-status-prompter").classList.add("hidden");
-      // Clean query links
+      // Clean request query endpoints
       window.history.replaceState({}, document.title, window.location.pathname);
     }
 
