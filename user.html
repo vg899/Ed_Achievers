@@ -372,6 +372,43 @@
       </button>
     </div>
 
+    <!-- PROFILE MANAGEMENT CARD (MANDATORY BILLING DETAILS) -->
+    <div class="bg-white rounded-3xl p-5 border border-slate-100 shadow-xl space-y-4">
+      <div class="border-b border-slate-50 pb-3">
+        <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5"><i class="fas fa-id-card text-orange-500"></i> Manage User Profile &amp; Billing Details</h3>
+        <p class="text-[10px] text-slate-450 mt-1 font-semibold leading-relaxed">Full name, email and correct mobile number are required by Cashfree central gateway to process transactions safely.</p>
+      </div>
+      <div class="space-y-3.5">
+        <div class="space-y-1">
+          <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">Full Name *</label>
+          <div class="relative">
+            <span class="absolute left-3 top-2.5 text-slate-400 text-[10px]"><i class="fa fa-user"></i></span>
+            <input type="text" id="profile-edit-name" placeholder="Full legal name" class="w-full pl-8 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-3xs font-bold text-slate-800 uppercase focus:outline-none focus:border-orange-500" required>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">Email Address *</label>
+            <div class="relative">
+              <span class="absolute left-3 top-2.5 text-slate-400 text-[10px]"><i class="fa fa-envelope"></i></span>
+              <input type="email" id="profile-edit-email" placeholder="Billing email" class="w-full pl-8 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-3xs font-bold text-slate-800 focus:outline-none focus:border-orange-500" required>
+            </div>
+          </div>
+          <div class="space-y-1">
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">Mobile Number *</label>
+            <div class="relative">
+              <span class="absolute left-3 top-2.5 text-slate-440 text-[10px]"><i class="fa fa-phone"></i></span>
+              <input type="tel" id="profile-edit-phone" placeholder="10-digit mobile number" maxlength="10" class="w-full pl-8 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-3xs font-bold text-slate-850 focus:outline-none focus:border-orange-500 font-mono" required>
+            </div>
+          </div>
+        </div>
+        
+        <button onclick="window.saveUserProfileDetails()" id="profile-edit-save-btn" class="w-full py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-extrabold rounded-2xl text-[10px] uppercase tracking-wider transition shadow-md shadow-orange-100 flex items-center justify-center gap-2">
+          <i class="fas fa-save animate-pulse"></i> Save Profile Details
+        </button>
+      </div>
+    </div>
+
     <!-- Achievements & Gamification Badges Grid -->
     <div class="bg-white rounded-3xl p-5 border border-slate-100 shadow-xl space-y-4">
       <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5"><i class="fas fa-award text-orange-500"></i> My Academic Badges & Rewards</h3>
@@ -971,6 +1008,28 @@
   </div>
 
 
+  <!-- PROFILE INCOMPLETE REGISTRATION WARNING POPUP -->
+  <div id="profile-incomplete-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm rounded-[32px] shadow-2xl p-6 border border-slate-100/80 text-center space-y-5 animate-fade-in">
+      <div class="w-14 h-14 bg-orange-50 rounded-full flex items-center justify-center text-orange-500 mx-auto animate-bounce">
+         <i class="fas fa-user-pen text-xl"></i>
+      </div>
+      <div class="space-y-2">
+        <h3 class="text-sm font-black text-slate-900">Profile Incomplete</h3>
+        <p class="text-xs text-slate-650 leading-relaxed font-semibold">Please complete your profile before making a payment.</p>
+      </div>
+      <div class="grid grid-cols-2 gap-3 pt-2">
+        <button onclick="closeProfileIncompleteModal()" class="py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold rounded-2xl text-[10px] uppercase tracking-wider transition">
+          Dismiss
+        </button>
+        <button onclick="window.redirectToProfileScreen()" class="py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-extrabold rounded-2xl text-[10px] uppercase tracking-wider transition shadow-md shadow-orange-100">
+          Complete Profile
+        </button>
+      </div>
+    </div>
+  </div>
+
+
   <!-- INTERACTIVE ANDROID-STYLE SECURE CHECKOUT DRAWER AND PORTAL -->
   <div id="checkout-drawer-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
     <!-- Sliding Bottom-Sheet style container -->
@@ -1039,9 +1098,15 @@
         </div>
 
         <!-- Billing Contact Information Segment (Required by Cashfree APIs) -->
-        <div class="space-y-2.5">
-          <label class="block text-4xs font-bold text-slate-450 uppercase tracking-widest"><i class="fa-solid fa-address-card text-orange-500 mr-1 animate-pulse"></i> BILLING CONTACT INFO (REQUIRED)</label>
-          <div class="grid grid-cols-1 gap-2.5">
+        <div id="co-billing-wrapper" class="space-y-2.5">
+          <div class="flex items-center justify-between">
+            <label class="block text-4xs font-bold text-slate-450 uppercase tracking-widest"><i class="fa-solid fa-address-card text-orange-500 mr-1 animate-pulse"></i> BILLING CONTACT INFO</label>
+            <span id="co-billing-autofilled-badge" class="hidden text-[9px] text-emerald-600 font-extrabold bg-emerald-50 border border-emerald-105 px-2.5 py-0.5 rounded-lg flex items-center gap-1">
+              <i class="fa fa-circle-check"></i> SECURELY AUTO-FILLED
+            </span>
+          </div>
+          <!-- Inputs sub-wrapper -->
+          <div id="co-billing-inputs" class="grid grid-cols-1 gap-2.5">
             <div class="relative">
               <span class="absolute left-3 top-2.5 text-slate-450 text-[10px]"><i class="fa fa-user"></i></span>
               <input type="text" id="co-student-name" placeholder="Billing Full Name (e.g., Harsh Tiwari)" class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-3xs font-extrabold text-slate-800 uppercase focus:outline-none focus:border-orange-500" required>
@@ -1056,6 +1121,19 @@
                 <input type="tel" id="co-student-phone" placeholder="10-Digit Mobile" maxlength="10" class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-3xs font-extrabold text-slate-850 focus:outline-none focus:border-orange-500 font-mono" required>
               </div>
             </div>
+          </div>
+          <div id="co-billing-readonly-summary" class="hidden bg-slate-50 p-3 rounded-2xl border border-slate-100/80 flex items-center justify-between">
+            <div class="space-y-0.5 text-left">
+              <p class="text-3xs font-black text-slate-800 uppercase animate-pulse" id="co-summary-name"></p>
+              <p class="text-[10px] font-bold text-slate-450 flex flex-wrap items-center gap-1.5 leading-none mt-1">
+                <span id="co-summary-email" class="font-semibold text-slate-500"></span>
+                <span class="text-slate-300">•</span>
+                <span id="co-summary-phone" class="font-mono text-slate-500"></span>
+              </p>
+            </div>
+            <button type="button" onclick="navigateTab('profile', document.querySelector('[onclick*=\'profile\']')); closeCheckoutDrawer();" class="text-4xs text-orange-600 font-extrabold hover:underline select-none">
+              Edit Profile
+            </button>
           </div>
         </div>
 
@@ -2339,55 +2417,100 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
         return;
       }
 
-      activeCheckoutCourseId = courseId;
-      activeCheckoutCoursePrice = parseFloat(price);
-      currentNetPrice = activeCheckoutCoursePrice;
-      currentActiveDiscount = 0;
-      currentActiveCoupon = "";
+      // Query central Firebase profile node first to guarantee profile information exists
+      const profileRef = ref(db, `users/${currentUser.uid}/profile`);
+      get(profileRef).then(snap => {
+        let name = "";
+        let email = "";
+        let phone = "";
+        if (snap.exists()) {
+          const profile = snap.val();
+          name = profile.name || "";
+          email = profile.email || "";
+          phone = profile.phone || "";
+        }
 
-      const courseObj = localDBInstance.courses[courseId];
-      if (!courseObj) return;
+        // Fallback to client localStorage cache if DB hasn't populated yet
+        if (!name) name = localStorage.getItem(`edach_name_${currentUser.uid}`) || currentUser.displayName || "";
+        if (!email) email = localStorage.getItem(`edach_email_${currentUser.uid}`) || currentUser.email || "";
+        if (!phone) phone = localStorage.getItem(`edach_phone_${currentUser.uid}`) || "";
 
-      // Populate Checkout Sheet fields
-      const metaIdEl = document.getElementById("co-meta-id");
-      const metaTitleEl = document.getElementById("co-meta-title");
-      const metaPriceEl = document.getElementById("co-meta-price");
-      const couponInput = document.getElementById("co-coupon-input");
-      const statusLabel = document.getElementById("co-coupon-status-lbl");
+        // Verify Full Name, Email, and correct Mobile Number presence
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!name || !email || !emailRegex.test(email) || !phone || phone.replace(/\D/g, "").length !== 10) {
+          // Rule: Show a popup "Please complete your profile before making a payment." with "Complete Profile" button
+          document.getElementById("profile-incomplete-modal").classList.remove("hidden");
+          return;
+        }
 
-      if (metaIdEl) metaIdEl.innerText = courseObj.examType || "EXAM";
-      if (metaTitleEl) metaTitleEl.innerText = courseObj.title;
-      if (metaPriceEl) metaPriceEl.innerText = `Catalog Base Value: ₹${activeCheckoutCoursePrice.toFixed(2)}`;
-      
-      if (couponInput) couponInput.value = "";
-      if (statusLabel) statusLabel.classList.add("hidden");
+        // If all available, auto-fill details and do not ask again repeatedly
+        activeCheckoutCourseId = courseId;
+        activeCheckoutCoursePrice = parseFloat(price);
+        currentNetPrice = activeCheckoutCoursePrice;
+        currentActiveDiscount = 0;
+        currentActiveCoupon = "";
 
-      // Set default payment choice
-      highlightPaymentChoice("upi");
+        const courseObj = localDBInstance.courses[courseId];
+        if (!courseObj) return;
 
-      // Compute and refresh billing ticket
-      recomputeDrawerInvoice();
+        // Populate Checkout Sheet fields
+        const metaIdEl = document.getElementById("co-meta-id");
+        const metaTitleEl = document.getElementById("co-meta-title");
+        const metaPriceEl = document.getElementById("co-meta-price");
+        const couponInput = document.getElementById("co-coupon-input");
+        const statusLabel = document.getElementById("co-coupon-status-lbl");
 
-      // Reset button loading state
-      const pBtn = document.getElementById("co-pay-proceed-btn");
-      if (pBtn) {
-        pBtn.disabled = false;
-        pBtn.innerHTML = `<i class="fas fa-lock"></i> <span>SECURE PAY</span> <i class="fa fa-arrow-right text-[10px]"></i>`;
-      }
+        if (metaIdEl) metaIdEl.innerText = courseObj.examType || "EXAM";
+        if (metaTitleEl) metaTitleEl.innerText = courseObj.title;
+        if (metaPriceEl) metaPriceEl.innerText = `Catalog Base Value: ₹${activeCheckoutCoursePrice.toFixed(2)}`;
+        
+        if (couponInput) couponInput.value = "";
+        if (statusLabel) statusLabel.classList.add("hidden");
 
-      // Pre-fill Billing Contact details (for secure Cashfree checkout)
-      const nInp = document.getElementById("co-student-name");
-      const eInp = document.getElementById("co-student-email");
-      const pInp = document.getElementById("co-student-phone");
+        // Set default payment choice
+        highlightPaymentChoice("upi");
 
-      if (currentUser) {
-        if (nInp) nInp.value = localStorage.getItem(`edach_name_${currentUser.uid}`) || currentUser.displayName || "";
-        if (eInp) eInp.value = localStorage.getItem(`edach_email_${currentUser.uid}`) || currentUser.email || "";
-        if (pInp) pInp.value = localStorage.getItem(`edach_phone_${currentUser.uid}`) || "";
-      }
+        // Compute and refresh billing ticket
+        recomputeDrawerInvoice();
 
-      // Launch Drawer
-      document.getElementById("checkout-drawer-modal").classList.remove("hidden");
+        // Reset button loading state
+        const pBtn = document.getElementById("co-pay-proceed-btn");
+        if (pBtn) {
+          pBtn.disabled = false;
+          pBtn.innerHTML = `<i class="fas fa-lock"></i> <span>SECURE PAY</span> <i class="fa fa-arrow-right text-[10px]"></i>`;
+        }
+
+        // Fill Cashier elements safely
+        const nInp = document.getElementById("co-student-name");
+        const eInp = document.getElementById("co-student-email");
+        const pInp = document.getElementById("co-student-phone");
+
+        if (nInp) nInp.value = name;
+        if (eInp) eInp.value = email;
+        if (pInp) pInp.value = phone.replace(/\D/g, "");
+
+        // Rule 5 & 6: Fill and toggle billing details from user profile during payment
+        const bBadge = document.getElementById("co-billing-autofilled-badge");
+        const bInputs = document.getElementById("co-billing-inputs");
+        const bSummary = document.getElementById("co-billing-readonly-summary");
+        const sumName = document.getElementById("co-summary-name");
+        const sumEmail = document.getElementById("co-summary-email");
+        const sumPhone = document.getElementById("co-summary-phone");
+
+        if (bBadge) bBadge.classList.remove("hidden");
+        if (bInputs) bInputs.classList.add("hidden");
+        if (bSummary) bSummary.classList.remove("hidden");
+
+        if (sumName) sumName.innerText = name;
+        if (sumEmail) sumEmail.innerText = email;
+        if (sumPhone) sumPhone.innerText = phone.replace(/\D/g, "");
+
+        // Launch Drawer
+        document.getElementById("checkout-drawer-modal").classList.remove("hidden");
+      }).catch(err => {
+        console.error("Central profile authentication resolution failure:", err);
+        document.getElementById("profile-incomplete-modal").classList.remove("hidden");
+      });
     };
 
     window.closeCheckoutDrawer = function() {
@@ -3988,16 +4111,101 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
       get(emailRef).then(snap => {
         let dName = currentUser.displayName || "Premium Student";
         let dEmail = currentUser.email || "student@edachievers.com";
+        let dPhone = "";
         if (snap.exists()) {
           const profile = snap.val();
           dName = profile.name || dName;
           dEmail = profile.email || dEmail;
+          dPhone = profile.phone || dPhone;
         }
         document.getElementById("profile-name").innerText = dName;
         document.getElementById("profile-email").innerText = dEmail;
         document.getElementById("user-avatar").innerText = dName.charAt(0).toUpperCase();
+
+        const epName = document.getElementById("profile-edit-name");
+        const epEmail = document.getElementById("profile-edit-email");
+        const epPhone = document.getElementById("profile-edit-phone");
+        if (epName) epName.value = dName;
+        if (epEmail) epEmail.value = dEmail;
+        if (epPhone) epPhone.value = dPhone ? dPhone.replace(/\D/g, "") : "";
       });
     }
+
+    window.saveUserProfileDetails = function() {
+      if (!currentUser) {
+        alert("Authentication Required: Please login to save your profile details.");
+        return;
+      }
+      const eName = document.getElementById("profile-edit-name").value.trim();
+      const eEmail = document.getElementById("profile-edit-email").value.trim();
+      let ePhone = document.getElementById("profile-edit-phone").value.trim();
+      ePhone = ePhone.replace(/\D/g, "");
+
+      // Validate inputs
+      if (!eName) {
+        alert("Validation failure:\nFull Name is mandatory to process secured invoices.");
+        return;
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!eEmail || !emailRegex.test(eEmail)) {
+        alert("Validation failure:\nA valid Email address is required.");
+        return;
+      }
+      if (!ePhone || ePhone.length !== 10) {
+        alert("Validation failure:\nPlease enter a correct 10-digit mobile number.");
+        return;
+      }
+
+      const saveBtn = document.getElementById("profile-edit-save-btn");
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = `<i class="fas fa-spinner animate-spin"></i> Saving to Secure Cloud...`;
+      }
+
+      const profileRef = ref(db, `users/${currentUser.uid}/profile`);
+      set(profileRef, {
+        name: eName,
+        email: eEmail,
+        phone: ePhone,
+        updatedAt: new Date().toISOString()
+      }).then(() => {
+        // Cache locally for convenience
+        localStorage.setItem(`edach_name_${currentUser.uid}`, eName);
+        localStorage.setItem(`edach_email_${currentUser.uid}`, eEmail);
+        localStorage.setItem(`edach_phone_${currentUser.uid}`, ePhone);
+
+        // Update UI
+        updateUserProfileUI();
+
+        alert("Success:\nYour billing profile and contact details have been securely synchronized with Firebase Safeguard Cloud.");
+        
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = `<i class="fas fa-save animate-pulse"></i> Save Profile Details`;
+        }
+      }).catch(err => {
+        alert("Database Sync Failed:\n" + err.message);
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = `<i class="fas fa-save animate-pulse"></i> Save Profile Details`;
+        }
+      });
+    };
+
+    window.redirectToProfileScreen = function() {
+      document.getElementById("profile-incomplete-modal").classList.add("hidden");
+      document.getElementById("checkout-drawer-modal").classList.add("hidden");
+      const pNavBtn = document.querySelector('[onclick*="\'profile\'"]');
+      if (pNavBtn) {
+        navigateTab('profile', pNavBtn);
+      } else {
+        navigateTab('profile');
+      }
+    };
+
+    window.closeProfileIncompleteModal = function() {
+      document.getElementById("profile-incomplete-modal").classList.add("hidden");
+    };
 
     window.logOutUser = function() {
       if (confirm("Disconnect active study workspace profile?")) {
