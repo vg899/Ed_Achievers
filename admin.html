@@ -55,6 +55,9 @@
       <button onclick="navigateAdminTab('courses', this)" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white font-semibold transition">
         <i class="fas fa-graduation-cap w-4"></i> Course Manager
       </button>
+      <button onclick="navigateAdminTab('recordings', this)" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white font-semibold transition">
+        <i class="fas fa-photo-film w-4"></i> Recorded Lectures
+      </button>
       <button onclick="navigateAdminTab('live', this)" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white font-semibold transition">
         <i class="fas fa-video w-4"></i> Live Class Scheduler
       </button>
@@ -186,8 +189,19 @@
             </select>
           </div>
           <div>
-            <label class="block font-semibold text-slate-500">Secure Cloudinary Thumbnail Link</label>
-            <input type="text" id="add-course-thumb" placeholder="https://res.cloudinary.com/demo/image/upload/sample.jpg" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            <label class="block font-semibold text-slate-500">Course Thumbnail Image (Direct Cloudinary Upload)</label>
+            <input type="hidden" id="add-course-thumb">
+            <input type="file" id="add-course-thumb-file" accept="image/*" class="hidden" onchange="handleCourseThumbSelection(this)">
+            
+            <div onclick="document.getElementById('add-course-thumb-file').click()" class="border-2 border-dashed border-slate-200 hover:border-orange-500 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer bg-slate-50 transition min-h-[100px] mt-1 text-center" id="course-thumb-droparea">
+              <i class="fas fa-image text-2xl text-orange-500 mb-1"></i>
+              <span class="text-3xs font-semibold text-slate-500" id="course-thumb-status">Click to select Thumbnail from Device gallery</span>
+            </div>
+            
+            <div class="hidden mt-2 relative border border-slate-100 rounded-2xl overflow-hidden bg-slate-100" id="course-thumb-preview-container">
+              <img id="course-thumb-preview" class="w-full h-24 object-cover">
+              <span class="absolute top-1.5 right-1.5 bg-emerald-500 text-white font-bold text-[8px] px-1.5 py-0.5 rounded shadow">UPLOADED PREVIEW</span>
+            </div>
           </div>
           <div>
             <label class="block font-semibold text-slate-500">Price tag (₹ INR)</label>
@@ -380,6 +394,144 @@
       </div>
     </div>
 
+    <!-- SUB-VIEW 8: RECORDED LECTURE MANAGEMENT -->
+    <div id="admin-view-recordings" class="admin-tab-view space-y-6 hidden text-xs">
+      <div class="flex justify-between items-center bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+        <div>
+          <h2 class="text-base font-bold text-slate-800">Recorded Exam Lectures Directory</h2>
+          <p class="text-[10px] text-slate-400">Upload recorded course classes directly to Cloudinary Video Streaming Vaults</p>
+        </div>
+        <button onclick="toggleSection('recordings-create-panel'); clearRecordingForm();" class="px-5 py-2.5 bg-orange-500 hover:bg-orange-650 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center gap-1.5"><i class="fa fa-plus"></i> Upload Recorded Lecture</button>
+      </div>
+
+      <!-- Creation/Editing Form Panel -->
+      <div id="recordings-create-panel" class="hidden bg-white p-5 rounded-3xl border border-slate-100 shadow-xl space-y-4 text-xs">
+        <h3 id="recordings-panel-title" class="font-bold text-slate-800 text-sm border-b pb-2">Upload New Lecture Recording</h3>
+        <input type="hidden" id="rec-edit-id">
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-500">Select Target Course *</label>
+            <select id="rec-course-id" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500"></select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Target Subject (e.g. CDP, EVS, Mathematics, GS) *</label>
+            <select id="rec-subject-dropdown" onchange="handleRecSubjectChange()" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500">
+              <option value="CDP">Child Development & Pedagogy (CDP)</option>
+              <option value="Mathematics">Mathematics</option>
+              <option value="EVS">Environmental Studies (EVS)</option>
+              <option value="English">English</option>
+              <option value="GS">General Studies (GS)</option>
+              <option value="CUSTOM">Custom / Others (Type below)</option>
+            </select>
+            <input type="text" id="rec-subject-custom" placeholder="Type custom subject tag..." class="hidden w-full mt-1.5 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Chapter / Section identifier *</label>
+            <input type="text" id="rec-chapter" placeholder="e.g. Chapter 1: Developmental Stages" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Lecture Title *</label>
+            <input type="text" id="rec-title" placeholder="Kohlberg Morality Levels Masterclass" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500">
+          </div>
+          <div class="col-span-full">
+            <label class="block font-semibold text-slate-500">Detailed Lecture Syllabus Description</label>
+            <textarea id="rec-desc" rows="2" placeholder="Describe the topics discussed, notes attachment, questions solved in this class..." class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500"></textarea>
+          </div>
+          
+          <!-- Direct Gallery Video Upload Droparea -->
+          <div class="col-span-full p-4 bg-slate-550/5 rounded-2xl border border-slate-150">
+            <label class="block font-bold text-slate-700 mb-1 flex items-center gap-1.5"><i class="fa fa-clapperboard text-orange-500"></i> Video Streaming Asset (Direct Cloudinary Upload)</label>
+            <span class="text-[10px] text-slate-400 block mb-3">Upload direct high-definition .mp4, .mov, or .webm videos from your device</span>
+            
+            <input type="hidden" id="rec-video-url">
+            <input type="file" id="rec-video-file" accept="video/*" class="hidden" onchange="handleRecordedVideoSelection(this)">
+            
+            <div onclick="document.getElementById('rec-video-file').click()" class="border-2 border-dashed border-slate-200 hover:border-orange-500 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer bg-white transition text-center" id="rec-video-droparea">
+              <i class="fas fa-file-video text-3xl text-orange-500 mb-2"></i>
+              <span class="text-xs font-semibold text-slate-700 block" id="rec-video-status">Click to select Video file from Device gallery</span>
+              <span class="text-[10px] text-slate-400 block mt-0.5">Max size 100MB recommended for fast uploads</span>
+            </div>
+
+            <!-- Upload Progress Bar -->
+            <div id="rec-video-progress-container" class="hidden mt-3 space-y-1.5 p-3.5 bg-white border rounded-xl shadow-xs">
+              <div class="flex justify-between items-center text-[10px] font-semibold">
+                <span class="text-slate-550"><i class="fa fa-spinner animate-spin text-orange-500 mr-1"></i> Transmitting bytes to Cloudinary Video Streaming Vault...</span>
+                <span id="rec-video-progress-text" class="text-orange-600 font-bold">0%</span>
+              </div>
+              <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                <div id="rec-video-progress" class="bg-orange-500 h-2.5 rounded-full transition" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Secure uploaded video preview -->
+            <div id="rec-video-preview-container" class="hidden mt-3 space-y-2">
+              <span class="text-[10px] font-bold text-emerald-600 uppercase flex items-center gap-1"><i class="fa fa-circle-check"></i> SECURE VIDEO VAULT PREVIEW RECONSTRUCTED:</span>
+              <video id="rec-video-preview" controls class="w-full max-h-56 bg-black rounded-xl shadow-inner border border-slate-100"></video>
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-500">Auto-Detected Duration *</label>
+            <input type="text" id="rec-duration" class="w-full mt-1 p-2.5 bg-slate-100 border border-slate-200 rounded-xl font-bold font-mono focus:outline-none" placeholder="0:00 mins" readonly>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Syllabus Access Subscription Rules</label>
+            <select id="rec-premium-rule" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500">
+              <option value="PREMIUM">Premium Classes (Subscribed Members Only)</option>
+              <option value="FREE">Free Trial Classes (Unrestricted Access Preview)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Directory Publishing Mode</label>
+            <select id="rec-draft-rule" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500">
+              <option value="PUBLISHED">Published (Visible on Student board instantly)</option>
+              <option value="DRAFT">Draft Mode (Save structure, hide from students)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex gap-2 justify-end pt-2">
+          <button onclick="toggleSection('recordings-create-panel')" type="button" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl font-semibold transition">Discard</button>
+          <button onclick="publishRecordedLectureAction()" type="button" class="px-5 py-2.5 bg-orange-500 hover:bg-orange-650 text-white font-bold rounded-xl shadow transition" id="rec-submit-btn">Publish Lecture Capsule</button>
+        </div>
+      </div>
+
+      <!-- Published Lectures List -->
+      <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-xl space-y-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5"><i class="fas fa-video text-orange-500"></i> Published Lecture Assets Ledger</h3>
+          
+          <!-- Filter tools -->
+          <div class="flex items-center gap-2">
+            <select id="rec-filter-course" onchange="renderRecordedLecturesAdmin()" class="bg-slate-50 border border-slate-200 rounded-lg p-2 focus:outline-none text-[11px] font-medium">
+              <option value="ALL">All Course Packs</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-[11px] border-collapse">
+            <thead>
+              <tr class="border-b border-slate-150 text-slate-400 font-semibold uppercase text-[10px]">
+                <th class="py-3 px-2">Lecture Details</th>
+                <th class="py-3 px-2">Course & Subject</th>
+                <th class="py-3 px-2">Duration</th>
+                <th class="py-3 px-2">Status</th>
+                <th class="py-3 px-2">Playouts</th>
+                <th class="py-3 px-2 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="recordings-admin-rows">
+              <tr>
+                <td colspan="6" class="text-center text-slate-400 py-8 italic font-light">Loading recorded lectures database...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <!-- JS CONTROLLERS -->
@@ -442,9 +594,11 @@
           localDB.courses = snap.val();
           document.getElementById("stat-courses").innerText = Object.keys(localDB.courses).length;
           renderAdminCoursesList();
+          populateRecordedLectureCourseDropdowns();
         } else {
           document.getElementById("stat-courses").innerText = "0";
         }
+        syncRecordedLectures();
       });
 
       // Synchronize doubts console replies
@@ -504,6 +658,385 @@
         }
       });
     }
+
+    // ----------------------------------------------------
+    // CLOUDINARY UPLOADING VAULT & RECORDED LECTURES ENGINE
+    // ----------------------------------------------------
+    const cloudName = 'djtzg5ou7';
+    const uploadPreset = 'edachievers_upload';
+    let localLectures = {};
+
+    // Generic uploadToCloudinary engine using pure XMLHttpRequest for real-time progress
+    async function uploadToCloudinary(file, resourceType = 'image', onProgress = null) {
+      const url = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', url, true);
+
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable && onProgress) {
+            const percent = Math.round((e.loaded / e.total) * 100);
+            onProgress(percent);
+          }
+        };
+
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            try {
+              const res = JSON.parse(xhr.responseText);
+              resolve(res.secure_url);
+            } catch (err) {
+              reject(new Error('Syntax parser failure'));
+            }
+          } else {
+            reject(new Error(`Upload status rejected: ${xhr.status}`));
+          }
+        };
+
+        xhr.onerror = () => reject(new Error('Network loss during transmission'));
+
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('upload_preset', uploadPreset);
+        xhr.send(fd);
+      });
+    }
+
+    // Interactive Course Thumb file selector with live preview before and after
+    window.handleCourseThumbSelection = async function(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const statusText = document.getElementById("course-thumb-status");
+      const droparea = document.getElementById("course-thumb-droparea");
+      const previewContainer = document.getElementById("course-thumb-preview-container");
+      const previewImg = document.getElementById("course-thumb-preview");
+
+      statusText.innerHTML = '<i class="fa fa-spinner animate-spin text-orange-500 mr-1.5"></i> Transmitting graphic to server...';
+      droparea.classList.add("border-orange-500", "bg-orange-50/10");
+
+      try {
+        const secureUrl = await uploadToCloudinary(file, 'image');
+        document.getElementById("add-course-thumb").value = secureUrl;
+        
+        statusText.innerHTML = '<i class="fa fa-circle-check text-emerald-500 mr-1.5"></i> Thumbnail verified successfully!';
+        previewImg.src = secureUrl;
+        previewContainer.classList.remove("hidden");
+      } catch (err) {
+        alert("Cloudinary image upload failed: " + err.message);
+        statusText.innerHTML = '<i class="fa fa-circle-xmark text-red-500 mr-1.5"></i> Upload failed, click to retry';
+      }
+    };
+
+    // Recorded Video selector with live upload progress percentage bar and duration extraction
+    window.handleRecordedVideoSelection = async function(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const progressContainer = document.getElementById("rec-video-progress-container");
+      const progressBar = document.getElementById("rec-video-progress");
+      const progressText = document.getElementById("rec-video-progress-text");
+      const statusText = document.getElementById("rec-video-status");
+      const previewContainer = document.getElementById("rec-video-preview-container");
+      const previewVideo = document.getElementById("rec-video-preview");
+
+      progressContainer.classList.remove("hidden");
+      progressBar.style.width = "0%";
+      progressText.innerText = "0%";
+      statusText.innerHTML = '<i class="fa fa-spinner animate-spin text-orange-500 mr-1.5"></i> Transmitting video bytes to secure vault...';
+
+      try {
+        const secureUrl = await uploadToCloudinary(file, 'video', (p) => {
+          progressBar.style.width = p + "%";
+          progressText.innerText = p + "%";
+        });
+
+        document.getElementById("rec-video-url").value = secureUrl;
+        
+        statusText.innerHTML = '<i class="fa fa-circle-check text-emerald-500 mr-1.5"></i> Video uploaded and synchronized!';
+        progressContainer.classList.add("hidden");
+
+        // Load preview URL and grab duration
+        previewVideo.src = secureUrl;
+        previewContainer.classList.remove("hidden");
+
+        previewVideo.onloadedmetadata = function() {
+          const durSecs = Math.round(previewVideo.duration);
+          const mins = Math.floor(durSecs / 60);
+          const secs = durSecs % 60;
+          const finalDuration = `${mins}:${secs < 10 ? '0' : ''}${secs} mins`;
+          document.getElementById("rec-duration").value = finalDuration;
+        };
+
+      } catch (err) {
+        alert("Cloudinary video upload failed: " + err.message);
+        statusText.innerHTML = '<i class="fa fa-circle-xmark text-red-500 mr-1.5"></i> Upload failed, select another';
+        progressContainer.classList.add("hidden");
+      }
+    };
+
+    // Subject toggle panel
+    window.handleRecSubjectChange = function() {
+      const dropdown = document.getElementById("rec-subject-dropdown");
+      const customField = document.getElementById("rec-subject-custom");
+      if (dropdown.value === "CUSTOM") {
+        customField.classList.remove("hidden");
+      } else {
+        customField.classList.add("hidden");
+      }
+    };
+
+    // Form clearers
+    window.clearRecordingForm = function() {
+      document.getElementById("rec-edit-id").value = "";
+      document.getElementById("rec-course-id").value = "";
+      document.getElementById("rec-subject-dropdown").value = "CDP";
+      document.getElementById("rec-subject-custom").value = "";
+      document.getElementById("rec-subject-custom").classList.add("hidden");
+      document.getElementById("rec-chapter").value = "";
+      document.getElementById("rec-title").value = "";
+      document.getElementById("rec-desc").value = "";
+      document.getElementById("rec-video-url").value = "";
+      document.getElementById("rec-duration").value = "";
+      document.getElementById("rec-premium-rule").value = "PREMIUM";
+      document.getElementById("rec-draft-rule").value = "PUBLISHED";
+      document.getElementById("rec-video-status").innerHTML = "Click to select Video file from Device gallery";
+      document.getElementById("rec-video-preview-container").classList.add("hidden");
+      document.getElementById("rec-video-preview").src = "";
+      document.getElementById("rec-submit-btn").innerText = "Publish Lecture Capsule";
+      document.getElementById("recordings-panel-title").innerText = "Upload New Lecture Recording";
+    };
+
+    // Synchronize recordings rows
+    function syncRecordedLectures() {
+      get(ref(db, "recorded_lectures")).then((snap) => {
+        if (snap.exists()) {
+          localLectures = snap.val();
+        } else {
+          localLectures = {};
+        }
+        renderRecordedLecturesAdmin();
+      });
+    }
+
+    // Populate drop-downs for Course selection
+    function populateRecordedLectureCourseDropdowns() {
+      const selectCreate = document.getElementById("rec-course-id");
+      const selectFilter = document.getElementById("rec-filter-course");
+      if (!selectCreate) return;
+
+      selectCreate.innerHTML = '<option value="">-- Choose Course Pack --</option>';
+      selectFilter.innerHTML = '<option value="ALL">All Course Packs</option>';
+
+      Object.values(localDB.courses || {}).forEach(course => {
+        const opt = document.createElement("option");
+        opt.value = course.id;
+        opt.innerText = `${course.title} (${course.examType})`;
+        selectCreate.appendChild(opt);
+
+        const optF = document.createElement("option");
+        optF.value = course.id;
+        optF.innerText = course.title;
+        selectFilter.appendChild(optF);
+      });
+    }
+
+    // Admin publishers
+    window.publishRecordedLectureAction = function() {
+      const editId = document.getElementById("rec-edit-id").value;
+      const courseId = document.getElementById("rec-course-id").value;
+      const subDropdown = document.getElementById("rec-subject-dropdown").value;
+      const customSub = document.getElementById("rec-subject-custom").value.trim();
+      const subject = subDropdown === "CUSTOM" ? customSub : subDropdown;
+      const chapter = document.getElementById("rec-chapter").value.trim();
+      const title = document.getElementById("rec-title").value.trim();
+      const desc = document.getElementById("rec-desc").value.trim();
+      const videoUrl = document.getElementById("rec-video-url").value;
+      const duration = document.getElementById("rec-duration").value || "0:00 mins";
+      const premiumRule = document.getElementById("rec-premium-rule").value;
+      const draftRule = document.getElementById("rec-draft-rule").value;
+
+      if (!courseId || !subject || !chapter || !title || !videoUrl) {
+        alert("All asterisked fields (*), including target course selection and direct device video upload, are required!");
+        return;
+      }
+
+      const lectureId = editId || "lecture_" + Date.now();
+      
+      let orderIndex = 1;
+      if (!editId) {
+        const courseLectures = Object.values(localLectures).filter(l => l.courseId === courseId);
+        orderIndex = courseLectures.length + 1;
+      } else {
+        orderIndex = localLectures[editId]?.orderIndex || 1;
+      }
+
+      const payload = {
+        id: lectureId,
+        courseId,
+        subject,
+        chapter,
+        title,
+        description: desc,
+        videoUrl,
+        duration,
+        isFreePreview: premiumRule === "FREE",
+        isDraft: draftRule === "DRAFT",
+        watchCount: editId ? (localLectures[editId]?.watchCount || 0) : 0,
+        lastUpdated: Date.now(),
+        orderIndex
+      };
+
+      set(ref(db, `recorded_lectures/${lectureId}`), payload)
+      .then(() => {
+        alert(editId ? "Lecture capsule modified and published successfully!" : "Recorded Lecture capsule published to registry successfully!");
+        clearRecordingForm();
+        document.getElementById("recordings-create-panel").classList.add("hidden");
+        syncRecordedLectures();
+      })
+      .catch(err => alert("Sync Failure: " + err.message));
+    };
+
+    // Delete recorders
+    window.deleteRecordedLectureAction = function(lId) {
+      if (confirm("Remove this recorded lecture asset from student databases immediately?")) {
+        remove(ref(db, `recorded_lectures/${lId}`)).then(() => {
+          alert("Asset removed from database registries.");
+          syncRecordedLectures();
+        });
+      }
+    };
+
+    // Edit recorded lectures
+    window.editRecordedLectureAction = function(lId) {
+      const lecture = localLectures[lId];
+      if (!lecture) return;
+
+      document.getElementById("rec-edit-id").value = lecture.id;
+      document.getElementById("rec-course-id").value = lecture.courseId;
+      
+      const standardSubjects = ["CDP", "Mathematics", "EVS", "English", "GS"];
+      if (standardSubjects.includes(lecture.subject)) {
+        document.getElementById("rec-subject-dropdown").value = lecture.subject;
+        document.getElementById("rec-subject-custom").value = "";
+        document.getElementById("rec-subject-custom").classList.add("hidden");
+      } else {
+        document.getElementById("rec-subject-dropdown").value = "CUSTOM";
+        document.getElementById("rec-subject-custom").value = lecture.subject;
+        document.getElementById("rec-subject-custom").classList.remove("hidden");
+      }
+
+      document.getElementById("rec-chapter").value = lecture.chapter;
+      document.getElementById("rec-title").value = lecture.title;
+      document.getElementById("rec-desc").value = lecture.description || "";
+      document.getElementById("rec-video-url").value = lecture.videoUrl;
+      document.getElementById("rec-duration").value = lecture.duration || "0:00 mins";
+      
+      document.getElementById("rec-premium-rule").value = lecture.isFreePreview ? "FREE" : "PREMIUM";
+      document.getElementById("rec-draft-rule").value = lecture.isDraft ? "DRAFT" : "PUBLISHED";
+
+      document.getElementById("rec-video-status").innerHTML = '<i class="fa fa-circle-check text-emerald-500 mr-1.5"></i> Stream link verified!';
+      
+      const previewVideo = document.getElementById("rec-video-preview");
+      previewVideo.src = lecture.videoUrl;
+      document.getElementById("rec-video-preview-container").classList.remove("hidden");
+
+      document.getElementById("rec-submit-btn").innerText = "Save Edited Lecture";
+      document.getElementById("recordings-panel-title").innerText = "Edit Lecture Recording Capsule";
+
+      document.getElementById("recordings-create-panel").classList.remove("hidden");
+      document.getElementById("admin-view-recordings").scrollIntoView({ behavior: 'smooth' });
+    };
+
+    // Reorder lists
+    window.reorderRecordedLectureAction = function(lId, direction) {
+      const lecture = localLectures[lId];
+      if (!lecture) return;
+
+      const courseLectures = Object.values(localLectures)
+        .filter(l => l.courseId === lecture.courseId && l.subject === lecture.subject)
+        .sort((a, b) => a.orderIndex - b.orderIndex);
+
+      const curIdx = courseLectures.findIndex(l => l.id === lId);
+      if (curIdx === -1) return;
+
+      let targetIdx = curIdx + (direction === 'up' ? -1 : 1);
+      if (targetIdx < 0 || targetIdx >= courseLectures.length) return;
+
+      const otherLecture = courseLectures[targetIdx];
+      
+      const temp = lecture.orderIndex;
+      lecture.orderIndex = otherLecture.orderIndex;
+      otherLecture.orderIndex = temp;
+
+      const updates = {};
+      updates[`recorded_lectures/${lecture.id}/orderIndex`] = lecture.orderIndex;
+      updates[`recorded_lectures/${otherLecture.id}/orderIndex`] = otherLecture.orderIndex;
+
+      update(ref(db), updates).then(() => {
+        syncRecordedLectures();
+      });
+    };
+
+    // Table render of recorded lectures
+    window.renderRecordedLecturesAdmin = function() {
+      const filterCourseId = document.getElementById("rec-filter-course").value;
+      const container = document.getElementById("recordings-admin-rows");
+      if (!container) return;
+
+      container.innerHTML = "";
+
+      let lectures = Object.values(localLectures);
+      if (filterCourseId !== "ALL") {
+        lectures = lectures.filter(l => l.courseId === filterCourseId);
+      }
+
+      lectures.sort((a, b) => {
+        if (a.courseId !== b.courseId) return a.courseId.localeCompare(b.courseId);
+        if (a.subject !== b.subject) return a.subject.localeCompare(b.subject);
+        return a.orderIndex - b.orderIndex;
+      });
+
+      if (lectures.length === 0) {
+        container.innerHTML = `
+          <tr>
+            <td colspan="6" class="text-center text-slate-400 py-10 italic">No lectures found matching options.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      lectures.forEach(l => {
+        const course = localDB.courses[l.courseId] || { title: "Unidentified Course" };
+        const tr = document.createElement("tr");
+        tr.className = "border-b border-slate-100 hover:bg-slate-550/10 text-[11px] font-medium";
+        tr.innerHTML = `
+          <td class="py-3 px-2">
+            <span class="font-bold text-slate-800 text-xs block">${l.title}</span>
+            <span class="text-4xs text-slate-400 block">${l.chapter}</span>
+          </td>
+          <td class="py-3 px-2 text-slate-600 font-medium">
+            <span class="font-bold text-slate-800 block">${course.title}</span>
+            <span class="text-5xs px-2 py-0.5 bg-orange-100 text-orange-850 rounded uppercase tracking-wider font-bold w-max inline-block mt-0.5">${l.subject}</span>
+          </td>
+          <td class="py-3 px-2 font-bold font-mono text-xs text-slate-600">${l.duration || "0:00 mins"}</td>
+          <td class="py-3 px-2 whitespace-nowrap">
+            <span class="px-2 py-0.5 rounded font-bold text-5xs uppercase tracking-wide block w-max ${l.isDraft ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}">${l.isDraft ? 'Draft' : 'Published'}</span>
+            <span class="px-2 py-0.5 rounded font-semibold text-5xs block w-max mt-1 ${l.isFreePreview ? 'bg-orange-105 text-orange-850' : 'bg-slate-100 text-slate-600'}">${l.isFreePreview ? 'Free Preview' : 'Premium'}</span>
+          </td>
+          <td class="py-3 px-2 font-black text-rose-500 font-mono text-xs">${l.watchCount || 0} plays</td>
+          <td class="py-3 px-2 text-right">
+            <div class="flex gap-1.5 justify-end">
+              <button onclick="reorderRecordedLectureAction('${l.id}', 'up')" class="p-1 px-2 border rounded-md hover:bg-orange-50 hover:text-orange-600 transition text-[10px]" title="Order Up"><i class="fa fa-chevron-up"></i></button>
+              <button onclick="reorderRecordedLectureAction('${l.id}', 'down')" class="p-1 px-2 border rounded-md hover:bg-orange-50 hover:text-orange-600 transition text-[10px]" title="Order Down"><i class="fa fa-chevron-down"></i></button>
+              <button onclick="editRecordedLectureAction('${l.id}')" class="p-1 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 rounded-md transition text-[10px]"><i class="fa fa-edit"></i> Edit</button>
+              <button onclick="deleteRecordedLectureAction('${l.id}')" class="p-1 px-2 bg-red-550/10 hover:bg-red-600 text-red-500 hover:text-white rounded-md transition text-[10px]"><i class="fa fa-trash-can"></i></button>
+            </div>
+          </td>
+        `;
+        container.appendChild(tr);
+      });
+    };
 
     // RENDER COURSE CRUD MANAGER Cards
     function renderAdminCoursesList() {

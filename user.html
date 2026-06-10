@@ -165,7 +165,16 @@
       </div>
     </div>
 
-    <!-- Quick Action Categories Grid -->
+    <!-- Recently Watched Lectures / Resume Learning Section -->
+    <div id="recently-watched-section" class="hidden space-y-3.5 mt-5">
+      <div class="flex justify-between items-center">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><i class="fa fa-play text-orange-500 text-[10px]"></i> Keep Watching & Lesson Resume</h3>
+        <span class="text-[9px] bg-orange-100 text-orange-850 px-2 py-0.5 rounded font-black">CONTINUE PREP</span>
+      </div>
+      <div id="recently-watched-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Dyn list of resumed lectures -->
+      </div>
+    </div>
     <div>
       <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Choose Your Focus Area</h3>
       <div class="flex gap-2.5 overflow-x-auto pb-2 custom-scrollbar">
@@ -368,14 +377,24 @@
         
         <!-- SECTION 1: LECTURES LIST -->
         <div id="modal-panel-lectures" class="space-y-4 p-1">
-          <!-- Embedded player if active -->
+          <!-- Embedded player if active (Dual system: YouTube Live iframe + Cloudinary direct secure .mp4 player) -->
           <div id="video-player-container" class="hidden rounded-2xl overflow-hidden bg-black aspect-video relative shadow-inner mb-3">
-            <iframe id="video-iframe" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <iframe id="video-iframe" class="w-full h-full hidden" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <video id="native-video-player" class="w-full h-full hidden" controls controlsList="nodownload" playsinline></video>
           </div>
           <div class="space-y-3">
-            <h4 class="font-bold text-slate-850 uppercase tracking-widest text-3xs">Syllabus Chapters</h4>
-            <div id="lectures-list" class="space-y-2">
-              <!-- Dynam list -->
+            <h4 class="font-bold text-slate-800 uppercase tracking-widest text-[9px] flex justify-between items-center">
+              <span>Syllabus Chapters & Lessons</span>
+              <span class="text-[8px] bg-indigo-50 text-indigo-750 px-1.5 py-0.5 rounded font-bold">SORTED BY SESSIONS</span>
+            </h4>
+            
+            <!-- Dynamic Subject Filter Pills inside Classroom Modal -->
+            <div id="modal-subject-pills" class="flex flex-wrap gap-1.5 pb-1">
+              <!-- Populated dynamically via JS -->
+            </div>
+
+            <div id="lectures-list" class="space-y-3">
+              <!-- Dynam lessons list -->
             </div>
           </div>
         </div>
@@ -397,19 +416,30 @@
             <i class="fas fa-heart-pulse text-indigo-600 mt-0.5"></i>
             <div class="space-y-0.5">
               <span class="font-bold text-indigo-900 block">Expert Doubt Assistance desk</span>
-              <p class="text-4xs text-indigo-700">Enter a query below. Instructors generally reply to structural pedagogy doubts within 30 minutes.</p>
+              <p class="text-4xs text-indigo-700">Enter a query below. Instructors generally reply to doubts within 30 minutes.</p>
             </div>
           </div>
 
-          <!-- Submit new doubt form -->
+          <!-- Submit new doubt form with Cloudinary Direct Upload from library gallery -->
           <div class="space-y-2.5">
             <div>
-              <label class="block font-bold text-slate-500">Detail Your Doubt question</label>
+              <label class="block font-bold text-slate-500">Detail Your Doubt Question</label>
               <textarea id="doubt-text" rows="2" placeholder="Explain the difference between Vygotsky's Scaffolding and ZPD in child pedagogy with classroom examples..." class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500"></textarea>
             </div>
             <div>
-              <label class="block font-bold text-slate-500">Cloudinary Illustration attachment URL (optional)</label>
-              <input type="text" id="doubt-image" placeholder="Paste secure image/screenshot URL" class="w-full mt-1 p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500">
+              <label class="block font-bold text-slate-500">screenshot / proof proofing (optional)</label>
+              <input type="hidden" id="doubt-image">
+              <input type="file" id="doubt-image-file" accept="image/*" class="hidden" onchange="handleDoubtImageSelection(this)">
+              
+              <div onclick="document.getElementById('doubt-image-file').click()" class="border-2 border-dashed border-slate-200 hover:border-orange-500 rounded-2xl p-3 flex flex-col items-center justify-center cursor-pointer bg-slate-50 transition min-h-[80px] mt-1 text-center" id="doubt-image-droparea">
+                <i class="fas fa-camera text-xl text-orange-500 mb-1"></i>
+                <span class="text-[10px] font-semibold text-slate-400" id="doubt-image-status">Tap to attach screenshot/book photo from device</span>
+              </div>
+              
+              <div class="hidden mt-2 relative border bg-slate-100 rounded-2xl overflow-hidden w-28 h-20" id="doubt-image-preview-container">
+                <img id="doubt-image-preview" class="w-full h-full object-cover">
+                <span class="absolute bottom-1 right-1 bg-emerald-500 text-white font-bold text-[6px] px-1 rounded shadow">READY</span>
+              </div>
             </div>
             <button onclick="submitStudentDoubt()" class="px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl transition shadow">Post To Instructors Desk</button>
           </div>
@@ -591,7 +621,8 @@
       testSeries: {},
       currentAffairs: {},
       notifications: {},
-      leaderboard: {}
+      leaderboard: {},
+      recordedLectures: {}
     };
 
     // DOM & State Bootstrapping
@@ -791,6 +822,17 @@
           localDBInstance.leaderboard = snap.val();
           renderLeaderboard();
         }
+      });
+
+      // Recorded Lectures Database listener
+      onValue(ref(db, "recorded_lectures"), (snap) => {
+        if (snap.exists()) {
+          localDBInstance.recordedLectures = snap.val();
+        } else {
+          localDBInstance.recordedLectures = {};
+        }
+        syncUserPurchasedAndStreakData();
+        renderRecentlyWatchedDashboard();
       });
     }
 
@@ -1121,19 +1163,36 @@
       window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    // List user subscriptions
+    // State buffers for user profiles
+    let userPurchasedCourses = {};
+    let userWatchProgress = {};
+    let userCompletedLectures = {};
+
+    // List user subscriptions and load state logs
     function syncUserPurchasedAndStreakData() {
       if (!currentUser) return;
 
-      const userSubsRef = ref(db, `users/${currentUser.uid}/purchasedCourses`);
-      get(userSubsRef).then((snap) => {
+      const userRef = ref(db, `users/${currentUser.uid}`);
+      onValue(userRef, (snap) => {
+        if (snap.exists()) {
+          const ud = snap.val();
+          userPurchasedCourses = ud.purchasedCourses || {};
+          userWatchProgress = ud.watchProgress || {};
+          userCompletedLectures = ud.completedLectures || {};
+        } else {
+          userPurchasedCourses = {};
+          userWatchProgress = {};
+          userCompletedLectures = {};
+        }
+
         const container = document.getElementById("purchased-list");
         if (!container) return;
         container.innerHTML = "";
 
-        if (snap.exists()) {
-          const subs = snap.val();
-          Object.entries(subs).forEach(([cId, subInfo]) => {
+        const subs = userPurchasedCourses;
+        const subEntries = Object.entries(subs);
+        if (subEntries.length > 0) {
+          subEntries.forEach(([cId, subInfo]) => {
             const course = localDBInstance.courses[cId] || subInfo.courseData || {};
             
             const div = document.createElement("div");
@@ -1162,6 +1221,9 @@
             </div>
           `;
         }
+
+        // Render keeps watching list
+        renderRecentlyWatchedDashboard();
       });
 
       // Daily login streak tracker
@@ -1172,7 +1234,6 @@
           const dat = snap.val();
           count = dat.count || 1;
           const lastLogin = dat.lastLogin;
-          // Check if today matches, increment if yesterday
           const todayStr = new Date().toDateString();
           const lastDateStr = new Date(lastLogin).toDateString();
           if (todayStr !== lastDateStr) {
@@ -1184,72 +1245,355 @@
       });
     }
 
-    // 4. EMBEDDED LECTURES & DOCUMENT CLASSROOM WORKSPACE
+    // 4. CLOUDINARY MEDIA CONTROLLERS & SECURED PLAYLIST WORKSPACE
     let activeOpenCourseId = "";
+    let activeModalSubjectFilter = "ALL";
+    let activeModalLecturesList = [];
+    let currentWatchingLectureId = "";
+    let progressTimer = null;
+
+    // Direct Cloudinary file attachment selector for helpdesk
+    window.handleDoubtImageSelection = async function(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const statusText = document.getElementById("doubt-image-status");
+      const droparea = document.getElementById("doubt-image-droparea");
+      const previewContainer = document.getElementById("doubt-image-preview-container");
+      const previewImg = document.getElementById("doubt-image-preview");
+
+      statusText.innerHTML = '<i class="fa fa-spinner animate-spin text-orange-500 mr-1.5"></i> Transmitting graphic attachment...';
+      droparea.classList.add("border-orange-500", "bg-orange-50/10");
+
+      try {
+        const secureUrl = await uploadToCloudinaryDirect(file, 'image');
+        document.getElementById("doubt-image").value = secureUrl;
+        
+        statusText.innerHTML = '<i class="fa fa-circle-check text-emerald-500 mr-1.5"></i> Screenshot validated successfully!';
+        previewImg.src = secureUrl;
+        previewContainer.classList.remove("hidden");
+      } catch (err) {
+        alert("Cloudinary graphic failed: " + err.message);
+        statusText.innerHTML = '<i class="fa fa-circle-xmark text-red-500 mr-1.5"></i> Attachment failed, try another card';
+      }
+    };
+
+    // Generic upload handler for student profile attachments
+    async function uploadToCloudinaryDirect(file, resourceType = 'image') {
+      const cloudName = 'djtzg5ou7';
+      const uploadPreset = 'edachievers_upload';
+      const url = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
+      
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', uploadPreset);
+
+      const res = await fetch(url, { method: "POST", body: fd });
+      if (!res.ok) throw new Error("Cloudinary status failed");
+      const data = await res.json();
+      return data.secure_url;
+    }
+
+    // Render recently watched resume grid
+    window.renderRecentlyWatchedDashboard = function() {
+      const section = document.getElementById("recently-watched-section");
+      const list = document.getElementById("recently-watched-list");
+      if (!section || !list) return;
+
+      const progressEntries = Object.entries(userWatchProgress);
+      if (progressEntries.length === 0) {
+        section.classList.add("hidden");
+        return;
+      }
+
+      section.classList.remove("hidden");
+      list.innerHTML = "";
+
+      progressEntries.sort((a,b) => b[1].lastWatched - a[1].lastWatched);
+      const recentLogins = progressEntries.slice(0, 3);
+
+      recentLogins.forEach(([lId, dat]) => {
+        let lecture = localDBInstance.recordedLectures[lId];
+        if (!lecture) {
+          // Check if it is a mock fallback
+          const standardMockLectures = {
+            "mock_1": { id: "mock_1", title: "Introduction to Child Development Principle", courseId: "ctet_gold_pack", subject: "CDP", chapter: "Chapter 1" },
+            "mock_2": { id: "mock_2", title: "Kohlberg Levels of Moral Growth Theory", courseId: "ctet_gold_pack", subject: "CDP", chapter: "Chapter 1" },
+            "mock_3": { id: "mock_3", title: "Bilingual Language Pedagogy revision session", courseId: "ctet_gold_pack", subject: "CDP", chapter: "Chapter 2" }
+          };
+          lecture = standardMockLectures[lId];
+        }
+
+        if (!lecture) return;
+
+        const course = localDBInstance.courses[lecture.courseId] || { title: "Preparatory Course" };
+        const card = document.createElement("div");
+        card.className = "bg-white p-4 rounded-3xl shadow-md border border-orange-50 flex flex-col justify-between hover:shadow-lg transition cursor-pointer";
+        card.innerHTML = `
+          <div class="space-y-1.5" onclick="viewCourseDetails('${lecture.courseId}')">
+            <div class="flex justify-between items-center text-[8px] font-black uppercase text-slate-400">
+              <span class="truncate max-w-[120px]">${course.title}</span>
+              <span class="px-1.5 py-0.5 bg-orange-50 text-orange-850 rounded font-bold">${lecture.subject}</span>
+            </div>
+            <h4 class="font-bold text-slate-800 text-xs line-clamp-2 leading-relaxed">${lecture.title}</h4>
+            <span class="font-bold text-slate-450 text-[9px] block">${lecture.chapter}</span>
+          </div>
+
+          <div class="mt-4 space-y-1.5">
+            <div class="flex items-center justify-between text-[9px] font-bold">
+              <span class="text-slate-400">Streak resume</span>
+              <span class="text-orange-500">${dat.percent}% watched</span>
+            </div>
+            <div class="h-1 w-full bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-full bg-orange-500" style="width: ${dat.percent}%"></div>
+            </div>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    };
+
+    // Open course workspace details modal
     window.viewCourseDetails = function(courseId) {
       const course = localDBInstance.courses[courseId];
       if (!course) return;
 
       activeOpenCourseId = courseId;
+      activeModalSubjectFilter = "ALL";
       document.getElementById("modal-course-title").innerText = course.title;
       document.getElementById("modal-course-exam").innerText = `${course.examType} Exam Chapter Lessons`;
       
-      // Load corresponding lessons from Subjects node
-      const subListContainer = document.getElementById("lectures-list");
-      subListContainer.innerHTML = "";
+      // Load corresponding lessons from recordedLectures
+      activeModalLecturesList = Object.values(localDBInstance.recordedLectures || {})
+        .filter(l => l.courseId === courseId);
 
-      // We populate realistic mock modules/chapters for each stream
-      const chapters = {
-        "CTET": [
-          { title: "Introduction to Child Development Principle", duration: "1h 40min", url: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-          { title: "Kohlberg Levels of Moral Growth Theory", duration: "1h 15min", url: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-          { title: "Bilingual Language Pedagogy revision session", duration: "2h 05min", url: "https://www.youtube.com/embed/dQw4w9WgXcQ" }
-        ],
-        "KVS": [
-          { title: "School Leadership & General Management models", duration: "2h 10min", url: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-          { title: "Aptitude logical reasoning question review master", duration: "1h 35min", url: "https://www.youtube.com/embed/dQw4w9WgXcQ" }
-        ],
-        "SUPERTET": [
-          { title: "Elementary Board Maths and Pedagogy Formulas", duration: "1h 50min", url: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-          { title: "Static GS & Current Affairs Revision Class", duration: "2h 40min", url: "https://www.youtube.com/embed/dQw4w9WgXcQ" }
-        ]
-      };
+      // Render the custom Subject Filter Pill Bar
+      renderModalSubjectPills();
 
-      const syllabus = chapters[course.examType] || chapters["CTET"];
-      syllabus.forEach((chap, idx) => {
-        const div = document.createElement("div");
-        div.className = "p-3 bg-slate-50 border border-slate-150 rounded-2xl flex items-center justify-between";
-        div.innerHTML = `
-          <div class="flex items-center gap-3">
-            <span class="w-6 h-6 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center font-bold text-3xs">${idx+1}</span>
-            <div>
-              <span class="font-bold text-slate-800 text-3xs sm:text-xs block leading-tight">${chap.title}</span>
-              <span class="text-4xs text-slate-450">${chap.duration}</span>
-            </div>
-          </div>
-          <button onclick="watchRecordingStream('${chap.url}')" class="px-3 py-1.5 bg-orange-500 hover:bg-orange-650 text-white font-bold rounded-lg text-4xs leading-none transition">Watch Class</button>
-        `;
-        subListContainer.appendChild(div);
-      });
+      // Render actual lectures list filtered
+      renderModalLecturesList();
 
       // Pull queries logs for helpdesk panel
       syncHelpDeskHistoryForCourse();
 
       document.getElementById("course-details-modal").classList.remove("hidden");
+    };
+
+    function renderModalSubjectPills() {
+      const pillBox = document.getElementById("modal-subject-pills");
+      if (!pillBox) return;
+      pillBox.innerHTML = "";
+
+      const subjects = ["ALL"];
+      activeModalLecturesList.forEach(l => {
+        if (l.subject && !subjects.includes(l.subject)) {
+          subjects.push(l.subject);
+        }
+      });
+
+      if (subjects.length === 1) {
+        subjects.push("CDP", "Mathematics", "EVS");
+      }
+
+      subjects.forEach(sub => {
+        const btn = document.createElement("button");
+        const isActive = activeModalSubjectFilter === sub;
+        btn.className = `px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-wider border transition-all cursor-pointer ${
+          isActive 
+            ? "bg-orange-500 text-white border-orange-500 shadow-sm" 
+            : "bg-white text-slate-600 border-slate-200 hover:bg-orange-50"
+        }`;
+        btn.innerText = sub === "ALL" ? "All Subjects" : sub;
+        btn.onclick = () => {
+          activeModalSubjectFilter = sub;
+          renderModalSubjectPills();
+          renderModalLecturesList();
+        };
+        pillBox.appendChild(btn);
+      });
+    }
+
+    function renderModalLecturesList() {
+      const subListContainer = document.getElementById("lectures-list");
+      if (!subListContainer) return;
+      subListContainer.innerHTML = "";
+
+      let list = [...activeModalLecturesList];
+
+      if (list.length === 0) {
+        const course = localDBInstance.courses[activeOpenCourseId] || {};
+        const fallbackChapters = {
+          "CTET": [
+            { id: "mock_1", title: "Introduction to Child Development Principle", duration: "1h 40min", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", subject: "CDP", chapter: "Chapter 1", isFreePreview: true, orderIndex: 1 },
+            { id: "mock_2", title: "Kohlberg Levels of Moral Growth Theory", duration: "1h 15min", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", subject: "CDP", chapter: "Chapter 1", isFreePreview: false, orderIndex: 2 },
+            { id: "mock_3", title: "Bilingual Language Pedagogy revision session", duration: "2h 05min", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", subject: "CDP", chapter: "Chapter 2", isFreePreview: false, orderIndex: 3 }
+          ],
+          "KVS": [
+            { id: "mock_4", title: "School Leadership & General Management models", duration: "2h 10min", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", subject: "General Management", chapter: "Chapter 1", isFreePreview: true, orderIndex: 1 },
+            { id: "mock_5", title: "Aptitude logical reasoning question review master", duration: "1h 35min", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", subject: "Mathematics", chapter: "Chapter 1", isFreePreview: false, orderIndex: 2 }
+          ],
+          "default": [
+            { id: "mock_6", title: "Elementary Board Maths and Pedagogy Formulas", duration: "1h 50min", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", subject: "Mathematics", chapter: "Chapter 1", isFreePreview: true, orderIndex: 1 },
+            { id: "mock_7", title: "Static GS & Current Affairs Revision Class", duration: "2h 40min", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", subject: "GS", chapter: "Chapter 1", isFreePreview: false, orderIndex: 2 }
+          ]
+        };
+        list = fallbackChapters[course.examType] || fallbackChapters["default"];
+      }
+
+      if (activeModalSubjectFilter !== "ALL") {
+        list = list.filter(l => l.subject === activeModalSubjectFilter);
+      }
+
+      const grouped = {};
+      list.forEach(l => {
+        const chap = l.chapter || "General Introduction Modules";
+        if (!grouped[chap]) grouped[chap] = [];
+        grouped[chap].push(l);
+      });
+
+      Object.entries(grouped).forEach(([chapterName, lectures]) => {
+        const header = document.createElement("div");
+        header.className = "flex items-center gap-2 pt-2.5 pb-1 border-b border-slate-100 text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2";
+        header.innerHTML = `<i class="fa fa-folder-open text-orange-400"></i> <span>${chapterName}</span>`;
+        subListContainer.appendChild(header);
+
+        lectures.sort((a,b) => (a.orderIndex || 0) - (b.orderIndex || 0));
+
+        lectures.forEach((chap) => {
+          const isSubscribed = isCourseSubscribed(activeOpenCourseId);
+          const canWatch = chap.isFreePreview || isSubscribed;
+          
+          const watchData = userWatchProgress[chap.id] || { currentTime: 0, percent: 0 };
+          const isCompleted = userCompletedLectures[chap.id] || watchData.percent >= 90;
+
+          const div = document.createElement("div");
+          div.className = "p-3 bg-slate-50 hover:bg-orange-50/10 border border-slate-150 rounded-2xl flex items-center justify-between shadow-xs transition duration-200 gap-3";
+          
+          let actionBtnHtml = "";
+          if (canWatch) {
+            actionBtnHtml = `<button onclick="watchRecordingStream('${chap.id}', '${chap.videoUrl}')" class="px-3.5 py-2 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl text-3xs flex items-center gap-1 shadow-xs leading-none shrink-0 transition cursor-pointer">
+              <i class="fa fa-play text-[8px]"></i> Play
+            </button>`;
+          } else {
+            const discPrice = localDBInstance.courses[activeOpenCourseId]?.price || "1999";
+            actionBtnHtml = `<button onclick="initiateCheckout('${activeOpenCourseId}', '${discPrice}')" class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-3xs flex items-center gap-1 shadow-xs leading-none shrink-0 transition cursor-pointer">
+              <i class="fa fa-lock text-[8px] text-amber-400"></i> Unlock
+            </button>`;
+          }
+
+          let progressMeterHtml = "";
+          if (isCompleted) {
+            progressMeterHtml = `<span class="text-[8px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded flex items-center gap-0.5 w-max mt-1.5">✓ COMPLETED</span>`;
+          } else if (watchData.percent > 0) {
+            progressMeterHtml = `
+              <div class="space-y-1 w-24 mt-2">
+                <div class="flex justify-between text-[7px] text-slate-400 font-black">
+                  <span>RESUME</span>
+                  <span>${watchData.percent}%</span>
+                </div>
+                <div class="h-1 w-full bg-slate-200 rounded-full overflow-hidden">
+                  <div class="h-full bg-amber-500" style="width: ${watchData.percent}%"></div>
+                </div>
+              </div>
+            `;
+          }
+
+          div.innerHTML = `
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-full ${isCompleted ? 'bg-emerald-100 text-emerald-600' : 'bg-orange-50/70 text-orange-500'} flex items-center justify-center shrink-0">
+                <i class="${isCompleted ? 'fa-solid fa-circle-check text-xs' : 'fa-solid fa-play text-[9px]'}"></i>
+              </div>
+              <div>
+                <span class="font-bold text-slate-800 text-[11px] sm:text-xs block leading-snug">${chap.title}</span>
+                <div class="flex flex-wrap items-center gap-1.5 text-slate-400 font-semibold text-[9px] mt-0.5">
+                  <span>${chap.duration || '0:00 mins'}</span>
+                  ${chap.isFreePreview ? '<span class="text-[7px] bg-sky-100 text-sky-800 px-1 py-0.5 rounded font-black uppercase">Demo Lesson</span>' : ''}
+                </div>
+                ${progressMeterHtml}
+              </div>
+            </div>
+            ${actionBtnHtml}
+          `;
+          subListContainer.appendChild(div);
+        });
+      });
     }
 
     window.closeCourseModal = function() {
       document.getElementById("course-details-modal").classList.add("hidden");
       document.getElementById("video-player-container").classList.add("hidden");
-      document.getElementById("video-iframe").src = "";
-    }
+      
+      const iframe = document.getElementById("video-iframe");
+      iframe.src = "";
+      
+      const nativePlayer = document.getElementById("native-video-player");
+      nativePlayer.pause();
+      nativePlayer.src = "";
 
-    window.watchRecordingStream = function(url) {
+      if (progressTimer) clearInterval(progressTimer);
+    };
+
+    window.watchRecordingStream = function(lectureId, url) {
       const container = document.getElementById("video-player-container");
-      const player = document.getElementById("video-iframe");
-      player.src = url;
+      const iframe = document.getElementById("video-iframe");
+      const nativePlayer = document.getElementById("native-video-player");
+
+      if (progressTimer) clearInterval(progressTimer);
+      currentWatchingLectureId = lectureId;
       container.classList.remove("hidden");
-    }
+
+      if (url.includes("youtube.com") || url.includes("youtu.be")) {
+        iframe.classList.remove("hidden");
+        nativePlayer.classList.add("hidden");
+        nativePlayer.pause();
+        nativePlayer.src = "";
+        iframe.src = url;
+      } else {
+        iframe.classList.add("hidden");
+        iframe.src = "";
+        nativePlayer.classList.remove("hidden");
+
+        const progress = userWatchProgress[lectureId] || { currentTime: 0, percent: 0 };
+        nativePlayer.src = url;
+        nativePlayer.load();
+
+        nativePlayer.oncanplay = function() {
+          if (progress.currentTime > 0 && nativePlayer.currentTime < progress.currentTime) {
+            nativePlayer.currentTime = progress.currentTime;
+          }
+        };
+
+        nativePlayer.play().catch(err => console.log("Stream play suspended or aborted", err));
+
+        progressTimer = setInterval(() => {
+          if (nativePlayer.paused || !currentUser) return;
+          const curr = nativePlayer.currentTime;
+          const total = nativePlayer.duration;
+          if (!total || isNaN(total)) return;
+
+          const pct = Math.min(100, Math.round((curr / total) * 100));
+
+          userWatchProgress[lectureId] = {
+            currentTime: Math.round(curr),
+            percent: pct,
+            lastWatched: Date.now()
+          };
+
+          // Save watch progress to Firebase RTDB
+          set(ref(db, `users/${currentUser.uid}/watchProgress/${lectureId}`), userWatchProgress[lectureId]);
+
+          // Track completion at >= 90%
+          if (pct >= 90 && !userCompletedLectures[lectureId]) {
+            userCompletedLectures[lectureId] = true;
+            set(ref(db, `users/${currentUser.uid}/completedLectures/${lectureId}`), true);
+            updateLeaderboardPoints(25);
+            alert("Outstanding! Lecture capsule completed. Added +25 points on leaderboards!");
+            renderModalLecturesList();
+            renderRecentlyWatchedDashboard();
+          }
+        }, 4000);
+      }
+    };
 
     window.joinLiveStream = function(youtubeUrl) {
       if (!currentUser) {
@@ -1257,7 +1601,6 @@
         return;
       }
       alert("Opening Interactive Live Stream and registering attendance. Happy Learning!");
-      // Track interactive attendances
       const attendRef = ref(db, `attendance/${currentUser.uid}/${Date.now()}`);
       set(attendRef, { timestamp: Date.now(), title: "Live Session Attendance" });
       updateLeaderboardPoints(10);
@@ -1271,8 +1614,12 @@
     // 5. HELPDESK REALTIME CHAT FOR STUDENTS
     window.submitStudentDoubt = function() {
       const box = document.getElementById("doubt-text");
-      const img = document.getElementById("doubt-image");
-      if (!box.value.trim()) return;
+      const imgVal = document.getElementById("doubt-image").value;
+
+      if (!box.value.trim()) {
+        alert("Please describe your question or pedagogy doubt first.");
+        return;
+      }
 
       const payload = {
         studentName: currentUser?.displayName || "Anonymous Learner",
@@ -1280,7 +1627,7 @@
         email: currentUser?.email,
         courseId: activeOpenCourseId,
         question: box.value.trim(),
-        screenshotUrl: img.value.trim() || null,
+        screenshotUrl: imgVal || null,
         timestamp: Date.now(),
         status: "PENDING",
         reply: null
@@ -1289,7 +1636,11 @@
       const doubtsRef = ref(db, "doubts");
       push(doubtsRef, payload).then(() => {
         box.value = "";
-        img.value = "";
+        document.getElementById("doubt-image").value = "";
+        document.getElementById("doubt-image-preview-container").classList.add("hidden");
+        document.getElementById("doubt-image-preview").src = "";
+        document.getElementById("doubt-image-status").innerText = "Tap to attach screenshot/book photo from device";
+        
         alert("Doubt query recorded. Ed Achievers instructors will reply shortly.");
         syncHelpDeskHistoryForCourse();
       });
