@@ -157,6 +157,9 @@
       <button onclick="navigateAdminTab('legal', this)" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white font-semibold transition">
         <i class="fas fa-scale-balanced w-4 text-orange-500 animate-pulse"></i> Legal &amp; Compliance Management
       </button>
+      <button onclick="navigateAdminTab('banners', this)" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white font-semibold transition">
+        <i class="fas fa-images w-4 text-orange-500 animate-pulse"></i> Banner &amp; Ads Management
+      </button>
     </nav>
 
     <!-- Side bottom actions -->
@@ -327,6 +330,140 @@
             </div>
           </div>
 
+        </div>
+      </div>
+    </div>
+
+    <!-- SUB-VIEW: BANNER MANAGEMENT CENTER -->
+    <div id="admin-view-banners" class="admin-tab-view space-y-6 hidden">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-3xl border border-slate-100 shadow-sm gap-4">
+        <div>
+          <h2 class="text-base font-black text-slate-800 flex items-center gap-2">
+            <span>Banner &amp; Promotion Center</span>
+            <span class="text-5xs bg-orange-100 text-orange-850 font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Gateway Slider Enabled</span>
+          </h2>
+          <p class="text-[11px] text-slate-400 font-semibold mt-1">Configure active auto-slider banners, targeted campaigns, and discount redirection banners for students.</p>
+        </div>
+        <button onclick="clearAdminBannerForm()" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
+          <i class="fas fa-plus"></i> Create New Banner
+        </button>
+      </div>
+
+      <!-- Banner Management Grid layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- LEFT COLUMN: Live List of Banners (7 cols) -->
+        <div class="lg:col-span-7 bg-white rounded-3xl p-5 border border-slate-100 shadow-xl space-y-4">
+          <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5">
+            <i class="fas fa-images text-orange-500"></i> Active Promotional Banners
+          </h3>
+          <p class="text-[10px] text-slate-400 font-medium">Banners are sorted by direct Display Order ranking. Reorder them using up/down actions to synchronize the home page slide priority.</p>
+          
+          <div id="admin-banners-list" class="space-y-4">
+            <!-- Dynamic list of banners from RTDB -->
+            <p class="text-center text-slate-400 text-4xs italic py-12">Loading banner nodes from Firebase...</p>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Banner configuration & Upload form (5 cols) -->
+        <div class="lg:col-span-5 bg-white rounded-3xl p-5 border border-slate-100 shadow-xl space-y-5">
+          <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+            <h3 id="admin-banner-form-title" class="font-bold text-slate-800 text-sm flex items-center gap-1.5">
+              <i class="fas fa-file-invoice text-orange-500"></i> Configure Promotional Banner
+            </h3>
+            <span id="admin-banner-mode-badge" class="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-black rounded text-[8px] uppercase tracking-wide">NEW BANNER</span>
+          </div>
+
+          <!-- The Form -->
+          <form id="admin-banner-form" onsubmit="handleBannerFormSubmit(event)" class="space-y-3.5 text-xs text-slate-700">
+            <input type="hidden" id="admin-banner-id" value="">
+            <input type="hidden" id="admin-banner-image-url" value="">
+            
+            <!-- Direct Device Gallery File upload -->
+            <div>
+              <label class="block font-semibold text-slate-500 mb-1">Select Banner Image (Landscape Graphic)</label>
+              <input type="file" id="admin-banner-file" accept="image/*" class="hidden" onchange="handleBannerFileSelection(this)">
+              
+              <div onclick="document.getElementById('admin-banner-file').click()" class="border-2 border-dashed border-slate-200 hover:border-orange-500 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer bg-slate-50 transition min-h-[110px] text-center" id="banner-upload-droparea">
+                <i class="fas fa-cloud-arrow-up text-2xl text-orange-500 mb-1"></i>
+                <span class="text-3xs font-semibold text-slate-500" id="banner-upload-status">Click to open Gallery &amp; auto upload to Cloudinary</span>
+                <p class="text-[9px] text-slate-400 mt-1 font-semibold">Requirement: 16:9 or wide landscape recommended</p>
+              </div>
+            </div>
+
+            <!-- Custom Interactive HTML LIVE PREVIEW BOX BEFORE PUBLISH -->
+            <div>
+              <label class="block font-semibold text-slate-500 mb-1">Live Home Slider Preview (Instant mockup representation)</label>
+              <div class="border border-slate-150 rounded-2xl overflow-hidden bg-slate-50 p-2 text-slate-800 relative shadow-sm">
+                <div class="relative w-full aspect-[21/9] rounded-xl overflow-hidden bg-slate-200 flex items-center justify-center" id="banner-preview-frame">
+                  <!-- Empty placeholder or actual rendered image -->
+                  <div class="absolute inset-0 bg-cover bg-center bg-slate-250 transition-all duration-350 flex flex-col justify-end p-3 bg-gradient-to-t from-slate-950/90 via-slate-900/50 to-transparent" id="banner-preview-bg" style="background-image: url('placeholder');">
+                    <div class="text-white space-y-0.5 relative z-10 w-full text-left">
+                      <span class="px-1.5 py-0.5 bg-orange-500 text-[6px] font-black rounded uppercase tracking-wider inline-block text-white" id="banner-preview-sub">LIMITED OFFER</span>
+                      <h4 class="text-xs font-black leading-tight drop-shadow-sm text-white" id="banner-preview-title">Banner Display Title</h4>
+                      <p class="text-[8px] text-slate-300 font-semibold truncate leading-none" id="banner-preview-desc">Short promotional description detail copy</p>
+                    </div>
+                  </div>
+                  <div id="banner-preview-empty-state" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-100 text-slate-400 text-center p-4 z-20">
+                    <i class="fas fa-image text-xl mb-1 text-slate-300"></i>
+                    <p class="text-[9px] font-bold">No graphic uploaded. Select file to render preview.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Banner Metadata -->
+            <div>
+              <label class="block font-semibold text-slate-500 mb-0.5">Banner Campaign Title</label>
+              <input type="text" id="admin-banner-title-field" oninput="updateLiveBannerPreview()" required placeholder="🚀 LIVE FLIP 50% COUPON CAMPAIGN" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 font-bold">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block font-semibold text-slate-500 mb-0.5">Category Tag / Subtitle</label>
+                <input type="text" id="admin-banner-subtitle-field" oninput="updateLiveBannerPreview()" placeholder="LIMITED OFFER" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 font-semibold">
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-500 mb-0.5">Redirect URL / Link</label>
+                <input type="text" id="admin-banner-redirect-field" placeholder="https://edachievers.com/user.html#courses" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 font-semibold">
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-500 mb-0.5">Short Campaign Description</label>
+              <textarea id="admin-banner-desc-field" oninput="updateLiveBannerPreview()" rows="2" placeholder="Enroll in any master educational classroom batch today and claim massive savings." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 text-3xs leading-relaxed font-medium"></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block font-semibold text-slate-500 mb-0.5">Active From Date</label>
+                <input type="date" id="admin-banner-start" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 font-semibold">
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-500 mb-0.5">Active End Date</label>
+                <input type="date" id="admin-banner-end" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 font-semibold">
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-150">
+              <div>
+                <span class="block text-3xs font-black text-slate-850 uppercase">Publish Campaign Status</span>
+                <span class="text-[9px] text-slate-400 font-bold">Instantly enable/disable display visibility on main student dashboard</span>
+              </div>
+              <label class="inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="admin-banner-status-toggle" checked class="sr-only peer">
+                <div class="relative w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
+              </label>
+            </div>
+
+            <div class="flex gap-2.5 pt-2">
+              <button type="submit" id="admin-banner-submit-btn" class="flex-1 py-3 bg-orange-500 hover:bg-orange-650 text-white font-extrabold rounded-2xl hover:shadow-lg transition uppercase tracking-wider text-center cursor-pointer">
+                Publish Active Banner
+              </button>
+              <button type="button" id="admin-banner-cancel-btn" onclick="clearAdminBannerForm()" class="hidden py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-2xl transition text-center cursor-pointer">
+                Cancel
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -875,7 +1012,8 @@
       transactions: {},
       legalDocs: {},
       supportQueries: {},
-      refundRequests: {}
+      refundRequests: {},
+      banners: {}
     };
 
     // Admin PIN Security State variables
@@ -1207,6 +1345,18 @@
         }
         if (typeof window.renderAdminRefundRequests === "function") {
           window.renderAdminRefundRequests();
+        }
+      });
+
+      // Synchronize promotional campaign banners
+      onValue(ref(db, "banners"), (snap) => {
+        if (snap.exists()) {
+          localDB.banners = snap.val();
+        } else {
+          localDB.banners = {};
+        }
+        if (typeof window.renderAdminBanners === "function") {
+          window.renderAdminBanners();
         }
       });
 
@@ -2300,6 +2450,288 @@
         .catch(err => {
           alert("Failed to update process: " + err.message);
         });
+    };
+
+    // ----------------------------------------------------
+    // BANNER CAMPAIGN MANAGEMENT SYSTEM ENGINE
+    // ----------------------------------------------------
+    window.handleBannerFileSelection = async function(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const statusText = document.getElementById("banner-upload-status");
+      const droparea = document.getElementById("banner-upload-droparea");
+      
+      statusText.innerHTML = '<i class="fa fa-spinner animate-spin text-orange-500 mr-1.5"></i> Transmitting graphic to secure gallery server...';
+      droparea.classList.add("border-orange-500", "bg-orange-50/10");
+
+      try {
+        const secureUrl = await uploadToCloudinary(file, 'image');
+        document.getElementById("admin-banner-image-url").value = secureUrl;
+        
+        statusText.innerHTML = '<i class="fa fa-circle-check text-emerald-500 mr-1.5"></i> Graphic uploaded and verified!';
+        
+        // Render preview instantly
+        window.updateLiveBannerPreview();
+      } catch (err) {
+        alert("Cloudinary image upload failed: " + err.message);
+        statusText.innerHTML = '<i class="fa fa-circle-xmark text-red-500 mr-1.5"></i> Upload failed, click to retry';
+      }
+    };
+
+    window.updateLiveBannerPreview = function() {
+      const imageUrl = document.getElementById("admin-banner-image-url").value;
+      const title = document.getElementById("admin-banner-title-field").value || "Banner Display Title";
+      const subtitle = document.getElementById("admin-banner-subtitle-field").value || "LIMITED OFFER";
+      const desc = document.getElementById("admin-banner-desc-field").value || "Short promotional description detail copy";
+
+      const bgDiv = document.getElementById("banner-preview-bg");
+      const emptyDiv = document.getElementById("banner-preview-empty-state");
+
+      if (imageUrl) {
+        bgDiv.style.backgroundImage = `url('${imageUrl}')`;
+        emptyDiv.classList.add("hidden");
+      } else {
+        bgDiv.style.backgroundImage = "";
+        emptyDiv.classList.remove("hidden");
+      }
+
+      document.getElementById("banner-preview-sub").innerText = subtitle;
+      document.getElementById("banner-preview-title").innerText = title;
+      document.getElementById("banner-preview-desc").innerText = desc;
+    };
+
+    window.handleBannerFormSubmit = function(e) {
+      e.preventDefault();
+      
+      const bannerId = document.getElementById("admin-banner-id").value;
+      const imageUrl = document.getElementById("admin-banner-image-url").value;
+      const title = document.getElementById("admin-banner-title-field").value.trim();
+      const subtitle = document.getElementById("admin-banner-subtitle-field").value.trim();
+      const description = document.getElementById("admin-banner-desc-field").value.trim();
+      const redirectLink = document.getElementById("admin-banner-redirect-field").value.trim();
+      const startDate = document.getElementById("admin-banner-start").value;
+      const endDate = document.getElementById("admin-banner-end").value;
+      const status = document.getElementById("admin-banner-status-toggle").checked ? "active" : "inactive";
+
+      if (!imageUrl) {
+        alert("Critical Action Required: You must select and upload a promotional banner graphic first prior to publishing.");
+        return;
+      }
+
+      let finalOrder = 0;
+      if (!bannerId) {
+        const existingBanners = Object.values(localDB.banners || {});
+        if (existingBanners.length > 0) {
+          finalOrder = Math.max(...existingBanners.map(b => b.displayOrder || 0)) + 1;
+        }
+      }
+
+      const postData = {
+        imageUrl: imageUrl,
+        title: title,
+        subtitle: subtitle,
+        description: description,
+        redirectLink: redirectLink || "",
+        startDate: startDate,
+        endDate: endDate,
+        status: status,
+        updatedAt: Date.now()
+      };
+
+      if (!bannerId) {
+        const newRef = push(ref(db, "banners"));
+        postData.bannerId = newRef.key;
+        postData.createdAt = Date.now();
+        postData.displayOrder = finalOrder;
+        
+        set(newRef, postData)
+          .then(() => {
+            alert("Success! Promotional campaign banner successfully published to live classrooms.");
+            clearAdminBannerForm();
+          })
+          .catch(err => {
+            alert("Save failure: " + err.message);
+          });
+      } else {
+        postData.bannerId = bannerId;
+        const oldData = localDB.banners[bannerId] || {};
+        postData.createdAt = oldData.createdAt || Date.now();
+        postData.displayOrder = oldData.displayOrder !== undefined ? oldData.displayOrder : 0;
+
+        set(ref(db, "banners/" + bannerId), postData)
+          .then(() => {
+            alert("Success! Campaign banner update synchronized successfully.");
+            clearAdminBannerForm();
+          })
+          .catch(err => {
+            alert("Update failure: " + err.message);
+          });
+      }
+    };
+
+    window.clearAdminBannerForm = function() {
+      document.getElementById("admin-banner-id").value = "";
+      document.getElementById("admin-banner-image-url").value = "";
+      document.getElementById("admin-banner-form").reset();
+      
+      document.getElementById("banner-upload-status").innerHTML = "Click to open Gallery &amp; auto upload to Cloudinary";
+      document.getElementById("banner-upload-droparea").className = "border-2 border-dashed border-slate-200 hover:border-orange-500 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer bg-slate-50 transition min-h-[110px] text-center";
+
+      document.getElementById("admin-banner-form-title").innerHTML = `<i class="fas fa-file-invoice text-orange-500"></i> Configure Promotional Banner`;
+      document.getElementById("admin-banner-mode-badge").innerText = "NEW BANNER";
+      document.getElementById("admin-banner-mode-badge").className = "px-2 py-0.5 bg-emerald-100 text-emerald-800 font-black rounded text-[8px] uppercase tracking-wide";
+      document.getElementById("admin-banner-submit-btn").innerText = "Publish Active Banner";
+      document.getElementById("admin-banner-cancel-btn").classList.add("hidden");
+
+      window.updateLiveBannerPreview();
+    };
+
+    window.editAdminBanner = function(bannerId) {
+      const banner = localDB.banners[bannerId];
+      if (!banner) return;
+
+      document.getElementById("admin-banner-id").value = banner.bannerId;
+      document.getElementById("admin-banner-image-url").value = banner.imageUrl;
+      document.getElementById("admin-banner-title-field").value = banner.title || "";
+      document.getElementById("admin-banner-subtitle-field").value = banner.subtitle || "";
+      document.getElementById("admin-banner-desc-field").value = banner.description || "";
+      document.getElementById("admin-banner-redirect-field").value = banner.redirectLink || "";
+      document.getElementById("admin-banner-start").value = banner.startDate || "";
+      document.getElementById("admin-banner-end").value = banner.endDate || "";
+      document.getElementById("admin-banner-status-toggle").checked = (banner.status === 'active');
+
+      document.getElementById("admin-banner-form-title").innerHTML = `<i class="fas fa-edit text-orange-500"></i> Update Promotional Banner`;
+      document.getElementById("admin-banner-mode-badge").innerText = "EDIT BANNER";
+      document.getElementById("admin-banner-mode-badge").className = "px-2 py-0.5 bg-orange-100 text-orange-850 font-black rounded text-[8px] uppercase tracking-wide";
+      document.getElementById("admin-banner-submit-btn").innerText = "Save Banner Changes";
+      document.getElementById("admin-banner-cancel-btn").classList.remove("hidden");
+
+      window.updateLiveBannerPreview();
+    };
+
+    window.deleteAdminBanner = function(bannerId) {
+      if (confirm("Are you sure you want to permanently delete this promotional banner campaign?")) {
+        remove(ref(db, "banners/" + bannerId))
+          .then(() => {
+            alert("Banner campaign permanently deleted.");
+          })
+          .catch(err => {
+            alert("Deletion failed: " + err.message);
+          });
+      }
+    };
+
+    window.reorderAdminBanner = function(bannerId, direction) {
+      const list = Object.values(localDB.banners || {})
+        .sort((a,b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+
+      const idx = list.findIndex(b => b.bannerId === bannerId);
+      if (idx === -1) return;
+
+      let targetIdx = -1;
+      if (direction === 'up' && idx > 0) {
+        targetIdx = idx - 1;
+      } else if (direction === 'down' && idx < list.length - 1) {
+        targetIdx = idx + 1;
+      }
+
+      if (targetIdx !== -1) {
+        const currentBanner = list[idx];
+        const targetBanner = list[targetIdx];
+
+        // Swap displayOrder values
+        const tempOrder = currentBanner.displayOrder || 0;
+        currentBanner.displayOrder = targetBanner.displayOrder || 0;
+        targetBanner.displayOrder = tempOrder;
+
+        // Perform updates to Firebase Realtime Database
+        const updates = {};
+        updates[`banners/${currentBanner.bannerId}/displayOrder`] = currentBanner.displayOrder;
+        updates[`banners/${targetBanner.bannerId}/displayOrder`] = targetBanner.displayOrder;
+
+        update(ref(db), updates)
+          .then(() => {
+            console.log("Reorder success");
+          })
+          .catch(err => {
+            alert("Reordering failed: " + err.message);
+          });
+      }
+    };
+
+    window.renderAdminBanners = function() {
+      const container = document.getElementById("admin-banners-list");
+      if (!container) return;
+
+      container.innerHTML = "";
+
+      const bannerList = Object.values(localDB.banners || {})
+        .sort((a,b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+
+      if (bannerList.length === 0) {
+        container.innerHTML = `
+          <div class="text-center text-slate-400 text-4xs italic py-16 border border-dashed border-slate-100 rounded-2xl">
+            <i class="fas fa-image text-2xl text-slate-200 mb-2"></i>
+            <p>No active marketing campaign banners established in the database.</p>
+          </div>
+        `;
+        return;
+      }
+
+      bannerList.forEach((b, idx) => {
+        const item = document.createElement("div");
+        item.className = "p-4 bg-slate-50 rounded-2xl border border-slate-150/80 flex flex-col md:flex-row gap-4 items-center justify-between";
+        
+        const statusBadge = b.status === "active" 
+          ? `<span class="px-2 py-0.5 bg-emerald-105 text-emerald-800 font-extrabold rounded text-[8px] uppercase tracking-wider">ACTIVE</span>`
+          : `<span class="px-2 py-0.5 bg-slate-210 text-slate-600 font-extrabold rounded text-[8px] uppercase tracking-wider">INACTIVE</span>`;
+
+        item.innerHTML = `
+          <div class="flex items-center gap-3.5 w-full md:w-auto">
+            <!-- Rank reorder controls -->
+            <div class="flex flex-col gap-1 shrink-0">
+              <button type="button" onclick="reorderAdminBanner('${b.bannerId}', 'up')" class="w-6 h-6 hover:bg-slate-200 rounded flex items-center justify-center text-slate-500 cursor-pointer text-xs" title="Move Up">
+                <i class="fa fa-chevron-up"></i>
+              </button>
+              <span class="text-center font-bold text-slate-700 text-5xs">${idx + 1}</span>
+              <button type="button" onclick="reorderAdminBanner('${b.bannerId}', 'down')" class="w-6 h-6 hover:bg-slate-200 rounded flex items-center justify-center text-slate-500 cursor-pointer text-xs" title="Move Down">
+                <i class="fa fa-chevron-down"></i>
+              </button>
+            </div>
+
+            <!-- Image thumbnail -->
+            <div class="w-20 aspect-[16/9] rounded-lg overflow-hidden border border-slate-200 shrink-0 bg-slate-100 relative">
+              <img src="${b.imageUrl}" class="w-full h-full object-cover">
+            </div>
+
+            <div class="space-y-1 text-left">
+              <div class="flex items-center gap-2">
+                ${statusBadge}
+                <span class="text-4xs text-slate-400 font-bold uppercase tracking-wider">${b.startDate || 'No start'} • ${b.endDate || 'No end'}</span>
+              </div>
+              <h4 class="text-xs font-black text-slate-800">${b.title}</h4>
+              <p class="text-3xs text-slate-500 line-clamp-1 leading-relaxed">${b.description || 'No campaign copy descriptions added.'}</p>
+              ${b.redirectLink ? `
+                <a href="${b.redirectLink}" target="_blank" class="text-5xs font-bold text-orange-600 hover:underline flex items-center gap-1">
+                  <i class="fa fa-link text-[8px]"></i> ${b.redirectLink}
+                </a>
+              ` : ''}
+            </div>
+          </div>
+
+          <div class="flex gap-2 shrink-0 w-full md:w-auto justify-end border-t md:border-t-0 border-slate-150 pt-2.5 md:pt-0">
+            <button type="button" onclick="editAdminBanner('${b.bannerId}')" class="px-2.5 py-1.5 bg-white border border-slate-200 hover:border-orange-500 text-slate-650 hover:text-orange-600 font-bold rounded-lg text-3xs flex items-center gap-1 transition shadow-2xs cursor-pointer">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button type="button" onclick="deleteAdminBanner('${b.bannerId}')" class="px-2.5 py-1.5 bg-red-50 hover:bg-red-650 text-red-600 hover:text-white font-bold rounded-lg text-3xs flex items-center gap-1 transition cursor-pointer">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </div>
+        `;
+
+        container.appendChild(item);
+      });
     };
 
   </script>

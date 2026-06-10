@@ -152,16 +152,30 @@
 
   <!-- PAGE 1: HOME DASHBOARD -->
   <main id="view-dashboard" class="page-view px-4 py-5 space-y-6">
-    <!-- Banner Slider Carousel -->
-    <div class="relative w-full overflow-hidden rounded-2xl shadow-md border border-orange-100 bg-orange-50 h-44 sm:h-52">
-      <div id="banner-slider" class="flex transition-transform duration-500 ease-in-out h-full" style="transform: translateX(0%);">
-        <!-- Dynamic Banners populated below -->
+    <!-- Beautiful Slider Parent Container with controls and indicators -->
+    <div class="relative w-full overflow-hidden rounded-3xl shadow-xl border border-orange-100 bg-slate-900 group h-48 sm:h-56" id="banner-slider-outer">
+      <!-- The slider carriage track -->
+      <div id="banner-slider" class="flex transition-transform duration-500 ease-out h-full select-none cursor-grab active:cursor-grabbing">
+        <!-- populated dynamically -->
         <div class="min-w-full h-full flex flex-col justify-center p-6 bg-gradient-to-r from-orange-500 to-amber-500 text-white relative">
           <h3 class="text-xl sm:text-2xl font-bold max-w-xs leading-tight">Crash Course for Super TET 2026</h3>
           <p class="text-xs text-orange-100 mt-2">Comprehensive Pedagogy, CDP & General Knowledge modules</p>
           <div class="mt-4"><span class="px-3 py-1 bg-white text-orange-600 font-bold rounded-lg text-2xs uppercase">₹1,999 Only</span></div>
           <i class="fas fa-graduation-cap absolute right-6 bottom-4 text-7xl opacity-15"></i>
         </div>
+      </div>
+
+      <!-- Navigation Arrows (visible on hover) -->
+      <button type="button" id="slider-prev-btn" class="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100 z-10 cursor-pointer">
+        <i class="fa fa-chevron-left text-xs"></i>
+      </button>
+      <button type="button" id="slider-next-btn" class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100 z-10 cursor-pointer">
+        <i class="fa fa-chevron-right text-xs"></i>
+      </button>
+
+      <!-- Carousel Indicators Dots -->
+      <div id="banner-slider-dots" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+        <!-- populated dynamically -->
       </div>
     </div>
 
@@ -185,6 +199,12 @@
         <button onclick="filterCourses('DSSSB')" class="exam-filter-btn shrink-0 px-4 py-2 bg-white text-slate-600 hover:bg-orange-50 font-semibold rounded-xl text-xs border border-slate-200/60 shadow-xs">DSSSB</button>
         <button onclick="filterCourses('SUPERTET')" class="exam-filter-btn shrink-0 px-4 py-2 bg-white text-slate-600 hover:bg-orange-50 font-semibold rounded-xl text-xs border border-slate-200/60 shadow-xs">Super TET</button>
       </div>
+    </div>
+
+    <!-- Featured Banner spotlight section (populated dynamically) -->
+    <div id="home-featured-banner-section" class="hidden space-y-3.5">
+      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><i class="fa fa-star text-orange-500 text-[10px]"></i> Academic Spotlight</h3>
+      <div id="home-featured-banner-card"></div>
     </div>
 
     <!-- Live Classes Feed -->
@@ -212,6 +232,18 @@
         <span class="text-2xs text-orange-500 font-bold hover:underline cursor-pointer" onclick="filterCourses('ALL')">View All</span>
       </div>
       <div id="recommended-courses" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- dyn pop -->
+      </div>
+    </div>
+
+    <!-- Promotional Banner center grid (populated dynamically) -->
+    <div id="home-promotional-banners-section" class="hidden space-y-4 pt-2">
+      <div class="flex justify-between items-center">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+          <i class="fa fa-percent text-orange-505 text-[10px]"></i> Active Discounts & Promotional Schemes
+        </h3>
+      </div>
+      <div id="home-promotional-banners-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- dyn pop -->
       </div>
     </div>
@@ -986,7 +1018,8 @@
       currentAffairs: {},
       notifications: {},
       leaderboard: {},
-      recordedLectures: {}
+      recordedLectures: {},
+      banners: {}
     };
 
     // DOM & State Bootstrapping
@@ -1116,9 +1149,34 @@
           };
           update(ref(db), { pdfNotes: defaultPDFs });
 
-          // Seed default Banners
+          // Seed default Banners conforming to robust campaign schema
           const defaultBanners = {
-            "b1": { id: "b1", title: "Mega Republic Day 70% Discount Offer!", sub: "Use Coupon FIRST50 during checkout portal checkout." }
+            "b1": {
+              bannerId: "b1",
+              imageUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
+              title: "Mega Teacher Recruitment Special Prep Pack",
+              subtitle: "70% MASSIVE DISCOUNT",
+              description: "Instant access to Live Pedagogy sessions & mock tests. Use coupon ACHIEVERS10 across checkouts.",
+              redirectLink: "#courses",
+              status: "active",
+              startDate: "2026-06-01",
+              endDate: "2026-12-31",
+              displayOrder: 1,
+              createdAt: Date.now()
+            },
+            "b2": {
+              bannerId: "b2",
+              imageUrl: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=80",
+              title: "Pedagogy Masters CDP Level 2 Target Batch",
+              subtitle: "NEW INAUGURAL CAMPAIGN",
+              description: "Master Piaget, Vygotsky, & Bloom's taxonomy in detail. Guided by elite mentor Harsh Vardhan.",
+              redirectLink: "#courses",
+              status: "active",
+              startDate: "2026-06-01",
+              endDate: "2026-12-31",
+              displayOrder: 2,
+              createdAt: Date.now()
+            }
           };
           update(ref(db), { banners: defaultBanners });
         }
@@ -1210,6 +1268,16 @@
         if (typeof window.renderActiveLegalDoc === "function") {
           window.renderActiveLegalDoc();
         }
+      });
+
+      // Promotional & Slider Banners
+      onValue(ref(db, "banners"), (snap) => {
+        if (snap.exists()) {
+          localDBInstance.banners = snap.val();
+        } else {
+          localDBInstance.banners = {};
+        }
+        renderHomeBannersAndSlider();
       });
     }
 
@@ -1545,6 +1613,255 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
         container.appendChild(card);
       });
     }
+
+    function renderHomeBannersAndSlider() {
+      const allBanners = Object.values(localDBInstance.banners || {});
+      const todayString = new Date().toISOString().split('T')[0];
+      
+      const activeBanners = allBanners
+        .filter(b => {
+          if (b.status !== "active") return false;
+          if (b.startDate && b.startDate > todayString) return false;
+          if (b.endDate && b.endDate < todayString) return false;
+          return true;
+        })
+        .sort((a,b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+
+      const sliderContainer = document.getElementById("banner-slider");
+      const dotContainer = document.getElementById("banner-slider-dots");
+      if (!sliderContainer) return;
+
+      sliderContainer.innerHTML = "";
+      if (dotContainer) dotContainer.innerHTML = "";
+
+      if (activeBanners.length === 0) {
+        sliderContainer.innerHTML = `
+          <div class="min-w-full h-full flex flex-col justify-center p-6 bg-gradient-to-r from-slate-800 to-slate-900 text-white relative">
+            <h3 class="text-base sm:text-lg font-black max-w-sm leading-tight text-white m-0">Welcome to Ed Achievers Portal</h3>
+            <p class="text-4xs text-slate-300 mt-1.5 leading-relaxed max-w-xs">Connecting next-gen teachers to verified examinations.</p>
+            <i class="fas fa-graduation-cap absolute right-6 bottom-4 text-7xl opacity-5"></i>
+          </div>
+        `;
+        const featuredSect = document.getElementById("home-featured-banner-section");
+        if (featuredSect) featuredSect.classList.add("hidden");
+        const promoSect = document.getElementById("home-promotional-banners-section");
+        if (promoSect) promoSect.classList.add("hidden");
+        return;
+      }
+
+      // Populate Slides
+      activeBanners.forEach((b, idx) => {
+        const slide = document.createElement("div");
+        slide.className = "min-w-full h-full relative flex flex-col justify-end p-6 text-white overflow-hidden bg-cover bg-center shrink-0 cursor-pointer";
+        slide.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.75)), url('${b.imageUrl}')`;
+        slide.onclick = () => {
+          if (b.redirectLink) {
+            window.openBannerLink(b.redirectLink);
+          }
+        };
+
+        slide.innerHTML = `
+          <div class="space-y-1 relative z-10 text-left max-w-md">
+            ${b.subtitle ? `<span class="px-2 py-0.5 bg-orange-655 font-extrabold rounded text-[8px] tracking-wider uppercase">${b.subtitle}</span>` : ''}
+            <h3 class="text-sm sm:text-base font-black truncate leading-snug text-white mt-1 drop-shadow-sm">${b.title}</h3>
+            <p class="text-[10px] leading-relaxed text-slate-200 line-clamp-1 opacity-90">${b.description || ""}</p>
+          </div>
+          <i class="fas fa-bullhorn absolute right-8 bottom-6 text-5xl opacity-15 pointer-events-none"></i>
+        `;
+        sliderContainer.appendChild(slide);
+
+        // Dot indicators
+        if (dotContainer) {
+          const dot = document.createElement("button");
+          dot.type = "button";
+          dot.className = `w-2 h-2 rounded-full transition-all duration-300 ${idx === 0 ? 'bg-orange-500 w-4' : 'bg-white/40 hover:bg-white/70'}`;
+          dot.onclick = (e) => {
+            e.stopPropagation();
+            window.slideToGo(idx);
+          };
+          dotContainer.appendChild(dot);
+        }
+      });
+
+      let currentSlide = 0;
+      let totalSlides = activeBanners.length;
+
+      function updateSliderPosition() {
+        if (!sliderContainer) return;
+        sliderContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+        
+        if (dotContainer) {
+          const dots = dotContainer.querySelectorAll("button");
+          dots.forEach((dot, idx) => {
+            if (idx === currentSlide) {
+              dot.className = "w-4 h-2 rounded-full bg-orange-500 transition-all duration-300";
+            } else {
+              dot.className = "w-2 h-2 rounded-full bg-white/40 hover:bg-white/70 transition-all duration-300";
+            }
+          });
+        }
+      }
+
+      window.slideNext = function() {
+        if (totalSlides <= 1) return;
+        currentSlide = (currentSlide + 1) % totalSlides;
+        updateSliderPosition();
+      };
+
+      window.slidePrev = function() {
+        if (totalSlides <= 1) return;
+        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+        updateSliderPosition();
+      };
+
+      window.slideToGo = function(idx) {
+        currentSlide = idx;
+        updateSliderPosition();
+      };
+
+      // Expose slider controls to chevrons
+      const prevBtn = document.getElementById("slider-prev-btn");
+      const nextBtn = document.getElementById("slider-next-btn");
+      if (prevBtn) prevBtn.onclick = (e) => { e.stopPropagation(); window.slidePrev(); };
+      if (nextBtn) nextBtn.onclick = (e) => { e.stopPropagation(); window.slideNext(); };
+
+      // Auto Slider Banner Setup
+      if (window.sliderAutoTimer) {
+        clearInterval(window.sliderAutoTimer);
+      }
+      if (totalSlides > 1) {
+        window.sliderAutoTimer = setInterval(window.slideNext, 4000);
+      }
+
+      // Add slider hover pause/resume
+      const sliderOuter = document.getElementById("banner-slider-outer");
+      if (sliderOuter) {
+        sliderOuter.onmouseenter = () => clearInterval(window.sliderAutoTimer);
+        sliderOuter.onmouseleave = () => {
+          clearInterval(window.sliderAutoTimer);
+          if (totalSlides > 1) {
+            window.sliderAutoTimer = setInterval(window.slideNext, 4000);
+          }
+        };
+
+        // Manual swipe & drag gesture support
+        let startX = 0;
+        let currX = 0;
+        let isDragging = false;
+
+        const handleDragStart = (e) => {
+          isDragging = true;
+          startX = e.type.includes("touch") ? e.touches[0].clientX : e.clientX;
+          clearInterval(window.sliderAutoTimer);
+        };
+
+        const handleDragMove = (e) => {
+          if (!isDragging) return;
+          currX = e.type.includes("touch") ? e.touches[0].clientX : e.clientX;
+        };
+
+        const handleDragEnd = () => {
+          if (!isDragging) return;
+          isDragging = false;
+          const diffX = startX - currX;
+          if (Math.abs(diffX) > 40) {
+            if (diffX > 0) {
+              window.slideNext();
+            } else {
+              window.slidePrev();
+            }
+          }
+          clearInterval(window.sliderAutoTimer);
+          if (totalSlides > 1) {
+            window.sliderAutoTimer = setInterval(window.slideNext, 4000);
+          }
+        };
+
+        sliderOuter.addEventListener("mousedown", handleDragStart);
+        sliderOuter.addEventListener("touchstart", handleDragStart, { passive: true });
+        
+        window.addEventListener("mousemove", handleDragMove);
+        window.addEventListener("touchmove", handleDragMove, { passive: true });
+        
+        window.addEventListener("mouseup", handleDragEnd);
+        window.addEventListener("touchend", handleDragEnd);
+      }
+
+      // 2. Featured Spotlight Section
+      const featuredSect = document.getElementById("home-featured-banner-section");
+      const featuredCard = document.getElementById("home-featured-banner-card");
+      if (featuredSect && featuredCard) {
+        const feat = activeBanners[0]; 
+        if (feat) {
+          featuredSect.classList.remove("hidden");
+          featuredCard.innerHTML = `
+            <div onclick="window.openBannerLink('${feat.redirectLink}')" class="relative group bg-gradient-to-br from-slate-900 via-slate-850 to-orange-950/80 rounded-3xl overflow-hidden border border-slate-800 shadow-2xl p-5 flex flex-col md:flex-row gap-5 items-center justify-between cursor-pointer transition hover:border-orange-500/60 transition duration-300">
+              <div class="absolute inset-0 bg-cover bg-right opacity-15 pointer-events-none mix-blend-color-dodge transition-all" style="background-image: url('${feat.imageUrl}')"></div>
+              <div class="space-y-2 relative z-10 max-w-lg text-left">
+                <span class="px-2.5 py-0.5 bg-orange-600 text-white font-extrabold rounded-full text-[8px] uppercase tracking-wider">FEATURED HIGHLIGHT</span>
+                <h4 class="text-sm font-black text-white">${feat.title}</h4>
+                <p class="text-3xs text-slate-300 leading-relaxed font-semibold">${feat.description || "Limited seasonal announcement."}</p>
+                <p class="text-[9px] text-orange-205 mt-1 font-bold flex items-center gap-1"><i class="fa-solid fa-calendar-days"></i> Validity: From ${feat.startDate || 'Launch'} up to ${feat.endDate || 'completion'}</p>
+              </div>
+              <div class="relative z-10 shrink-0 w-full md:w-auto flex md:flex-col items-center justify-between md:justify-center gap-2 border-t md:border-t-0 border-slate-800 pt-3 md:pt-0 text-left">
+                <button type="button" class="w-full md:w-auto px-4 py-2 bg-orange-500 text-white font-black text-3xs rounded-xl tracking-wide shadow-lg hover:bg-orange-650 transition cursor-pointer">Explore Now</button>
+              </div>
+            </div>
+          `;
+        } else {
+          featuredSect.classList.add("hidden");
+        }
+      }
+
+      // 3. Promotional banner grid center
+      const promoSect = document.getElementById("home-promotional-banners-section");
+      const promoGrid = document.getElementById("home-promotional-banners-grid");
+      if (promoSect && promoGrid) {
+        promoGrid.innerHTML = "";
+        
+        if (activeBanners.length > 0) {
+          promoSect.classList.remove("hidden");
+          activeBanners.forEach(b => {
+            const promoCard = document.createElement("div");
+            promoCard.onclick = () => window.openBannerLink(b.redirectLink);
+            promoCard.className = "relative rounded-2xl overflow-hidden border border-slate-200 shadow-md cursor-pointer transition hover:scale-[1.01] hover:border-orange-500/40 bg-white/70 backdrop-blur-sm p-4 flex flex-col justify-end text-left h-36";
+            
+            promoCard.innerHTML = `
+              <div class="absolute inset-0 bg-cover bg-center brightness-[0.4] z-0 transition duration-505 hover:scale-105" style="background-image: url('${b.imageUrl}')"></div>
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent z-1"></div>
+              
+              <div class="absolute top-3 left-3 z-10 text-left">
+                ${b.subtitle ? `<span class="px-2 py-0.5 bg-black/60 text-orange-400 border border-orange-400/20 text-[7px] font-black uppercase rounded tracking-widest">${b.subtitle}</span>` : ''}
+              </div>
+              
+              <div class="relative z-10 space-y-0.5 text-left pt-12">
+                <h4 class="text-xs font-black text-white truncate drop-shadow-md">${b.title}</h4>
+                <p class="text-4xs text-slate-200 line-clamp-1 font-medium">${b.description || ""}</p>
+                <div class="flex items-center justify-between pt-1">
+                  <span class="text-[8px] text-slate-300 font-bold uppercase tracking-wider">UNTIL ${b.endDate || "Soon"}</span>
+                  <span class="text-[9px] text-orange-350 font-black flex items-center gap-0.5">BUY NOW <i class="fa fa-arrow-right text-[7px]"></i></span>
+                </div>
+              </div>
+            `;
+            promoGrid.appendChild(promoCard);
+          });
+        } else {
+          promoSect.classList.add("hidden");
+        }
+      }
+    }
+
+    window.openBannerLink = function(link) {
+      if (!link) return;
+      if (link.startsWith("#")) {
+        const tab = link.substring(1);
+        if (typeof window.navigateTab === "function") {
+          window.navigateTab(tab);
+        }
+      } else {
+        window.open(link, "_blank");
+      }
+    };
 
     function renderLiveClasses() {
       const container = document.getElementById("live-classes-grid");
