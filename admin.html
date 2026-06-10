@@ -20,7 +20,84 @@
     }
   </style>
 </head>
-<body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col md:flex-row pb-12">
+<body class="bg-slate-950 min-h-screen text-slate-800 font-sans">
+
+  <!-- SECURED ADMIN PIN LOCK SCREEN (Android-style) -->
+  <div id="admin-lock-screen" class="fixed inset-0 z-[100] flex flex-col justify-between p-6 sm:p-8 bg-slate-950 text-white overflow-y-auto font-sans">
+    <!-- Outer Glow Ambient effects -->
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.12)_0,transparent_100%)] pointer-events-none"></div>
+
+    <!-- Lock Screen Top Header with clock & calendar style -->
+    <div class="w-full max-w-sm mx-auto text-center mt-6 z-10 select-none">
+      <div class="w-14 h-14 bg-slate-900 border border-slate-800 rounded-full flex items-center justify-center text-orange-500 text-xl shadow-lg mx-auto mb-4 animate-pulse">
+        <i class="fas fa-user-shield"></i>
+      </div>
+      <h3 class="text-4xl sm:text-5xl font-extrabold tracking-tighter text-white font-mono" id="lock-screen-time">12:00 PM</h3>
+      <p class="text-xs font-semibold uppercase tracking-widest text-slate-400 mt-2" id="lock-screen-date">Loading date...</p>
+      <div class="mt-3.5 py-1 px-3 bg-slate-900/80 border border-slate-800 rounded-full inline-flex items-center gap-2">
+        <span class="w-2 h-2 bg-rose-500 rounded-full animate-ping"></span>
+        <span class="text-[9px] font-black tracking-widest text-slate-300 uppercase">Secure PIN Gateway Active</span>
+      </div>
+    </div>
+
+    <!-- Centered Pin keyboard and Input Panel -->
+    <div class="w-full max-w-sm mx-auto my-6 z-10 relative bg-slate-900/60 backdrop-blur-xl border border-slate-800 p-6 sm:p-8 rounded-[36px] shadow-2xl">
+      <!-- Welcome prompt -->
+      <div class="text-center mb-5">
+        <h4 class="font-bold text-sm text-slate-200">Administrator Credentials Verification</h4>
+        <p class="text-[10px] text-slate-400 mt-1 leading-relaxed">Enter security PIN sequence to establish authoritative terminal session</p>
+      </div>
+
+      <!-- Input PIN & toggle show capability -->
+      <div class="relative flex items-center mb-4">
+        <div class="absolute left-4 text-slate-500">
+          <i class="fas fa-key text-[11px]"></i>
+        </div>
+        <input type="password" id="admin-pin-field" placeholder="Enter Security PIN" class="w-full py-3.5 pl-11 pr-12 text-center text-sm font-bold tracking-widest bg-slate-950 border border-slate-800 rounded-2xl focus:outline-none focus:border-orange-500 transition font-mono placeholder:tracking-normal placeholder:font-sans text-white focus:ring-1 focus:ring-orange-500/30">
+        <button onclick="togglePinVisibility()" type="button" class="absolute right-4 text-slate-400 hover:text-white transition w-6 h-6 flex items-center justify-center" id="pin-visibility-btn">
+          <i class="far fa-eye text-xs"></i>
+        </button>
+      </div>
+
+      <!-- Live Invalid Error message banner -->
+      <div id="admin-pin-error" class="hidden py-2.5 px-3.5 bg-rose-500/10 border border-rose-500/20 text-rose-450 rounded-xl text-3xs font-medium text-center mb-4 flex items-center justify-center gap-1.5">
+        <i class="fas fa-triangle-exclamation text-[10px]"></i> <span id="admin-pin-error-text">Invalid Admin PIN</span>
+      </div>
+
+      <!-- Android Numeric Grid Keypad -->
+      <div class="grid grid-cols-3 gap-3 mb-5 select-none font-sans">
+        <button onclick="appendPinDigit('1')" class="h-12 bg-slate-950 hover:bg-slate-800 border border-slate-800/80 text-white font-bold rounded-xl text-sm transition flex items-center justify-center active:scale-95 cursor-pointer">1</button>
+        <button onclick="appendPinDigit('2')" class="h-12 bg-slate-950 hover:bg-slate-800 border border-slate-800/80 text-white font-bold rounded-xl text-sm transition flex items-center justify-center active:scale-95 cursor-pointer">2</button>
+        <button onclick="appendPinDigit('3')" class="h-12 bg-slate-950 hover:bg-slate-800 border border-slate-800/80 text-white font-bold rounded-xl text-sm transition flex items-center justify-center active:scale-95 cursor-pointer">3</button>
+
+        <button onclick="appendPinDigit('4')" class="h-12 bg-slate-950 hover:bg-slate-800 border border-slate-800/80 text-white font-bold rounded-xl text-sm transition flex items-center justify-center active:scale-95 cursor-pointer">4</button>
+        <button onclick="appendPinDigit('5')" class="h-12 bg-slate-950 hover:bg-slate-800 border border-slate-800/80 text-white font-bold rounded-xl text-sm transition flex items-center justify-center active:scale-95 cursor-pointer">5</button>
+        <button onclick="appendPinDigit('6')" class="h-12 bg-slate-950 hover:bg-slate-800 border border-slate-800/80 text-white font-bold rounded-xl text-sm transition flex items-center justify-center active:scale-95 cursor-pointer">6</button>
+
+        <button onclick="appendPinDigit('7')" class="h-12 bg-slate-950 hover:bg-slate-800 border border-slate-800/80 text-white font-bold rounded-xl text-sm transition flex items-center justify-center active:scale-95 cursor-pointer">7</button>
+        <button onclick="appendPinDigit('8')" class="h-12 bg-slate-950 hover:bg-slate-800 border border-slate-800/80 text-white font-bold rounded-xl text-sm transition flex items-center justify-center active:scale-95 cursor-pointer">8</button>
+        <button onclick="appendPinDigit('9')" class="h-12 bg-slate-950 hover:bg-slate-800 border border-slate-800/80 text-white font-bold rounded-xl text-sm transition flex items-center justify-center active:scale-95 cursor-pointer">9</button>
+
+        <button onclick="clearPinAll()" class="h-12 bg-slate-950/40 hover:bg-slate-900 border border-slate-800/80 text-slate-400 font-bold rounded-xl text-[10px] uppercase transition flex items-center justify-center active:scale-95 cursor-pointer">Clear</button>
+        <button onclick="appendPinDigit('0')" class="h-12 bg-slate-950 hover:bg-slate-800 border border-slate-800/80 text-white font-bold rounded-xl text-sm transition flex items-center justify-center active:scale-95 cursor-pointer">0</button>
+        <button onclick="deletePinLastDigit()" class="h-12 bg-slate-950/40 hover:bg-slate-900 border border-slate-800/80 text-slate-400 font-bold rounded-xl text-xs transition flex items-center justify-center active:scale-95 cursor-pointer"><i class="fas fa-backspace"></i></button>
+      </div>
+
+      <!-- Action authentication button with load overlay support -->
+      <button onclick="submitAdminPINLogin()" id="admin-pin-submit-btn" class="w-full py-3.5 bg-orange-500 hover:bg-orange-650 text-white font-extrabold rounded-2xl transition shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-98">
+        <span>AUTHORIZE PIN SESSION</span> <i class="fas fa-arrow-right"></i>
+      </button>
+    </div>
+
+    <!-- System Safety guidelines -->
+    <div class="text-center text-[10px] text-slate-550 z-10 mb-2">
+      <p>Authorized access points only. All secure operations log entries are audited.</p>
+      <p class="mt-1">Ed Achievers Enterprise Security Protocol v2.5 (RTDB Powered)</p>
+    </div>
+  </div>
+
+  <!-- SECURED CONTENT PORTAL WRAPPER -->
+  <div id="admin-secured-content" class="hidden flex flex-col md:flex-row min-h-screen w-full bg-slate-50 pb-12">
 
   <!-- LEFT ADMIN SIDEBAR PANEL -->
   <aside class="w-full md:w-64 bg-slate-900 text-slate-350 flex flex-col shrink-0 border-r border-slate-800">
@@ -42,8 +119,8 @@
     <div class="p-4 bg-slate-950/40 border-b border-slate-800/60 flex items-center gap-2.5 text-xs">
       <div class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></div>
       <div>
-        <span id="admin-status-email" class="font-semibold text-white block text-3xs truncate max-w-[130px]">Checking Access...</span>
-        <span class="text-4xs text-slate-400 block mt-0.5">Role: Head Instructor</span>
+        <span id="admin-status-email" class="font-bold text-white block text-3xs truncate max-w-[130px]">Operator Name</span>
+        <span id="admin-status-role" class="text-4xs text-orange-400 font-extrabold block mt-0.5 uppercase tracking-wider">Super Admin</span>
       </div>
     </div>
 
@@ -86,6 +163,28 @@
 
   <!-- MAIN ADMIN ACTION SCREENS -->
   <main class="flex-1 p-4 sm:p-6 space-y-6 overflow-x-hidden">
+
+    <!-- ADMIN PANEL HEADER STRIP -->
+    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-slate-900 text-white rounded-3xl p-5 shadow-lg border border-slate-800/85 gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-orange-500 rounded-2xl flex items-center justify-center text-white text-lg shadow-md shrink-0">
+          <i class="fas fa-id-card-clip"></i>
+        </div>
+        <div>
+          <h2 class="text-sm font-bold text-slate-100 flex items-center gap-2">
+            <span>Welcome, <span id="hdr-admin-name" class="text-orange-400 font-extrabold font-mono">Admin Operator</span></span>
+            <span class="text-5xs bg-orange-550/15 text-orange-400 border border-orange-550/30 px-2 py-0.5 rounded-full font-black tracking-widest uppercase" id="hdr-admin-role">Super Admin</span>
+          </h2>
+          <p class="text-[10px] text-slate-400 mt-0.5 font-medium"><i class="fas fa-shield-halved text-orange-400 mr-1 text-[9px]"></i> Secure Session Authenticated via Enterprise PIN Gateway</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 text-[11px] font-bold">
+        <span class="px-3 py-1.5 bg-slate-800 hover:bg-slate-750 text-slate-350 rounded-xl flex items-center gap-1.5"><i class="far fa-clock"></i> <span id="hdr-clock-status">--:--:--</span></span>
+        <button onclick="triggerLogout()" class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl flex items-center gap-1.5 transition shadow">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </header>
     
     <!-- SUB-VIEW 1: METRICS DASHBOARD -->
     <div id="admin-view-dashboard" class="admin-tab-view space-y-6">
@@ -534,6 +633,8 @@
 
   </main>
 
+  </div> <!-- CLOSE OF SECURED CONTENT WRAPPER -->
+
   <!-- JS CONTROLLERS -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -562,16 +663,206 @@
       transactions: {}
     };
 
+    // Admin PIN Security State variables
+    const adminProfiles = {
+      "Harsh9696": { name: "Harsh Vardhan TIWARI", role: "Super Admin" },
+      "Roli9696": { name: "Roli Tiwari", role: "Admin" }
+    };
+
+    function updateLockScreenDateTime() {
+      const lockTimeSpan = document.getElementById("lock-screen-time");
+      const lockDateSpan = document.getElementById("lock-screen-date");
+      const hdrClockSpan = document.getElementById("hdr-clock-status");
+      
+      const now = new Date();
+      
+      // Time format
+      let hours = now.getHours();
+      let minutes = now.getMinutes();
+      let seconds = now.getSeconds();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      minutes = minutes < 10 ? '0'+minutes : minutes;
+      seconds = seconds < 10 ? '0'+seconds : seconds;
+      
+      if (lockTimeSpan) {
+        lockTimeSpan.innerText = `${hours}:${minutes} ${ampm}`;
+      }
+      if (hdrClockSpan) {
+        hdrClockSpan.innerText = `${hours}:${minutes}:${seconds} ${ampm}`;
+      }
+      
+      // Date format
+      const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+      if (lockDateSpan) {
+        lockDateSpan.innerText = now.toLocaleDateString('en-US', options);
+      }
+    }
+
+    // Append digit
+    window.appendPinDigit = function(digit) {
+      const pinField = document.getElementById("admin-pin-field");
+      if (!pinField) return;
+      pinField.value += digit;
+      clearPinError();
+    };
+
+    // Delete last digit
+    window.deletePinLastDigit = function() {
+      const pinField = document.getElementById("admin-pin-field");
+      if (!pinField) return;
+      pinField.value = pinField.value.slice(0, -1);
+      clearPinError();
+    };
+
+    // Clear all
+    window.clearPinAll = function() {
+      const pinField = document.getElementById("admin-pin-field");
+      if (!pinField) return;
+      pinField.value = "";
+      clearPinError();
+    };
+
+    // Toggle pin visibility
+    window.togglePinVisibility = function() {
+      const pinField = document.getElementById("admin-pin-field");
+      const btn = document.getElementById("pin-visibility-btn");
+      if (!pinField || !btn) return;
+      const eyeIcon = btn.querySelector("i");
+      
+      if (pinField.type === "password") {
+        pinField.type = "text";
+        if (eyeIcon) eyeIcon.className = "far fa-eye-slash text-xs";
+      } else {
+        pinField.type = "password";
+        if (eyeIcon) eyeIcon.className = "far fa-eye text-xs";
+      }
+    };
+
+    window.clearPinError = function() {
+      const errBanner = document.getElementById("admin-pin-error");
+      if (errBanner) {
+        errBanner.classList.add("hidden");
+      }
+    }
+
+    window.submitAdminPINLogin = function() {
+      const pinField = document.getElementById("admin-pin-field");
+      const submitBtn = document.getElementById("admin-pin-submit-btn");
+      const errorBanner = document.getElementById("admin-pin-error");
+      const errorText = document.getElementById("admin-pin-error-text");
+
+      if (!pinField) return;
+      const val = pinField.value.trim();
+
+      if (!val) {
+        if (errorText && errorBanner) {
+          errorText.innerText = "Please enter Admin Security PIN";
+          errorBanner.classList.remove("hidden");
+        }
+        return;
+      }
+
+      // Show Loading system
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<i class="fa fa-spinner animate-spin mr-1.5"></i> ESTABLISHING authoritative session...`;
+
+      setTimeout(() => {
+        if (val === "Harsh9696" || val === "Roli9696") {
+          const profile = adminProfiles[val];
+          
+          localStorage.setItem("ed_admin_session", JSON.stringify({
+            pin: val,
+            name: profile.name,
+            role: profile.role,
+            timestamp: Date.now()
+          }));
+
+          grantAdminAccess(val, profile.role, profile.name);
+          pinField.value = "";
+        } else {
+          if (errorText && errorBanner) {
+            errorText.innerText = "Invalid Admin PIN";
+            errorBanner.classList.remove("hidden");
+            
+            errorBanner.classList.remove("animate-shake");
+            void errorBanner.offsetWidth; // force redraw
+            errorBanner.classList.add("animate-shake");
+          }
+        }
+
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<span>AUTHORIZE PIN SESSION</span> <i class="fas fa-arrow-right"></i>`;
+      }, 750);
+    };
+
+    function grantAdminAccess(pin, role, name) {
+      document.getElementById("admin-lock-screen").classList.add("hidden");
+      document.getElementById("admin-secured-content").classList.remove("hidden");
+
+      const statusEmail = document.getElementById("admin-status-email");
+      const statusRole = document.getElementById("admin-status-role");
+      if (statusEmail) statusEmail.innerText = name;
+      if (statusRole) {
+        statusRole.innerText = role;
+        statusRole.className = `text-[10px] font-extrabold block mt-0.5 uppercase tracking-wider ${role === 'Super Admin' ? 'text-amber-400' : 'text-sky-400'}`;
+      }
+
+      const hdrName = document.getElementById("hdr-admin-name");
+      const hdrRole = document.getElementById("hdr-admin-role");
+      if (hdrName) hdrName.innerText = name;
+      if (hdrRole) {
+        hdrRole.innerText = role;
+        if (role === 'Super Admin') {
+          hdrRole.className = "text-5xs bg-amber-500/10 text-amber-400 border border-amber-550/30 px-2 py-0.5 rounded-full font-black tracking-widest uppercase";
+        } else {
+          hdrRole.className = "text-5xs bg-sky-500/10 text-sky-450 border border-sky-550/30 px-2 py-0.5 rounded-full font-black tracking-widest uppercase";
+        }
+      }
+
+      syncAllAdminData();
+    }
+
+    function checkAdminSessionPersistence() {
+      const sessionString = localStorage.getItem("ed_admin_session");
+      if (sessionString) {
+        try {
+          const session = JSON.parse(sessionString);
+          if (session.pin === "Harsh9696" || session.pin === "Roli9696") {
+            grantAdminAccess(session.pin, session.role, session.name);
+            return;
+          }
+        } catch (e) {
+          console.error("Session profile parsed failure");
+        }
+      }
+      document.getElementById("admin-lock-screen").classList.remove("hidden");
+      document.getElementById("admin-secured-content").classList.add("hidden");
+    }
+
     window.addEventListener("DOMContentLoaded", () => {
-      // Connect Auth listener
+      updateLockScreenDateTime();
+      setInterval(updateLockScreenDateTime, 1000);
+      checkAdminSessionPersistence();
+
+      // Keyboard submit listener
+      window.addEventListener("keydown", (e) => {
+        const lockScreen = document.getElementById("admin-lock-screen");
+        if (lockScreen && !lockScreen.classList.contains("hidden")) {
+          const pinField = document.getElementById("admin-pin-field");
+          if (pinField && document.activeElement !== pinField) {
+            pinField.focus();
+          }
+          if (e.key === "Enter") {
+            submitAdminPINLogin();
+          }
+        }
+      });
+
       onAuthStateChanged(auth, (user) => {
         if (user) {
-          document.getElementById("admin-status-email").innerText = user.email;
-          syncAllAdminData();
-        } else {
-          document.getElementById("admin-status-email").innerText = "Not authorized";
-          alert("Authorization required! Redirecting to setup portal.");
-          window.location.href = "/user.html";
+          console.log("Firebase background session verified for ledger reads:", user.email);
         }
       });
     });
@@ -1301,9 +1592,12 @@
     // LOGOUT & TABS NAVIGATORS
     window.triggerLogout = function() {
       if (confirm("Disconnect administrative access profiles?")) {
-        signOut(auth).then(() => {
-          window.location.href = "/user.html";
-        });
+        localStorage.removeItem("ed_admin_session");
+        signOut(auth).catch(() => {});
+        document.getElementById("admin-pin-field").value = "";
+        clearPinError();
+        document.getElementById("admin-secured-content").classList.add("hidden");
+        document.getElementById("admin-lock-screen").classList.remove("hidden");
       }
     }
 
