@@ -507,6 +507,273 @@
   </main>
 
 
+  <!-- PAGE 8: PREMIUM EDTECH COURSE DETAILS PAGE -->
+  <main id="view-course-details-page" class="page-view px-4 py-5 space-y-6 hidden bg-slate-50/50 min-h-screen pb-20">
+    <!-- Breadcrumb back banner -->
+    <div class="bg-white rounded-3xl p-4 border border-slate-150 shadow-sm flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <button onclick="navigateTab('dashboard')" class="w-10 h-10 bg-slate-100 hover:bg-orange-50 hover:text-orange-600 text-slate-700 rounded-2xl flex items-center justify-center transition cursor-pointer">
+          <i class="fa fa-arrow-left"></i>
+        </button>
+        <div>
+          <h2 class="text-base font-black text-slate-800">Course Syllabus &amp; Overview</h2>
+          <p class="text-4xs text-slate-400 font-extrabold uppercase tracking-widest mt-0.5">Instant Direct Admission</p>
+        </div>
+      </div>
+      
+      <!-- Wishlist / Share action tags -->
+      <div class="flex gap-1.5">
+        <button onclick="toggleWishlistAction()" id="btn-wishlist" class="w-9 h-9 bg-slate-50 hover:bg-rose-50 text-slate-600 hover:text-rose-500 rounded-xl flex items-center justify-center transition cursor-pointer" title="Add to Wishlist">
+          <i class="fa-regular fa-heart text-sm"></i>
+        </button>
+        <button onclick="shareCourseAction()" class="w-9 h-9 bg-slate-50 hover:bg-orange-100 text-slate-600 hover:text-orange-600 rounded-xl flex items-center justify-center transition cursor-pointer" title="Share Course Batch">
+          <i class="fa fa-share-nodes text-sm"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main dynamic layout grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- LHS: Course full details (Syllabus, content list, teacher bio, features grid) -->
+      <div class="lg:col-span-2 space-y-5">
+        
+        <!-- Course Header Information -->
+        <div class="bg-white rounded-3xl border border-slate-150 shadow-sm overflow-hidden p-5 space-y-4">
+          <!-- Full Course Banner Image -->
+          <div class="relative w-full h-48 sm:h-64 rounded-2xl overflow-hidden bg-slate-100 border border-slate-100">
+            <img id="details-course-banner" src="" class="w-full h-full object-cover">
+            <span class="absolute top-3 left-3 bg-gradient-to-r from-orange-500 to-red-500 text-white font-black text-[9px] px-2.5 py-1 rounded-full uppercase tracking-widest shadow-md">Target Batch Series</span>
+            <div class="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded-lg text-[9px] font-bold text-white tracking-wide">
+              <i class="fa fa-circle-check text-emerald-400 mr-1"></i> Live Classrooms Enabled
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <div class="flex items-center gap-1.5">
+              <span id="details-course-exam" class="px-2 py-0.5 bg-orange-100 text-orange-650 rounded font-black text-5xs uppercase tracking-widest leading-none">CTET Prep</span>
+              <span class="text-[10px] text-slate-500 font-bold flex items-center gap-1"><i class="fa fa-star text-amber-400"></i> <span id="details-course-rating">4.8</span> Rating</span>
+              <span class="text-[10px] text-slate-350 font-bold">•</span>
+              <span id="details-course-enrolled" class="text-[10px] text-orange-650 font-bold">2,450+ Engaged</span>
+            </div>
+            
+            <h1 id="details-course-title" class="text-base sm:text-lg font-black text-slate-800 leading-tight">Course Title Page</h1>
+            <p id="details-course-subtitle" class="text-xs text-slate-500 font-semibold leading-relaxed">Detailed sub-header descriptors go right here.</p>
+          </div>
+
+          <!-- Description logs -->
+          <div class="border-t border-slate-100 pt-3">
+            <h3 class="font-extrabold text-slate-700 text-xs mb-1">Pedagogical batch scope &amp; guidelines:</h3>
+            <p id="details-course-desc" class="text-xs text-slate-500 leading-relaxed font-semibold">Full descriptions goes here.</p>
+          </div>
+        </div>
+
+        <!-- Highlights Features specs chips -->
+        <div class="bg-white rounded-3xl border border-slate-150 shadow-sm p-5 space-y-3">
+          <h3 class="font-black text-slate-808 text-xs flex items-center gap-1.5"><i class="fa fa-star text-orange-500"></i> Key Course Information &amp; Delivery metrics</h3>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
+                <i class="fa fa-clock text-orange-600 text-[10px]"></i>
+              </div>
+              <div>
+                <span class="text-5xs uppercase tracking-wider font-extrabold text-slate-400 block">Duration</span>
+                <span id="metric-duration" class="text-4xs font-bold text-slate-700 block">150+ Hours</span>
+              </div>
+            </div>
+
+            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
+                <i class="fa fa-book-open text-orange-600 text-[10px]"></i>
+              </div>
+              <div>
+                <span class="text-5xs uppercase tracking-wider font-extrabold text-slate-400 block">Subjects</span>
+                <span id="metric-subjects-count" class="text-4xs font-bold text-slate-700 block">5 Subjects</span>
+              </div>
+            </div>
+
+            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
+                <i class="fa fa-layer-group text-orange-600 text-[10px]"></i>
+              </div>
+              <div>
+                <span class="text-5xs uppercase tracking-wider font-extrabold text-slate-400 block">Chapters</span>
+                <span id="metric-chapters-count" class="text-4xs font-bold text-slate-700 block">20 Modules</span>
+              </div>
+            </div>
+
+            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
+                <i class="fa fa-award text-orange-600 text-[10px]"></i>
+              </div>
+              <div>
+                <span class="text-5xs uppercase tracking-wider font-extrabold text-slate-400 block">Validity</span>
+                <span id="metric-validity" class="text-4xs font-bold text-slate-700 block">12 Months</span>
+              </div>
+            </div>
+
+            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-indigo-100 flex items-center justify-center shrink-0">
+                <i class="fa fa-video text-indigo-600 text-[10px]"></i>
+              </div>
+              <div>
+                <span class="text-5xs uppercase tracking-wider font-extrabold text-slate-400 block">Lectures</span>
+                <span id="metric-lectures" class="text-4xs font-bold text-slate-700 block">120+ Classes</span>
+              </div>
+            </div>
+
+            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-indigo-100 flex items-center justify-center shrink-0">
+                <i class="fa fa-file-pdf text-indigo-600 text-[10px]"></i>
+              </div>
+              <div>
+                <span class="text-5xs uppercase tracking-wider font-extrabold text-slate-400 block">PDF Sheets</span>
+                <span id="metric-pdfs" class="text-4xs font-bold text-slate-700 block">85+ Notes</span>
+              </div>
+            </div>
+
+            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-indigo-100 flex items-center justify-center shrink-0">
+                <i class="fa fa-list-check text-indigo-600 text-[10px]"></i>
+              </div>
+              <div>
+                <span class="text-5xs uppercase tracking-wider font-extrabold text-slate-400 block">Mock Tests</span>
+                <span id="metric-mocks" class="text-4xs font-bold text-slate-700 block">30 Series</span>
+              </div>
+            </div>
+
+            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-indigo-100 flex items-center justify-center shrink-0">
+                <i class="fa fa-language text-indigo-600 text-[10px]"></i>
+              </div>
+              <div>
+                <span class="text-5xs uppercase tracking-wider font-extrabold text-slate-400 block">Language</span>
+                <span id="metric-language" class="text-4xs font-bold text-slate-700 block">Bilingual</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Instructor Section -->
+        <div class="bg-white rounded-3xl border border-slate-150 shadow-sm p-5 space-y-4">
+          <h3 class="font-black text-slate-800 text-xs flex items-center gap-1.5"><i class="fa fa-chalkboard-user text-orange-500"></i> Course Director &amp; Expert Faculty</h3>
+          <div class="flex flex-col sm:flex-row items-center gap-4 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+            <div class="w-20 h-20 rounded-2xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200 shadow-sm">
+              <img id="details-teacher-photo" src="" class="w-full h-full object-cover">
+            </div>
+            <div class="space-y-1.5 text-center sm:text-left">
+              <div>
+                <h4 id="details-teacher-name" class="font-extrabold text-slate-800 text-sm">Faculty Director</h4>
+                <p id="details-teacher-qual" class="text-[9px] tracking-wide font-black text-orange-650">Double NET Qualified</p>
+              </div>
+              <p id="details-teacher-exp" class="text-4xs font-bold text-slate-500">Teaching Experience: 10+ Years</p>
+              <p id="details-teacher-desc" class="text-3xs text-slate-500 leading-relaxed font-semibold">Trained more than 2 lakh students over a stellar pedagogical career spanning multiple years.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Syllabus structure section list (Expand/Collapse accordion) -->
+        <div class="bg-white rounded-3xl border border-slate-150 shadow-sm p-5 space-y-4">
+          <div class="flex items-center justify-between pb-1">
+            <h3 class="font-black text-slate-800 text-xs flex items-center gap-1.5"><i class="fa fa-folder-open text-orange-500"></i> Subject Wise Syllabus Structure</h3>
+            <span class="text-5xs font-black bg-emerald-50 text-emerald-800 border border-emerald-100 px-2 py-0.5 rounded-full uppercase tracking-wider">All Subjects Mapped</span>
+          </div>
+          
+          <div id="details-subjects-accordion-container" class="space-y-2.5">
+            <!-- Dynamically injected accordions -->
+          </div>
+        </div>
+
+        <!-- Course Premium Benefits Checklist Section -->
+        <div class="bg-white rounded-3xl border border-slate-150 shadow-sm p-5 space-y-4">
+          <h3 class="font-black text-slate-800 text-xs flex items-center gap-1.5"><i class="fa fa-ribbon text-orange-500"></i> Guaranteed Interactive Batch Standardizations</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="details-features-container">
+            <!-- Dynamically listing benefits -->
+          </div>
+        </div>
+
+        <!-- Student Reviews Testimonials -->
+        <div class="bg-white rounded-3xl border border-slate-150 shadow-sm p-5 space-y-4">
+          <div class="flex justify-between items-center">
+            <h3 class="font-black text-slate-800 text-xs flex items-center gap-1.5"><i class="fa fa-comments text-orange-500"></i> Verified Student Feedback &amp; Reviews Hub</h3>
+            <span class="bg-amber-105 text-amber-800 px-2' py-0.5 rounded-md font-bold text-5xs flex items-center gap-0.5"><i class="fa fa-star text-amber-500"></i> Highly Commended</span>
+          </div>
+
+          <div id="details-reviews-container" class="space-y-3">
+            <!-- Injected user testimonials -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RHS: Buy Now Sidebar Container -->
+      <div class="space-y-5">
+        
+        <!-- Sticky purchase catalog card -->
+        <div class="bg-white rounded-3xl border border-slate-150 shadow-md overflow-hidden p-5 space-y-4 sticky top-6">
+          <span class="text-5xs font-black bg-red-100 text-red-650 px-2.5 py-1 rounded-full uppercase tracking-wider block w-max animate-pulse">Standard Limited-time Discount</span>
+          
+          <div class="w-full h-32 rounded-xl overflow-hidden bg-slate-50 border relative">
+            <img id="details-course-thumbnail-card" src="" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-3">
+              <span class="text-white font-black text-3xs tracking-wide">Course Preview Pack</span>
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <span class="text-4xs text-slate-450 font-bold uppercase block">Special Direct admission Price:</span>
+            <div class="flex items-baseline gap-2">
+              <span id="details-pricing-final" class="text-2xl font-black text-slate-900 font-mono">₹1,499</span>
+              <span id="details-pricing-base" class="text-xs font-bold text-slate-400 line-through font-mono">₹1,999</span>
+              <span id="details-pricing-discount" class="text-3xs font-extrabold text-emerald-600 block bg-emerald-50 px-1.5 py-0.5 rounded leading-none">40% OFF</span>
+            </div>
+          </div>
+
+          <!-- Refund / Guarantee note -->
+          <div class="bg-slate-50 p-3 rounded-2xl border flex items-center gap-2">
+            <i class="fa fa-shield-halved text-emerald-500 text-sm shrink-0"></i>
+            <div>
+              <p class="text-3xs font-extrabold text-slate-700">100% Cashfree Protected Payment</p>
+              <p class="text-4xs text-slate-400 font-semibold leading-none">7-Days refund protection guarantee applies</p>
+            </div>
+          </div>
+
+          <!-- Live Classroom Preview or Buy trigger button -->
+          <div id="details-action-button-container">
+            <!-- Dynamic checkout logic button depending on ownership status -->
+          </div>
+
+          <!-- Share / support details desk info tags -->
+          <div class="border-t border-slate-100 pt-3 flex flex-col gap-2">
+            <div class="flex items-center justify-between text-3xs font-semibold text-slate-500">
+              <span>Standard Admissions Line:</span>
+              <span class="font-extrabold text-slate-800">+91 95804-04600</span>
+            </div>
+            <div class="flex items-center justify-between text-3xs font-semibold text-slate-500">
+              <span>Email admissions desk:</span>
+              <span class="font-extrabold text-slate-800">support@achiever.com</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Related explore courses recommendation slider grid -->
+    <div class="mt-8 bg-white rounded-3xl border border-slate-150 shadow-sm p-4 space-y-4">
+      <div>
+        <h3 class="font-black text-slate-800 text-xs flex items-center gap-1.5"><i class="fa fa-compass text-orange-500"></i> Explore Auxiliary Exam Packages</h3>
+        <p class="text-[9px] text-slate-400 font-black uppercase tracking-wider mt-0.5">Top trending CTET &amp; Super TET batches recommended for you</p>
+      </div>
+
+      <div id="details-related-courses-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- populated dynamically via javascript -->
+      </div>
+    </div>
+  </main>
+
+
   <!-- DETAILED MODALS -->
 
   <!-- COURSE VIEWER WORKSPACE DETAILS MODAL -->
@@ -1580,32 +1847,33 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
         const discountedPrice = Math.round(parseFloat(course.price) * (1 - parseFloat(course.discountPercent) / 100));
         
         const card = document.createElement("div");
-        card.className = "bg-white rounded-3xl overflow-hidden shadow-md border border-slate-100 flex flex-col relative hover:shadow-lg transition cursor-pointer";
+        card.className = "bg-white rounded-3xl overflow-hidden shadow-md border border-slate-100 flex flex-col relative hover:shadow-lg transition cursor-pointer hover:scale-[1.01] duration-300";
         card.id = `course-card-${course.id}`;
+        card.setAttribute("onclick", `openCourseDetailsPageView('${course.id}')`);
         card.innerHTML = `
-          <div class="relative h-44 w-full">
+          <div class="relative h-44 w-full bg-slate-50">
             <img src="${course.thumbnail}" alt="${course.title}" class="w-full h-full object-cover">
-            <span class="absolute top-3 left-3 bg-orange-500 text-white font-bold text-3xs uppercase tracking-wider px-2 py-0.5 rounded-lg">${course.examType} Special</span>
-            <span class="absolute top-3 right-3 bg-red-500 text-white font-bold text-3xs px-2 py-0.5 rounded-lg">${course.discountPercent}% OFF</span>
+            <span class="absolute top-3 left-3 bg-orange-500 text-white font-extrabold text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-lg">${course.examType} Special</span>
+            <span class="absolute top-3 right-3 bg-red-500 text-white font-black text-[9px] px-2 py-0.5 rounded-lg">${course.discountPercent}% OFF</span>
           </div>
           <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
             <div class="space-y-1">
               <h3 class="font-bold text-slate-800 text-xs sm:text-sm line-clamp-2">${course.title}</h3>
-              <p class="text-slate-500 text-3xs line-clamp-2 leading-relaxed">${course.description}</p>
+              <p class="text-slate-500 text-3xs line-clamp-2 leading-relaxed font-semibold">${course.description || "Comprehensive test preparation, detailed video solutions, assignments, and print-friendly notes."}</p>
             </div>
             
-            <div class="flex items-center gap-1.5 text-orange-400 text-2xs font-bold">
-              <i class="fas fa-star text-[10px]"></i> 4.8 / 5 <span class="text-slate-400">(${course.reviewsCount || 0} Ratings)</span>
+            <div class="flex items-center gap-1.5 text-orange-500 text-[10px] font-black">
+              <i class="fas fa-star text-[10px] text-amber-400"></i> ${course.rating || '4.8'} <span class="text-slate-400 font-bold">(${course.reviewsCount || 0} Ratings)</span>
             </div>
 
             <div class="flex items-center justify-between pt-1">
               <div class="space-y-0.5">
-                <span class="text-slate-400 line-through text-4xs font-semibold">₹${course.price}</span>
-                <span class="text-base font-bold text-orange-600 block leading-none">₹${discountedPrice}</span>
+                <span class="text-slate-400 line-through text-4xs font-bold font-mono">₹${course.price}</span>
+                <span class="text-base font-black text-orange-650 block leading-none font-mono">₹${discountedPrice}</span>
               </div>
               <div class="flex gap-1.5">
-                <button onclick="event.stopPropagation(); initiateCheckout('${course.id}', ${course.price})" class="px-3.5 py-2 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl text-3xs shadow-md shadow-orange-100 transition">Buy now</button>
-                <button onclick="viewCourseDetails('${course.id}')" class="px-2.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-3xs">Details</button>
+                <button onclick="event.stopPropagation(); initiateCheckout('${course.id}', ${course.price})" class="px-3.5 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white font-black rounded-xl text-3xs shadow-md shadow-orange-100 hover:shadow-orange-200 transition cursor-pointer">Buy now</button>
+                <button onclick="event.stopPropagation(); openCourseDetailsPageView('${course.id}')" class="px-2.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold rounded-xl text-3xs transition cursor-pointer">Details</button>
               </div>
             </div>
           </div>
@@ -2615,6 +2883,274 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
         `;
         list.appendChild(card);
       });
+    };
+
+    window.openCourseDetailsPageView = function(courseId) {
+      const course = localDBInstance.courses[courseId];
+      if (!course) return;
+
+      activeOpenCourseId = courseId;
+
+      // Switch view layout
+      document.querySelectorAll(".page-view").forEach(main => main.classList.add("hidden"));
+      const pView = document.getElementById("view-course-details-page");
+      pView.classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Load Basic Info fields
+      document.getElementById("details-course-banner").src = course.bannerImage || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800";
+      document.getElementById("details-course-thumbnail-card").src = course.thumbnail || "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=200";
+      document.getElementById("details-course-exam").innerText = `${course.examType || 'CTET'} Prep Special`;
+      document.getElementById("details-course-title").innerText = course.title || "Preparatory Course Batch";
+      document.getElementById("details-course-subtitle").innerText = course.subtitle || "Complete pedagogy, assignments & elite practice sheets";
+      document.getElementById("details-course-desc").innerText = course.description || "Updated class structures, subject notes & mock tests.";
+      document.getElementById("details-course-rating").innerText = course.rating || "4.8";
+      document.getElementById("details-course-enrolled").innerText = course.enrolledCount || "2,450+ Enrolled";
+
+      // Load Metrics
+      document.getElementById("metric-duration").innerText = course.duration || "150+ Hours";
+      document.getElementById("metric-validity").innerText = course.courseValidity || "12 Months";
+      document.getElementById("metric-language").innerText = course.language || "Bilingual";
+
+      // Dynamically calculate subjects List and Chapters list count
+      const numSubjects = course.subjectsList ? course.subjectsList.length : 5;
+      const numChapters = course.chaptersList ? course.chaptersList.length : 20;
+      document.getElementById("metric-subjects-count").innerText = `${numSubjects} Subjects`;
+      document.getElementById("metric-chapters-count").innerText = `${numChapters} Chapters`;
+
+      // Filter lectures/pdf/tests to get dynamic metric counts
+      const relativeLectures = Object.values(localDBInstance.recordedLectures || {})
+        .filter(l => l.courseId === courseId);
+      const relativePDFs = Object.values(localDBInstance.pdfNotes || {})
+        .filter(p => p.courseId === courseId);
+      const relativeMocks = Object.values(localDBInstance.testSeries || {})
+        .filter(t => t.courseId === courseId);
+
+      document.getElementById("metric-lectures").innerText = `${relativeLectures.length || '120+'} Classes`;
+      document.getElementById("metric-pdfs").innerText = `${relativePDFs.length || '85+'} PDFs`;
+      document.getElementById("metric-mocks").innerText = `${relativeMocks.length || '30+'} Tests`;
+
+      // Seeding Teacher Profiles
+      document.getElementById("details-teacher-photo").src = course.teacherPhoto || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150";
+      document.getElementById("details-teacher-name").innerText = course.teacherName || "Achiever Expert Faculty";
+      document.getElementById("details-teacher-qual").innerText = course.teacherQualification || "NET & M.Ed Qualified";
+      document.getElementById("details-teacher-exp").innerText = `Experience: ${course.teacherExperience || '10+ Years'}`;
+      document.getElementById("details-teacher-desc").innerText = course.teacherDescription || "Senior academic pedagogue, professional development coach for national secondary recruitments.";
+
+      // Render Subject Accordion Breakdown
+      const accordionContainer = document.getElementById("details-subjects-accordion-container");
+      accordionContainer.innerHTML = "";
+      
+      const subsList = course.subjectsList && course.subjectsList.length ? course.subjectsList : ["Child Pedagogy Theory", "Environmental Studies", "Mathematics Aptitude", "Social Sciences Prep"];
+      subsList.forEach((subjectName, idx) => {
+        const key = `subject-acc-${courseId}-${idx}`;
+        const accordionItem = document.createElement("div");
+        accordionItem.className = "border border-slate-150 rounded-2xl overflow-hidden bg-white shadow-xs";
+        
+        // Filter sub lectures
+        const subLectures = relativeLectures.filter(l => l.subject === subjectName);
+        
+        let lecturesHTML = "";
+        if (subLectures.length > 0) {
+          lecturesHTML = subLectures.map(l => `
+            <div class="flex items-center justify-between p-3 bg-slate-50/50 hover:bg-orange-50/10 border-b border-slate-100 last:border-b-0">
+              <div class="flex items-center gap-2">
+                <i class="fa fa-circle-play text-orange-500 text-[10px]"></i>
+                <span class="text-3xs font-extrabold text-slate-700 truncate max-w-[200px] sm:max-w-[320px]">${l.title}</span>
+              </div>
+              <span class="text-5xs bg-orange-100 text-orange-655 px-1.5 py-0.5 rounded font-black whitespace-nowrap block shrink-0 select-none">${l.duration || 'Daily Session'}</span>
+            </div>
+          `).join("");
+        } else {
+          // fallback chapters list
+          const chList = course.chaptersList && course.chaptersList.length ? course.chaptersList : ["Growth Principles", "Piaget Theory Basics", "Classroom Socialization"];
+          lecturesHTML = chList.map((chap, cIdx) => `
+            <div class="flex items-center justify-between p-3 bg-slate-50/50 hover:bg-orange-50/10 border-b border-slate-100 last:border-b-0">
+              <div class="flex items-center gap-2">
+                <i class="fa fa-folder-open text-orange-400 text-[10px]"></i>
+                <span class="text-3xs font-extrabold text-slate-700 truncate max-w-[200px]">${chap}</span>
+              </div>
+              <span class="text-5xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-black whitespace-nowrap block shrink-0 select-none">Chapter Module ${cIdx+1}</span>
+            </div>
+          `).join("");
+        }
+
+        accordionItem.innerHTML = `
+          <button onclick="toggleAccordionTab('${key}')" class="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-orange-50/20 text-left cursor-pointer transition">
+            <div class="flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-lg bg-orange-100 text-orange-650 flex items-center justify-center font-black text-xs">${idx+1}</div>
+              <div class="leading-tight">
+                <span class="font-extrabold text-slate-800 text-[11px] block">${subjectName}</span>
+                <span class="text-5xs text-slate-400 font-extrabold block">Chapter modules loaded</span>
+              </div>
+            </div>
+            <i id="accordion-icon-${key}" class="fa fa-chevron-down text-slate-400 text-3xs transition-transform duration-300"></i>
+          </button>
+          <div id="accordion-panel-${key}" class="hidden border-t border-slate-100 p-2 space-y-1 bg-white">
+            ${lecturesHTML}
+          </div>
+        `;
+        accordionContainer.appendChild(accordionItem);
+      });
+
+      // Render Features Checklist Benefits
+      const featuresContainer = document.getElementById("details-features-container");
+      featuresContainer.innerHTML = "";
+      const fList = course.featuresList && course.featuresList.length ? course.featuresList : ["Interactive Daily Forums", "Print-ready revision PDFs", "Elite simulated mock series", "24x7 escalation support helpdesk", "Performance review diagnostics"];
+      fList.forEach(feat => {
+        const div = document.createElement("div");
+        div.className = "bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center gap-2.5";
+        div.innerHTML = `
+          <i class="fa fa-circle-check text-emerald-500 text-sm shrink-0"></i>
+          <span class="text-3xs font-extrabold text-slate-650 leading-tight">${feat}</span>
+        `;
+        featuresContainer.appendChild(div);
+      });
+
+      // Render Reviews Testimonials
+      const reviewsContainer = document.getElementById("details-reviews-container");
+      reviewsContainer.innerHTML = "";
+      const revsList = course.reviewsList && course.reviewsList.length ? course.reviewsList : [
+        { name: "Rohit K.", text: "Outstanding content blueprint! The custom pedagogy cards matched 90% of exam guidelines.", rating: 5, date: "12 May 2026" },
+        { name: "Suresh P.", text: "Perfect syllabus pacing. The doubt resolution help desk responded in 10 minutes.", rating: 5, date: "02 Jun 2026" }
+      ];
+      revsList.forEach(rev => {
+        const div = document.createElement("div");
+        div.className = "bg-slate-50 p-3.5 rounded-2xl border border-slate-100 space-y-1.5";
+        
+        let starsHTML = "";
+        for (let i = 0; i < 5; i++) {
+          starsHTML += `<i class="fa fa-star text-amber-400 text-[9px]"></i>`;
+        }
+
+        div.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-3xs font-black text-slate-800 flex items-center gap-1.5">
+              <i class="fa fa-user-circle text-slate-300 text-sm"></i> ${rev.name}
+            </span>
+            <span class="text-5xs text-slate-400 font-bold">${rev.date || 'Admission Batch'}</span>
+          </div>
+          <div class="flex items-center gap-1">${starsHTML}</div>
+          <p class="text-4xs font-semibold text-slate-500 leading-normal">${rev.text}</p>
+        `;
+        reviewsContainer.appendChild(div);
+      });
+
+      // Load Pricing details & Action Button
+      const discPrice = Math.round(parseFloat(course.price) * (1 - parseFloat(course.discountPercent) / 100));
+      document.getElementById("details-pricing-final").innerText = `₹${discPrice}`;
+      document.getElementById("details-pricing-base").innerText = `₹${course.price}`;
+      document.getElementById("details-pricing-discount").innerText = `${course.discountPercent || "0"}% OFF`;
+
+      const actionBtnContainer = document.getElementById("details-action-button-container");
+      const isOwned = localDBInstance.purchasedCourses && localDBInstance.purchasedCourses[courseId];
+      
+      if (isOwned) {
+        actionBtnContainer.innerHTML = `
+          <button onclick="viewCourseDetails('${courseId}')" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-750 text-white font-black text-xs rounded-2xl shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer hover:scale-[1.01]">
+            <i class="fa fa-graduation-cap"></i> Enter Active Classroom
+          </button>
+        `;
+      } else {
+        actionBtnContainer.innerHTML = `
+          <button onclick="initiateCheckout('${courseId}', ${course.price})" class="w-full py-3.5 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-650 text-white font-extrabold text-xs rounded-2xl shadow-md hover:shadow-orange-200/50 hover:scale-[1.01] transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+            <i class="fa fa-bolt"></i> Enroll Now &amp; Unlock
+          </button>
+        `;
+      }
+
+      // Render Related exam batches slider recommendation list (excluding current)
+      const recommendationsContainer = document.getElementById("details-related-courses-container");
+      recommendationsContainer.innerHTML = "";
+      
+      const related = Object.values(localDBInstance.courses);
+      let relatedCount = 0;
+      
+      related.forEach(rc => {
+        if (rc.id === courseId || relatedCount >= 3) return;
+        relatedCount++;
+        
+        const rPrice = Math.round(parseFloat(rc.price) * (1 - parseFloat(rc.discountPercent) / 100));
+        const div = document.createElement("div");
+        div.className = "bg-slate-50 p-3 rounded-2xl border border-slate-150 hover:bg-white hover:shadow-md transition cursor-pointer flex items-center gap-3";
+        div.setAttribute("onclick", `openCourseDetailsPageView('${rc.id}')`);
+        div.innerHTML = `
+          <div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-200 shrink-0">
+            <img src="${rc.thumbnail}" class="w-full h-full object-cover">
+          </div>
+          <div class="flex-1 min-w-0">
+            <span class="text-[8px] font-black uppercase text-orange-655 px-1 bg-orange-100 rounded tracking-wide leading-none select-none">${rc.examType}</span>
+            <h4 class="font-extrabold text-slate-800 text-3xs truncate mt-0.5">${rc.title}</h4>
+            <div class="flex items-center gap-1 text-[9px] mt-0.5">
+              <span class="font-bold text-slate-800">₹${rPrice}</span>
+              <span class="text-slate-400 line-through text-[8px]">₹${rc.price}</span>
+            </div>
+          </div>
+        `;
+        recommendationsContainer.appendChild(div);
+      });
+
+      if (relatedCount === 0) {
+        recommendationsContainer.innerHTML = `<p class="col-span-full py-4 text-center text-5xs font-bold text-slate-400">Other exam target batches are initializing.</p>`;
+      }
+
+      // Sync Wishlist status badge UI
+      updateWishlistUI();
+    };
+
+    window.toggleAccordionTab = function(key) {
+      const panel = document.getElementById(`accordion-panel-${key}`);
+      const icon = document.getElementById(`accordion-icon-${key}`);
+      if (panel.classList.contains("hidden")) {
+        panel.classList.remove("hidden");
+        icon.classList.add("rotate-180");
+      } else {
+        panel.classList.add("hidden");
+        icon.classList.remove("rotate-180");
+      }
+    };
+
+    window.toggleWishlistAction = function() {
+      if (!activeOpenCourseId) return;
+      let wishList = JSON.parse(localStorage.getItem("wishList") || "[]");
+      if (wishList.includes(activeOpenCourseId)) {
+        wishList = wishList.filter(id => id !== activeOpenCourseId);
+        alert("Removed course from your wishlist!");
+      } else {
+        wishList.push(activeOpenCourseId);
+        alert("Added course to your wishlist! Tap heart again to remove.");
+      }
+      localStorage.setItem("wishList", JSON.stringify(wishList));
+      updateWishlistUI();
+    };
+
+    window.updateWishlistUI = function() {
+      const btn = document.getElementById("btn-wishlist");
+      if (!btn || !activeOpenCourseId) return;
+      const wishList = JSON.parse(localStorage.getItem("wishList") || "[]");
+      if (wishList.includes(activeOpenCourseId)) {
+        btn.innerHTML = `<i class="fa-solid fa-heart text-sm text-rose-500"></i>`;
+      } else {
+        btn.innerHTML = `<i class="fa-regular fa-heart text-sm text-slate-600"></i>`;
+      }
+    };
+
+    window.shareCourseAction = function() {
+      if (!activeOpenCourseId) return;
+      const course = localDBInstance.courses[activeOpenCourseId];
+      if (!course) return;
+      
+      const text = `Join me at Ed Achievers: "${course.title}". Admissions now open at direct discount price. Check details!`;
+      if (navigator.share) {
+        navigator.share({
+          title: course.title,
+          text: text,
+          url: window.location.href
+        }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(text);
+        alert("Details copied to clipboard! Share it with friends.");
+      }
     };
 
     // Open course workspace details modal

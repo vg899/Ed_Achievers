@@ -615,9 +615,10 @@
       </div>
 
       <!-- Add course form card droparea -->
-      <div id="course-create-panel" class="hidden bg-white p-5 rounded-3xl border border-slate-100 shadow-xl space-y-4 text-xs">
-        <h3 class="font-bold text-slate-800 text-sm">Create New Training Course Pack</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div id="course-create-panel" class="hidden bg-white p-6 rounded-3xl border border-slate-100 shadow-xl space-y-4 text-xs">
+        <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5"><i class="fas fa-graduation-cap text-orange-500"></i> Configure Training Course Pack</h3>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
             <label class="block font-semibold text-slate-500">Course Identifier key (Unique, e.g. ctet_2026_CDP)</label>
             <input type="text" id="add-course-id" placeholder="ctet_25_advance" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
@@ -625,6 +626,10 @@
           <div>
             <label class="block font-semibold text-slate-500">Full Course Title</label>
             <input type="text" id="add-course-title" placeholder="CTET Paper 2 complete Child Psychology master batch" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Course Subtitle / Target tagline</label>
+            <input type="text" id="add-course-subtitle" placeholder="Bilingual complete theory, mock test series & personalized guidance" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
           </div>
           <div>
             <label class="block font-semibold text-slate-500">Exam Category Group</label>
@@ -637,21 +642,6 @@
             </select>
           </div>
           <div>
-            <label class="block font-semibold text-slate-500">Course Thumbnail Image (Direct Cloudinary Upload)</label>
-            <input type="hidden" id="add-course-thumb">
-            <input type="file" id="add-course-thumb-file" accept="image/*" class="hidden" onchange="handleCourseThumbSelection(this)">
-            
-            <div onclick="document.getElementById('add-course-thumb-file').click()" class="border-2 border-dashed border-slate-200 hover:border-orange-500 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer bg-slate-50 transition min-h-[100px] mt-1 text-center" id="course-thumb-droparea">
-              <i class="fas fa-image text-2xl text-orange-500 mb-1"></i>
-              <span class="text-3xs font-semibold text-slate-500" id="course-thumb-status">Click to select Thumbnail from Device gallery</span>
-            </div>
-            
-            <div class="hidden mt-2 relative border border-slate-100 rounded-2xl overflow-hidden bg-slate-100" id="course-thumb-preview-container">
-              <img id="course-thumb-preview" class="w-full h-24 object-cover">
-              <span class="absolute top-1.5 right-1.5 bg-emerald-500 text-white font-bold text-[8px] px-1.5 py-0.5 rounded shadow">UPLOADED PREVIEW</span>
-            </div>
-          </div>
-          <div>
             <label class="block font-semibold text-slate-500">Price tag (₹ INR)</label>
             <input type="number" id="add-course-price" placeholder="1999" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
           </div>
@@ -659,14 +649,141 @@
             <label class="block font-semibold text-slate-500">Percent Discount Promo (%)</label>
             <input type="number" id="add-course-disc" placeholder="40" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
           </div>
-          <div class="col-span-full">
-            <label class="block font-semibold text-slate-500">Detailed Syllabus Description</label>
-            <textarea id="add-course-desc" rows="3" placeholder="Explain lessons schedule, pedagogical scope, pdf notes access features..." class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"></textarea>
+
+          <!-- Extended Course Meta Specifications -->
+          <div>
+            <label class="block font-semibold text-slate-500">Course Duration (e.g. 150+ Hours)</label>
+            <input type="text" id="add-course-duration" placeholder="150+ Hours" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
           </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Language of Instruction</label>
+            <input type="text" id="add-course-language" placeholder="Bilingual: Hindi & English" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Course Validity Duration</label>
+            <input type="text" id="add-course-validity" placeholder="12 Months (Till Exam Date)" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Enrolled Students Count Display</label>
+            <input type="text" id="add-course-enrolled" placeholder="2,450+ Enrolled" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Average Completion Rate (%)</label>
+            <input type="text" id="add-course-completion" placeholder="85% Completion" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Student Rating Score (out of 5)</label>
+            <input type="text" id="add-course-rating" placeholder="4.8" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+
+          <!-- Cloudinary Upload Fields -->
+          <div class="col-span-full grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            <!-- Thumbnail upload -->
+            <div>
+              <label class="block font-semibold text-slate-500 text-3xs">Course Thumbnail Card Image</label>
+              <input type="hidden" id="add-course-thumb">
+              <input type="file" id="add-course-thumb-file" accept="image/*" class="hidden" onchange="handleCourseThumbSelection(this)">
+              
+              <div onclick="document.getElementById('add-course-thumb-file').click()" class="border border-dashed border-slate-200 hover:border-orange-500 rounded-2xl p-3 flex flex-col items-center justify-center cursor-pointer bg-slate-50 transition min-h-[90px] mt-1 text-center" id="course-thumb-droparea">
+                <i class="fas fa-image text-lg text-orange-500 mb-1"></i>
+                <span class="text-4xs font-bold text-slate-500" id="course-thumb-status">Select Course Thumbnail</span>
+              </div>
+              
+              <div class="hidden mt-2 relative border border-slate-100 rounded-2xl overflow-hidden bg-slate-150 h-16 w-full" id="course-thumb-preview-container">
+                <img id="course-thumb-preview" class="w-full h-full object-cover">
+                <span class="absolute top-1.5 right-1.5 bg-emerald-500 text-white font-bold text-[8px] px-1.5 py-0.5 rounded shadow">THUMBNAIL LOADED</span>
+              </div>
+            </div>
+
+            <!-- Banner image upload -->
+            <div>
+              <label class="block font-semibold text-slate-500 text-3xs">Full Course Details Page Banner Image</label>
+              <input type="hidden" id="add-course-banner">
+              <input type="file" id="add-course-banner-file" accept="image/*" class="hidden" onchange="handleCourseBannerSelection(this)">
+              
+              <div onclick="document.getElementById('add-course-banner-file').click()" class="border border-dashed border-slate-200 hover:border-orange-500 rounded-2xl p-3 flex flex-col items-center justify-center cursor-pointer bg-slate-50 transition min-h-[90px] mt-1 text-center" id="course-banner-droparea">
+                <i class="fas fa-panorama text-lg text-orange-500 mb-1"></i>
+                <span class="text-4xs font-bold text-slate-500" id="course-banner-status">Select Course Banner Graphic</span>
+              </div>
+              
+              <div class="hidden mt-2 relative border border-slate-100 rounded-2xl overflow-hidden bg-slate-150 h-16 w-full" id="course-banner-preview-container">
+                <img id="course-banner-preview" class="w-full h-full object-cover">
+                <span class="absolute top-1.5 right-1.5 bg-emerald-500 text-white font-bold text-[8px] px-1.5 py-0.5 rounded shadow">BANNER LOADED</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Instructor / Faculty Portfolio -->
+          <div class="col-span-full border-t border-slate-100 pt-4 mt-2">
+            <h4 class="font-bold text-slate-700 text-xs mb-2 flex items-center gap-1.5"><i class="fa fa-user-tie text-orange-500"></i> Instructor / Faculty Portfolio Header</h4>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Instructor Name</label>
+            <input type="text" id="add-course-teacher-name" placeholder="Dr. Harsh Vardhan" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Academic Qualification Spec</label>
+            <input type="text" id="add-course-teacher-qualification" placeholder="Ph.D in Child Psychology, M.Ed (CTET Qualified)" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Instructing Experience Metrics</label>
+            <input type="text" id="add-course-teacher-experience" placeholder="12+ Years Coaching Experience" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div class="col-span-full grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+            <div class="sm:col-span-2">
+              <label class="block font-semibold text-slate-500">Bio Description Paragraph</label>
+              <textarea id="add-course-teacher-desc" rows="3" placeholder="Explain lessons schedule, past selections record, and teaching style methodology..." class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"></textarea>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-500">Teacher Portrait Image Upload</label>
+              <input type="hidden" id="add-course-teacher-photo">
+              <input type="file" id="add-course-teacher-photo-file" accept="image/*" class="hidden" onchange="handleTeacherPhotoSelection(this)">
+              
+              <div onclick="document.getElementById('add-course-teacher-photo-file').click()" class="border border-dashed border-slate-200 hover:border-orange-500 rounded-2xl p-2.5 flex flex-col items-center justify-center cursor-pointer bg-slate-50 transition min-h-[80px] mt-1 text-center" id="course-teacher-photo-droparea">
+                <i class="fas fa-user-circle text-lg text-orange-500 mb-1"></i>
+                <span class="text-[9px] font-bold text-slate-500 leading-none" id="course-teacher-photo-status">Upload Portrait Photo</span>
+              </div>
+              
+              <div class="hidden mt-2 relative border border-slate-100 rounded-2xl overflow-hidden bg-slate-150 h-16 w-full" id="course-teacher-photo-preview-container">
+                <img id="course-teacher-photo-preview" class="w-full h-full object-cover">
+                <span class="absolute top-1 right-1 bg-emerald-500 text-white font-bold text-[7px] px-1.5 py-0.5 rounded shadow">LOADED</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Syllabus, Chapters & Features checklists list -->
+          <div class="col-span-full border-t border-slate-100 pt-4 mt-2">
+            <h4 class="font-bold text-slate-700 text-xs mb-2 flex items-center gap-1.5"><i class="fa fa-list-check text-orange-500"></i> Course Syllabus, Chapters, & Accent Highlights</h4>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Syllabus Accent Features (comma separated list)</label>
+            <input type="text" id="add-course-features" placeholder="Live Daily Dialog, Printable CPD Notes, Weekly Simulated Quizzes, 1-on-1 Help Desk Support, Certificate Awarded" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Subject Structure list (comma separated list)</label>
+            <input type="text" id="add-course-subjects" placeholder="Child Development Theory, Pedagogy Metrics, Kohleberg Principles, NEP Guidelines, Classroom Socialization" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-500">Chapter Indexes (comma separated list)</label>
+            <input type="text" id="add-course-chapters" placeholder="Chapter 1: Child Growth, Chapter 2: Cognitive Stages, Chapter 3: Inclusivity, Chapter 4: Formative Tests" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+
+          <div class="col-span-full pt-1">
+            <label class="block font-semibold text-slate-500">Detailed Course Description (supports paragraphs)</label>
+            <textarea id="add-course-desc" rows="3" placeholder="Provide general details about the exam, exam level prep guidelines, class structure etc." class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"></textarea>
+          </div>
+
+          <!-- Student Reviews & ratings mockers -->
+          <div class="col-span-full pt-1">
+            <label class="block font-semibold text-slate-500">Student Testimonial Reviews (Format: Name: Review Copy || Name2: Review Copy2)</label>
+            <textarea id="add-course-reviews" rows="2" placeholder="Naveen: Extremely structured! Coached me to score 28/30 in CDP. || Priyah: Best Pedagogy content on Super TET. Highly recommended!" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"></textarea>
+          </div>
+
         </div>
-        <div class="flex gap-2 justify-end pt-2">
-          <button onclick="toggleSection('course-create-panel')" class="px-4 py-2 bg-slate-100 rounded-lg font-semibold">Discard</button>
-          <button onclick="publishNewCourseAction()" class="px-5 py-2 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl transition">Publish Course Bundle</button>
+
+        <div class="flex gap-2 justify-end pt-3 border-t border-slate-100">
+          <button onclick="clearCourseFormState()" class="px-4 py-2 bg-slate-150 hover:bg-slate-200 rounded-xl font-bold text-slate-650 transition cursor-pointer">Discard / Clear</button>
+          <button onclick="publishNewCourseAction()" id="course-publish-btn" class="px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white font-extrabold rounded-xl transition shadow-md cursor-pointer">Publish Course Package</button>
         </div>
       </div>
 
@@ -1658,6 +1775,58 @@
       }
     };
 
+    // Course Banner selection
+    window.handleCourseBannerSelection = async function(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const statusText = document.getElementById("course-banner-status");
+      const droparea = document.getElementById("course-banner-droparea");
+      const previewContainer = document.getElementById("course-banner-preview-container");
+      const previewImg = document.getElementById("course-banner-preview");
+
+      statusText.innerHTML = '<i class="fa fa-spinner animate-spin text-orange-500 mr-1.5"></i> Transmitting banner...';
+      droparea.classList.add("border-orange-500", "bg-orange-50/10");
+
+      try {
+        const secureUrl = await uploadToCloudinary(file, 'image');
+        document.getElementById("add-course-banner").value = secureUrl;
+        
+        statusText.innerHTML = '<i class="fa fa-circle-check text-emerald-500 mr-1.5"></i> Banner uploaded successfully!';
+        previewImg.src = secureUrl;
+        previewContainer.classList.remove("hidden");
+      } catch (err) {
+        alert("Cloudinary banner upload failed: " + err.message);
+        statusText.innerHTML = '<i class="fa fa-circle-xmark text-red-500 mr-1.5"></i> Upload failed';
+      }
+    };
+
+    // Teacher Photo selection
+    window.handleTeacherPhotoSelection = async function(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const statusText = document.getElementById("course-teacher-photo-status");
+      const droparea = document.getElementById("course-teacher-photo-droparea");
+      const previewContainer = document.getElementById("course-teacher-photo-preview-container");
+      const previewImg = document.getElementById("course-teacher-photo-preview");
+
+      statusText.innerHTML = '<i class="fa fa-spinner animate-spin text-orange-500 mr-1.5"></i> Transmitting portrait...';
+      droparea.classList.add("border-orange-500", "bg-orange-50/10");
+
+      try {
+        const secureUrl = await uploadToCloudinary(file, 'image');
+        document.getElementById("add-course-teacher-photo").value = secureUrl;
+        
+        statusText.innerHTML = '<i class="fa fa-circle-check text-emerald-500 mr-1.5"></i> Portrait image loaded!';
+        previewImg.src = secureUrl;
+        previewContainer.classList.remove("hidden");
+      } catch (err) {
+        alert("Cloudinary portrait upload failed: " + err.message);
+        statusText.innerHTML = '<i class="fa fa-circle-xmark text-red-500 mr-1.5"></i> Upload failed';
+      }
+    };
+
     // Recorded Video selector with live upload progress percentage bar and duration extraction
     window.handleRecordedVideoSelection = async function(input) {
       const file = input.files[0];
@@ -1976,7 +2145,7 @@
 
       Object.values(localDB.courses).forEach(c => {
         const div = document.createElement("div");
-        div.className = "bg-white p-4 rounded-3xl border border-slate-100 shadow flex items-center justify-between";
+        div.className = "bg-white p-4 rounded-3xl border border-slate-100 shadow flex items-center justify-between gap-4";
         div.id = `admin-course-row-${c.id}`;
         div.innerHTML = `
           <div class="flex items-center gap-3">
@@ -1986,10 +2155,13 @@
             <div>
               <span class="px-1.5 py-0.5 bg-orange-150 text-orange-650 rounded font-bold text-5xs block w-max uppercase tracking-wider mb-0.5">${c.examType} Category</span>
               <h4 class="font-bold text-slate-800 text-xs line-clamp-1">${c.title}</h4>
-              <span class="text-4xs font-bold text-orange-600">₹${c.price} (Discounted -${c.discountPercent}%)</span>
+              <span class="text-4xs font-bold text-orange-600">₹${c.price} (Discounted -${c.discountPercent || "0"}%)</span>
             </div>
           </div>
-          <button onclick="deletePublishedCourseAction('${c.id}')" class="px-3 py-1.5 bg-red-50 hover:bg-red-650 text-red-500 hover:text-white rounded-lg text-4xs transition" title="Delete Course file"><i class="fas fa-trash-can"></i></button>
+          <div class="flex gap-1 shrink-0">
+            <button onclick="editPublishedCourseAction('${c.id}')" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-4xs font-bold transition flex items-center gap-1 border border-slate-200" title="Edit Course Pack"><i class="fas fa-edit"></i> Edit</button>
+            <button onclick="deletePublishedCourseAction('${c.id}')" class="px-2.5 py-1.5 bg-red-50 hover:bg-red-650 text-red-500 rounded-lg text-4xs font-bold transition flex items-center gap-1" title="Delete Course file"><i class="fas fa-trash-can"></i> Del</button>
+          </div>
         `;
         container.appendChild(div);
       });
@@ -1999,41 +2171,213 @@
     window.publishNewCourseAction = function() {
       const cId = document.getElementById("add-course-id").value.trim();
       const title = document.getElementById("add-course-title").value.trim();
+      const subtitle = document.getElementById("add-course-subtitle").value.trim();
       const exam = document.getElementById("add-course-exam").value;
       const thumb = document.getElementById("add-course-thumb").value.trim();
+      const banner = document.getElementById("add-course-banner").value.trim();
       const price = document.getElementById("add-course-price").value.trim();
       const disc = document.getElementById("add-course-disc").value.trim();
+      
+      const duration = document.getElementById("add-course-duration").value.trim();
+      const language = document.getElementById("add-course-language").value.trim();
+      const validity = document.getElementById("add-course-validity").value.trim();
+      const enrolled = document.getElementById("add-course-enrolled").value.trim();
+      const completion = document.getElementById("add-course-completion").value.trim();
+      const rating = document.getElementById("add-course-rating").value.trim();
+
+      const teacherName = document.getElementById("add-course-teacher-name").value.trim();
+      const teacherQual = document.getElementById("add-course-teacher-qualification").value.trim();
+      const teacherExp = document.getElementById("add-course-teacher-experience").value.trim();
+      const teacherDesc = document.getElementById("add-course-teacher-desc").value.trim();
+      const teacherPhoto = document.getElementById("add-course-teacher-photo").value.trim();
+
       const desc = document.getElementById("add-course-desc").value.trim();
 
       if (!cId || !title || !price) {
-        alert("Must input Course ID, Title name, and Base pricing tags.");
+        alert("Required error: Must provide Course ID, Title, and Catalog price tags.");
         return;
+      }
+
+      const splitChecklist = (id) => {
+        const val = document.getElementById(id).value.trim();
+        return val ? val.split(",").map(s => s.trim()).filter(Boolean) : [];
+      };
+
+      const featuresList = splitChecklist("add-course-features");
+      const subjectsList = splitChecklist("add-course-subjects");
+      const chaptersList = splitChecklist("add-course-chapters");
+
+      // Parse simulated reviews
+      const reviewsInput = document.getElementById("add-course-reviews").value.trim();
+      const reviewsList = [];
+      if (reviewsInput) {
+        reviewsInput.split("||").forEach(chunk => {
+          const parts = chunk.split(":");
+          if (parts.length >= 2) {
+            reviewsList.push({
+              name: parts[0].trim(),
+              text: parts.slice(1).join(":").trim(),
+              rating: 5,
+              date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+            });
+          }
+        });
       }
 
       const payload = {
         id: cId,
         title,
+        subtitle: subtitle || "Premium Live Target Classroom Series",
         examType: exam,
         thumbnail: thumb || "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=200",
+        bannerImage: banner || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800",
         price,
         discountPercent: disc || "0",
-        description: desc || "Updated educational prep module description logs.",
-        reviewsCount: 1,
-        teachers: ["Achiever Expert Faculty"]
+        description: desc || "Comprehensive test preparation, detailed video solutions, assignments, and print-friendly notes.",
+        
+        duration: duration || "120+ Hours Live Class",
+        language: language || "Bilingual: Hindi & English",
+        courseValidity: validity || "12 Months (Till Exam Date)",
+        enrolledCount: enrolled || "2,450+ Enrolled Students",
+        completionProgress: completion || "85% Successful Ratio",
+        rating: rating || "4.8",
+
+        teacherName: teacherName || "Achiever Core Faculty Team",
+        teacherQualification: teacherQual || "M.Ed & NET Qualified",
+        teacherExperience: teacherExp || "12+ Coaching Years",
+        teacherDescription: teacherDesc || "Academic coordinator, expert developer of pedagogical learning modules.",
+        teacherPhoto: teacherPhoto || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150",
+
+        featuresList: featuresList.length ? featuresList : ["Live Daily Forums", "Printable PDFs", "Elite simulated exams", "Performance audit desk"],
+        subjectsList: subjectsList.length ? subjectsList : ["Child Pedagogy", "Environmental Studies", "Mathematics Aptitude", "Social Sciences"],
+        chaptersList: chaptersList.length ? chaptersList : ["Introduction to Child Developmental stages", "NEP Guidelines", "Piaget moral frameworks"],
+        reviewsList: reviewsList.length ? reviewsList : [
+          { name: "Rohit K.", text: "Outstanding content blueprint! The custom pedagogy cards matched 90% of exam guidelines.", rating: 5, date: "12 May 2026" },
+          { name: "Suresh P.", text: "Perfect syllabus pacing. The doubt resolution help desk responded in 10 minutes.", rating: 5, date: "02 Jun 2026" }
+        ]
       };
 
       set(ref(db, `courses/${cId}`), payload)
       .then(() => {
-        alert("Course structure published to Realtime Database successfully!");
-        document.getElementById("add-course-id").value = "";
-        document.getElementById("add-course-title").value = "";
-        document.getElementById("add-course-price").value = "";
-        document.getElementById("add-course-desc").value = "";
+        alert("Successful integration! Course properties mapped to Firebase database.");
+        clearCourseFormState();
         document.getElementById("course-create-panel").classList.add("hidden");
         syncAllAdminData();
       })
-      .catch(err => alert("Fail: " + err.message));
+      .catch(err => alert("Sync Error: " + err.message));
     }
+
+    window.clearCourseFormState = function() {
+      document.getElementById("add-course-id").value = "";
+      document.getElementById("add-course-id").disabled = false;
+      document.getElementById("add-course-title").value = "";
+      document.getElementById("add-course-subtitle").value = "";
+      document.getElementById("add-course-price").value = "";
+      document.getElementById("add-course-disc").value = "";
+      document.getElementById("add-course-desc").value = "";
+      
+      document.getElementById("add-course-duration").value = "";
+      document.getElementById("add-course-language").value = "";
+      document.getElementById("add-course-validity").value = "";
+      document.getElementById("add-course-enrolled").value = "";
+      document.getElementById("add-course-completion").value = "";
+      document.getElementById("add-course-rating").value = "";
+
+      document.getElementById("add-course-teacher-name").value = "";
+      document.getElementById("add-course-teacher-qualification").value = "";
+      document.getElementById("add-course-teacher-experience").value = "";
+      document.getElementById("add-course-teacher-photo").value = "";
+      document.getElementById("add-course-teacher-desc").value = "";
+
+      document.getElementById("add-course-features").value = "";
+      document.getElementById("add-course-subjects").value = "";
+      document.getElementById("add-course-chapters").value = "";
+      document.getElementById("add-course-reviews").value = "";
+
+      document.getElementById("add-course-thumb").value = "";
+      document.getElementById("add-course-banner").value = "";
+
+      // Hide containers and reset guides
+      document.getElementById("course-thumb-preview-container").classList.add("hidden");
+      document.getElementById("course-thumb-status").innerText = "Select Course Thumbnail";
+      
+      document.getElementById("course-banner-preview-container").classList.add("hidden");
+      document.getElementById("course-banner-status").innerText = "Select Course Banner Graphic";
+
+      document.getElementById("course-teacher-photo-preview-container").classList.add("hidden");
+      document.getElementById("course-teacher-photo-status").innerText = "Upload Portrait Photo";
+    }
+
+    window.editPublishedCourseAction = function(cId) {
+      const course = localDB.courses[cId];
+      if (!course) return;
+
+      // Make panel active
+      const panel = document.getElementById("course-create-panel");
+      panel.classList.remove("hidden");
+
+      // Seed forms
+      document.getElementById("add-course-id").value = course.id || "";
+      document.getElementById("add-course-id").disabled = true;
+      document.getElementById("add-course-title").value = course.title || "";
+      document.getElementById("add-course-subtitle").value = course.subtitle || "";
+      document.getElementById("add-course-exam").value = course.examType || "CTET";
+      document.getElementById("add-course-thumb").value = course.thumbnail || "";
+      document.getElementById("add-course-banner").value = course.bannerImage || "";
+      document.getElementById("add-course-price").value = course.price || "";
+      document.getElementById("add-course-disc").value = course.discountPercent || "";
+      document.getElementById("add-course-desc").value = course.description || "";
+
+      document.getElementById("add-course-duration").value = course.duration || "";
+      document.getElementById("add-course-language").value = course.language || "";
+      document.getElementById("add-course-validity").value = course.courseValidity || "";
+      document.getElementById("add-course-enrolled").value = course.enrolledCount || "";
+      document.getElementById("add-course-completion").value = course.completionProgress || "";
+      document.getElementById("add-course-rating").value = course.rating || "";
+
+      document.getElementById("add-course-teacher-name").value = course.teacherName || "";
+      document.getElementById("add-course-teacher-qualification").value = course.teacherQualification || "";
+      document.getElementById("add-course-teacher-experience").value = course.teacherExperience || "";
+      document.getElementById("add-course-teacher-photo").value = course.teacherPhoto || "";
+      document.getElementById("add-course-teacher-desc").value = course.teacherDescription || "";
+
+      document.getElementById("add-course-features").value = (course.featuresList || []).join(", ") || "";
+      document.getElementById("add-course-subjects").value = (course.subjectsList || []).join(", ") || "";
+      document.getElementById("add-course-chapters").value = (course.chaptersList || []).join(", ") || "";
+      
+      let reviewsStr = "";
+      if (course.reviewsList && Array.isArray(course.reviewsList)) {
+        reviewsStr = course.reviewsList.map(r => `${r.name}:${r.text}`).join(" || ");
+      }
+      document.getElementById("add-course-reviews").value = reviewsStr;
+
+      // Render preview cards
+      if (course.thumbnail) {
+        document.getElementById("course-thumb-preview").src = course.thumbnail;
+        document.getElementById("course-thumb-preview-container").classList.remove("hidden");
+        document.getElementById("course-thumb-status").innerHTML = '<i class="fa fa-circle-check text-emerald-500 mr-1"></i> Thumbnail Loaded';
+      } else {
+        document.getElementById("course-thumb-preview-container").classList.add("hidden");
+      }
+
+      if (course.bannerImage) {
+        document.getElementById("course-banner-preview").src = course.bannerImage;
+        document.getElementById("course-banner-preview-container").classList.remove("hidden");
+        document.getElementById("course-banner-status").innerHTML = '<i class="fa fa-circle-check text-emerald-500 mr-1"></i> Banner Loaded';
+      } else {
+        document.getElementById("course-banner-preview-container").classList.add("hidden");
+      }
+
+      if (course.teacherPhoto) {
+        document.getElementById("course-teacher-photo-preview").src = course.teacherPhoto;
+        document.getElementById("course-teacher-photo-preview-container").classList.remove("hidden");
+        document.getElementById("course-teacher-photo-status").innerHTML = '<i class="fa fa-circle-check text-emerald-500 mr-1"></i> Portrait Loaded';
+      } else {
+        document.getElementById("course-teacher-photo-preview-container").classList.add("hidden");
+      }
+
+      panel.scrollIntoView({ behavior: 'smooth' });
+    };
 
     window.deletePublishedCourseAction = function(cId) {
       if (confirm(`Remove course ${cId} completely from database inventory?`)) {
