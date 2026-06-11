@@ -110,6 +110,21 @@ export default async function handler(req: any, res: any) {
         const baseDisc = draftDetails.discount || 0;
         const baseCpn = draftDetails.couponCode || "None";
 
+        // Extract transaction ID from orderInfo
+        let txId = "";
+        let failureText = "None";
+        if (orderInfo) {
+          if (Array.isArray(orderInfo.payments) && orderInfo.payments.length > 0) {
+            const successPayment = orderInfo.payments.find((p: any) => p.payment_status === "SUCCESS") || orderInfo.payments[0];
+            if (successPayment) {
+              txId = successPayment.cf_payment_id ? successPayment.cf_payment_id.toString() : "";
+              failureText = successPayment.payment_message || "None";
+            }
+          } else if (orderInfo.cf_order_id) {
+            txId = `CF-${orderInfo.cf_order_id}`;
+          }
+        }
+
         await logAuditTrace(orderId, "STATUS_POLL_RECOVERY_TRIGGERED", "WARNING", `Transaction status polled as PAID from gateway but was missing in database. Unlocking course: ${finalCourseId} for user: ${finalUid}`);
         
         await unlockCourseAndLogTransaction(
@@ -121,7 +136,10 @@ export default async function handler(req: any, res: any) {
           baseCpn,
           sName,
           sEmail,
-          { courseName: draftDetails.courseName || "Premium Training Batch" }
+          { courseName: draftDetails.courseName || "Premium Training Batch" },
+          txId,
+          failureText,
+          orderInfo
         );
       }
 

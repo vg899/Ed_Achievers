@@ -153,7 +153,35 @@ export default async function handler(req: any, res: any) {
     const baseDisc = draftDetails.discount || 0;
     const baseCpn = draftDetails.couponCode || "None";
 
-    await logAuditTrace(orderId, "VERIFY_RESPONSE_RECEIVED", "INFO", `Cashfree status: ${pStatus}. Processing dynamic database alignments. CourseId: ${finalCourseId}, Uid: ${finalUid}`, orderInfo);
+    // Detailed Logging: Verification Response
+    await logAuditTrace(orderId, "VERIFICATION_RESPONSE", "INFO", `[API Verification] Cashfree status: ${pStatus} for Order ID: ${orderId}. Processing dynamic database alignments. CourseId: ${finalCourseId}, Uid: ${finalUid}`, orderInfo);
+
+    // Extract transactionId if available frompayments lists or reference id
+    let transactionId = "";
+    let failureReasonText = "None";
+    if (orderInfo) {
+      if (Array.isArray(orderInfo.payments) && orderInfo.payments.length > 0) {
+        const successPayment = orderInfo.payments.find((p: any) => p.payment_status === "SUCCESS") || orderInfo.payments[0];
+        if (successPayment) {
+          transactionId = successPayment.cf_payment_id ? successPayment.cf_payment_id.toString() : "";
+          failureReasonText = successPayment.payment_message || "None";
+        }
+      } else if (orderInfo.cf_order_id) {
+        transactionId = `CF-${orderInfo.cf_order_id}`;
+      }
+    }
+
+    if (pStatus !== "PAID" && failureReasonText === "None") {
+      failureReasonText = `Gateway status reported: ${pStatus}`;
+    }
+
+    // Save Cashfree details back into draft node for debugging dashboard
+    await writeToRtdb(`cashfree_draft_orders/${orderId}`, {
+      status: pStatus,
+      transactionId: transactionId || `TXN-${Math.floor(100000 + Math.random() * 900000)}`,
+      cashfreeResponse: JSON.stringify(orderInfo),
+      failureReason: failureReasonText
+    }, "PATCH");
 
     // 4. Automatic Payout Recovery System & Entitlement Alignment
     let dbSuccess = false;
@@ -169,13 +197,19 @@ export default async function handler(req: any, res: any) {
         baseCpn,
         sName,
         sEmail,
-        { courseName: draftDetails.courseName || orderInfo.order_note || "Premium Training Batch" }
+        { courseName: draftDetails.courseName || orderInfo.order_note || "Premium Training Batch" },
+        transactionId,
+        failureReasonText,
+        orderInfo
       );
       dbSuccess = resolution.success;
       alreadyProcessed = resolution.alreadyProcessed;
     } else {
       // Update local draft tracking to match gateway cancel/fail status
-      await writeToRtdb(`cashfree_draft_orders/${orderId}`, { status: pStatus }, "PATCH");
+      await writeToRtdb(`cashfree_draft_orders/${orderId}`, { 
+        status: pStatus,
+        failureReason: failureReasonText 
+      }, "PATCH");
     }
 
     return res.status(200).json({

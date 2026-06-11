@@ -154,6 +154,9 @@
       <button onclick="navigateAdminTab('revenue', this)" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white font-semibold transition">
         <i class="fas fa-indian-rupee-sign w-4 text-emerald-500 animate-pulse"></i> Revenue & Finance
       </button>
+      <button onclick="navigateAdminTab('payment-debug', this)" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white font-semibold transition">
+        <i class="fas fa-bug w-4 text-rose-505 animate-pulse font-bold text-rose-500"></i> Payment Debug Dashboard
+      </button>
       <button onclick="navigateAdminTab('legal', this)" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white font-semibold transition">
         <i class="fas fa-scale-balanced w-4 text-orange-500 animate-pulse"></i> Legal &amp; Compliance Management
       </button>
@@ -737,6 +740,67 @@
         </div>
       </div>
 
+    </div>
+
+    <!-- SUB-VIEW: PAYMENT DEBUG DASHBOARD -->
+    <div id="admin-view-payment-debug" class="admin-tab-view space-y-6 hidden">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-3xl border border-slate-100 shadow-sm gap-4">
+        <div>
+          <h2 class="text-base font-black text-slate-800 flex items-center gap-2">
+            <span>Payment Debug Dashboard</span>
+            <span class="text-5xs bg-rose-100 text-rose-850 font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">PCI Compliant Monitor</span>
+          </h2>
+          <p class="text-[11px] text-slate-400 font-semibold mt-1">
+            Debug and audit all real-time Cashfree attempts, checkout sessions, success states, and actual API failure reasons.
+          </p>
+        </div>
+        <button onclick="refreshPaymentDebugData()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">
+          <i class="fas fa-rotate mr-1.5"></i> Refresh Data
+        </button>
+      </div>
+
+      <!-- Live Search & Filtration Panel -->
+      <div class="bg-white p-5 rounded-3xl border border-slate-150 shadow-xs flex flex-wrap gap-4 items-center justify-between col-span-full">
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="text-xs font-semibold text-slate-500">Filter Status:</span>
+          <select id="debug-status-filter" onchange="renderPaymentDebugRows()" class="p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-705 focus:outline-none">
+            <option value="ALL">Show All Orders</option>
+            <option value="SUCCESS">Success / Paid</option>
+            <option value="ACTIVE">Active Session</option>
+            <option value="FAILED">Failed</option>
+            <option value="INITIATED">Initiated</option>
+          </select>
+        </div>
+        <div class="w-full sm:w-80 relative">
+          <span class="absolute left-3 top-2.5 text-slate-400 text-3xs"><i class="fas fa-search"></i></span>
+          <input type="text" id="debug-search-box" oninput="renderPaymentDebugRows()" placeholder="Search Order ID, Name, Email..." class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 focus:outline-none focus:border-orange-500 rounded-xl text-xs font-medium text-slate-800">
+        </div>
+      </div>
+
+      <!-- Payment Attempts Ledger Table Card -->
+      <div class="bg-white rounded-3xl border border-slate-150 shadow-xs overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-150 text-slate-450 font-bold uppercase text-[9px] tracking-wider">
+                <th class="py-3 px-4">Date/Time</th>
+                <th class="py-3 px-4">Order ID</th>
+                <th class="py-3 px-4">Transaction ID / Session ID</th>
+                <th class="py-3 px-4">User Name</th>
+                <th class="py-3 px-4 text-right">Amount</th>
+                <th class="py-3 px-4 text-center">Payment Status</th>
+                <th class="py-3 px-4">Failure Reason</th>
+                <th class="py-3 px-4 text-center">Cashfree Response</th>
+              </tr>
+            </thead>
+            <tbody id="payment-debug-table-rows">
+              <tr>
+                <td colspan="8" class="text-center py-12 text-slate-400 italic font-light text-xs">Accumulating payment debug registries...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- SUB-VIEW 2: COURSE CRUD MANAGER -->
@@ -1650,6 +1714,9 @@
         if (typeof window.updateRecoveryTelemetry === "function") {
           window.updateRecoveryTelemetry();
         }
+        if (typeof window.renderPaymentDebugRows === "function") {
+          window.renderPaymentDebugRows();
+        }
       });
 
       // Synchronize real-time server audit traces
@@ -1982,6 +2049,108 @@
           } else {
             div.classList.add("hidden");
           }
+        }
+      };
+
+      window.renderPaymentDebugRows = function() {
+        const tbody = document.getElementById("payment-debug-table-rows");
+        if (!tbody) return;
+
+        const draftsObj = localDB.cashfreeDraftOrders || {};
+        const drafts = Object.values(draftsObj);
+
+        // Sort chronologically descending
+        drafts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+        const query = (document.getElementById("debug-search-box")?.value || "").toLowerCase().trim();
+        const statusFilter = document.getElementById("debug-status-filter")?.value || "ALL";
+
+        let html = "";
+        let displayedCount = 0;
+
+        drafts.forEach(o => {
+          const oId = o.orderId || "N/A";
+          const sName = o.studentName || "N/A";
+          const sEmail = o.studentEmail || "N/A";
+          const amount = parseFloat(o.finalAmount || o.price || 0);
+          
+          let stat = (o.status || "INITIATED").toUpperCase();
+          if (o.payment_status === "SUCCESS" || o.payment_status === "PAID") {
+            stat = "SUCCESS";
+          }
+          
+          if (statusFilter !== "ALL" && stat !== statusFilter) {
+            return;
+          }
+
+          const matchText = oId.toLowerCase().includes(query) ||
+                            sName.toLowerCase().includes(query) ||
+                            sEmail.toLowerCase().includes(query);
+          if (!matchText) return;
+
+          displayedCount++;
+
+          const tStr = o.timestamp ? new Date(o.timestamp).toLocaleString("en-IN") : "N/A";
+          const txId = o.paymentSessionId || "N/A";
+
+          let badge = "";
+          if (stat === "SUCCESS" || stat === "PAID") {
+            badge = `<span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-extrabold rounded-full text-[10px] uppercase tracking-wide flex items-center justify-center gap-1 w-max mx-auto"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span> SUCCESS</span>`;
+          } else if (stat === "ACTIVE") {
+            badge = `<span class="px-2 py-0.5 bg-amber-100 text-amber-800 font-extrabold rounded-full text-[10px] uppercase tracking-wide flex items-center justify-center gap-1 w-max mx-auto"><span class="w-1.5 h-1.5 bg-amber-500 rounded-full"></span> ACTIVE</span>`;
+          } else if (stat === "FAILED") {
+            badge = `<span class="px-2 py-0.5 bg-rose-100 text-rose-800 font-extrabold rounded-full text-[10px] uppercase tracking-wide flex items-center justify-center gap-1 w-max mx-auto"><span class="w-1.5 h-1.5 bg-rose-500 rounded-full"></span> FAILED</span>`;
+          } else {
+            badge = `<span class="px-2 py-0.5 bg-slate-100 text-slate-500 font-bold rounded-full text-[10px] uppercase tracking-wide flex items-center justify-center gap-1 w-max mx-auto">${stat}</span>`;
+          }
+
+          const fReason = o.failureReason || o.terminalError || "-";
+          const rawResponse = o.cashfreeResponse;
+          let viewBtnHtml = `<span class="text-slate-300 italic text-3xs">-</span>`;
+          if (rawResponse) {
+            const containerId = `cf_resp_view_${oId.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            viewBtnHtml = `
+              <div class="font-sans">
+                <button onclick="toggleAuditJson('${containerId}')" class="px-1.5 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded text-[8px] uppercase tracking-wider">Show Raw</button>
+                <div id="${containerId}" class="hidden mt-2 p-2 bg-slate-900 text-emerald-405 border border-slate-800 rounded-xl text-left font-mono text-[9px] overflow-x-auto max-w-[240px] whitespace-pre-wrap select-all leading-normal">
+                  ${escapeHtml(rawResponse)}
+                </div>
+              </div>
+            `;
+          }
+
+          html += `
+            <tr class="border-b border-slate-100 hover:bg-slate-50/65 text-[11px] text-slate-700 font-medium transition">
+              <td class="py-3.5 px-4 font-mono text-slate-455 text-[10px] whitespace-nowrap">${tStr}</td>
+              <td class="py-3.5 px-4 font-mono font-extrabold text-orange-600 whitespace-nowrap">${oId}</td>
+              <td class="py-3.5 px-4 font-mono text-slate-500 text-[10px] leading-relaxed break-all max-w-[140px]" title="${txId}">${txId}</td>
+              <td class="py-3.5 px-4">
+                <span class="font-bold text-slate-800 block">${sName}</span>
+                <span class="text-[10px] text-slate-400 block">${sEmail}</span>
+              </td>
+              <td class="py-3.5 px-4 text-right font-black text-slate-900 font-mono">₹${amount.toFixed(2)}</td>
+              <td class="py-3.5 px-4 text-center">${badge}</td>
+              <td class="py-3.5 px-4 text-[10px] font-semibold text-rose-600 truncate max-w-[150px]" title="${fReason}">${fReason}</td>
+              <td class="py-3.5 px-4 text-center">${viewBtnHtml}</td>
+              <input type="hidden" />
+            </tr>
+          `;
+        });
+
+        if (displayedCount === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="8" class="text-center py-12 text-slate-400 italic font-light text-xs">No checkout attempts found matching criteria.</td>
+            </tr>
+          `;
+        } else {
+          tbody.innerHTML = html;
+        }
+      };
+
+      window.refreshPaymentDebugData = function() {
+        if (typeof window.renderPaymentDebugRows === "function") {
+          window.renderPaymentDebugRows();
         }
       };
 
