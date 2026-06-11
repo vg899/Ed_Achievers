@@ -9,6 +9,7 @@
   <!-- Load Font Awesome & Google Fonts directly -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   
   <style>
     body {
@@ -225,15 +226,36 @@
       </div>
     </div>
 
-    <!-- Recommended Courses Grid Section -->
-    <div class="space-y-3.5">
-      <div class="flex justify-between items-center">
-        <h2 class="text-base font-bold text-slate-800">Hot Recommended Preparation Courses</h2>
-        <span class="text-2xs text-orange-500 font-bold hover:underline cursor-pointer" onclick="filterCourses('ALL')">View All</span>
+    <!-- Recommended Courses Grid Section with separate Free and Premium Course structures -->
+    <div class="space-y shadow-none">
+      <!-- Free Courses Section -->
+      <div class="space-y shadow-none">
+        <div class="flex justify-between items-center">
+          <h2 class="text-base font-extrabold text-slate-800 flex items-center gap-1.5">
+            <span>🟢 Free Courses</span>
+            <span class="text-[9px] bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded font-black uppercase tracking-wider">No Cost</span>
+          </h2>
+        </div>
+        <div id="free-courses-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- dyn pop -->
+        </div>
       </div>
-      <div id="recommended-courses" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <!-- dyn pop -->
+
+      <!-- Premium Courses Section -->
+      <div class="space-y shadow-none mt-6">
+        <div class="flex justify-between items-center">
+          <h2 class="text-base font-extrabold text-slate-800 flex items-center gap-1.5">
+            <span>🟠 Premium Courses</span>
+            <span class="text-[9px] bg-orange-50 text-orange-700 px-1.5 py-0.5 rounded font-black uppercase tracking-wider">Direct Admission</span>
+          </h2>
+        </div>
+        <div id="premium-courses-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- dyn pop -->
+        </div>
       </div>
+
+      <!-- Keep hidden fallback for backward compatibility -->
+      <div id="recommended-courses" class="hidden"></div>
     </div>
 
     <!-- Promotional Banner center grid (populated dynamically) -->
@@ -1142,7 +1164,7 @@
           <label class="block text-4xs font-bold text-slate-450 uppercase tracking-widest"><i class="fa-solid fa-credit-card text-orange-500 mr-1"></i> SELECT SECURE PAYMENT OPTION</label>
           <div class="grid grid-cols-1 gap-2">
             <!-- UPI Option -->
-            <label class="co-pm-option flex items-center justify-between p-3.5 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50 transition active:scale-99" id="co-pm-upi-label">
+            <label class="co-pm-option flex items-center justify-between p-3.5 border border-orange-500 bg-orange-50/20 rounded-2xl cursor-pointer hover:bg-slate-50 transition active:scale-99" id="co-pm-upi-label">
               <div class="flex items-center gap-3">
                 <input type="radio" name="checkoutPaymentMethod" value="UPI" checked onclick="highlightPaymentChoice('upi')" class="accent-orange-500">
                 <div>
@@ -1151,9 +1173,20 @@
                 </div>
               </div>
               <div class="flex items-center gap-1.5">
-                <i class="fa-brands fa-google-pay text-lg text-blue-600"></i>
-                <i class="fas fa-qrcode text-slate-400 text-xs"></i>
+                <i class="fa-brands fa-google-pay text-lg text-blue-600 font-bold"></i>
               </div>
+            </label>
+
+            <!-- QR Code Scan & Pay Option -->
+            <label class="co-pm-option flex items-center justify-between p-3.5 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50 transition active:scale-99" id="co-pm-qrcode-label">
+              <div class="flex items-center gap-3">
+                <input type="radio" name="checkoutPaymentMethod" value="QRCODE" onclick="highlightPaymentChoice('qrcode')" class="accent-orange-500">
+                <div>
+                  <span class="text-xs font-bold text-slate-800 block">UPI QR Scan & Pay (Dynamic QR)</span>
+                  <span class="text-5xs text-slate-400 block mt-0.5">Generate customized on-screen QR. Scan with phonepe, paytm, etc.</span>
+                </div>
+              </div>
+              <i class="fas fa-qrcode text-slate-500 text-xs"></i>
             </label>
 
             <!-- Cards Option -->
@@ -1317,6 +1350,46 @@
           </button>
           <button onclick="dismissPrompter()" class="py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium rounded-2xl transition text-2xs cursor-pointer uppercase">
             Go to dashboard
+          </button>
+        </div>
+      </div>
+
+      <!-- Stage 5: Scan & Pay QR Code dynamic modal -->
+      <div id="pay-prompter-qr-pane" class="hidden space-y-4 w-full flex flex-col items-center py-2">
+        <div class="space-y-1 text-center">
+          <h3 class="text-sm font-black text-slate-800 uppercase tracking-tight flex items-center justify-center gap-1.5">
+            <i class="fa fa-qrcode text-orange-500 animate-pulse"></i> Scan & Pay UPI QR
+          </h3>
+          <p class="text-[10px] text-slate-400 font-medium px-4 leading-normal">
+            Scan using Google Pay, PhonePe, Paytm, or any UPI App to unlock your course immediately.
+          </p>
+        </div>
+        
+        <!-- Generated brand-orange QR Image -->
+        <div class="relative p-3 bg-orange-50/10 border border-orange-100 rounded-[24px] shadow-sm flex items-center justify-center">
+          <img id="pay-qr-image" src="" alt="UPI Payment QR" class="w-48 h-48 rounded-xl bg-white shadow" />
+          <!-- Small center logo inner element inside QR code -->
+          <div class="absolute w-8 h-8 rounded-full bg-white shadow flex items-center justify-center border border-orange-200">
+            <i class="fa fa-mortar-board text-orange-500 text-xs"></i>
+          </div>
+        </div>
+
+        <div class="space-y-1 block text-center w-full">
+          <div class="text-[11px] font-black font-mono text-slate-800">
+            Amount: <span id="pay-qr-amount" class="text-orange-500">₹0.00</span>
+          </div>
+          <div class="text-[9px] text-amber-600 font-bold bg-amber-50 rounded-lg px-2.5 py-1 border border-amber-100 inline-flex items-center gap-1">
+            <i class="fas fa-circle-notch animate-spin text-[8px]"></i> WAITING FOR VERIFICATION...
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-2 w-full">
+          <button id="pay-qr-check-status-btn" onclick="checkQrPaymentStatus()" class="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white font-extrabold rounded-2xl transition text-xs uppercase tracking-wide cursor-pointer flex items-center justify-center gap-1.5 shadow-md">
+            <i class="fa fa-sync" id="pay-qr-spinner"></i> Verify My Payment
+          </button>
+          
+          <button onclick="dismissPrompter()" class="w-full py-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 font-semibold rounded-2xl text-[10px] uppercase">
+            Cancel Payment
           </button>
         </div>
       </div>
@@ -1938,22 +2011,53 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
 
     // Dynamic lists renderers
     function renderCourses() {
-      const container = document.getElementById("recommended-courses");
-      if (!container) return;
-      container.innerHTML = "";
+      const freeContainer = document.getElementById("free-courses-grid");
+      const premiumContainer = document.getElementById("premium-courses-grid");
+      const oldContainer = document.getElementById("recommended-courses");
+      
+      if (oldContainer) oldContainer.innerHTML = "";
+      if (freeContainer) freeContainer.innerHTML = "";
+      if (premiumContainer) premiumContainer.innerHTML = "";
+
+      let freeCount = 0;
+      let premiumCount = 0;
 
       Object.values(localDBInstance.courses).forEach(course => {
+        const isFree = course.courseType === "free";
         const discountedPrice = Math.round(parseFloat(course.price) * (1 - parseFloat(course.discountPercent) / 100));
         
         const card = document.createElement("div");
         card.className = "bg-white rounded-3xl overflow-hidden shadow-md border border-slate-100 flex flex-col relative hover:shadow-lg transition cursor-pointer hover:scale-[1.01] duration-300";
         card.id = `course-card-${course.id}`;
         card.setAttribute("onclick", `openCourseDetailsPageView('${course.id}')`);
+
+        const badgeHtml = isFree
+          ? `<span class="absolute top-3 right-3 bg-emerald-500 text-white font-extrabold text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-lg">🟢 FREE COURSE</span>`
+          : `<span class="absolute top-3 right-3 bg-orange-500 text-white font-extrabold text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-lg">🟠 PAID COURSE</span>`;
+
+        const tagHtml = isFree
+          ? `<span class="absolute top-3 left-3 bg-emerald-600 text-white font-extrabold text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-lg">${course.examType} Freebie</span>`
+          : `<span class="absolute top-3 left-3 bg-orange-500 text-white font-extrabold text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-lg">${course.examType} Special</span>`;
+
+        const priceBlockHtml = isFree
+          ? `<div class="space-y-0.5">
+               <span class="text-slate-400 text-4xs font-bold font-mono">Original: ₹0</span>
+               <span class="text-base font-black text-emerald-600 block leading-none font-mono font-sans">FREE</span>
+             </div>`
+          : `<div class="space-y-0.5">
+               <span class="text-slate-400 line-through text-4xs font-bold font-mono">₹${course.price}</span>
+               <span class="text-base font-black text-orange-650 block leading-none font-mono">₹${discountedPrice}</span>
+             </div>`;
+
+        const actionBtnHtml = isFree
+          ? `<button onclick="event.stopPropagation(); enrollInFreeCourse('${course.id}')" class="px-3.5 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black rounded-xl text-3xs shadow-md shadow-emerald-100 hover:shadow-emerald-200 transition cursor-pointer">Enroll Now</button>`
+          : `<button onclick="event.stopPropagation(); initiateCheckout('${course.id}', ${course.price})" class="px-3.5 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white font-black rounded-xl text-3xs shadow-md shadow-orange-100 hover:shadow-orange-200 transition cursor-pointer">Buy now</button>`;
+
         card.innerHTML = `
           <div class="relative h-44 w-full bg-slate-50">
             <img src="${course.thumbnail}" alt="${course.title}" class="w-full h-full object-cover">
-            <span class="absolute top-3 left-3 bg-orange-500 text-white font-extrabold text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-lg">${course.examType} Special</span>
-            <span class="absolute top-3 right-3 bg-red-500 text-white font-black text-[9px] px-2 py-0.5 rounded-lg">${course.discountPercent}% OFF</span>
+            ${tagHtml}
+            ${badgeHtml}
           </div>
           <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
             <div class="space-y-1">
@@ -1966,19 +2070,41 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
             </div>
 
             <div class="flex items-center justify-between pt-1">
-              <div class="space-y-0.5">
-                <span class="text-slate-400 line-through text-4xs font-bold font-mono">₹${course.price}</span>
-                <span class="text-base font-black text-orange-650 block leading-none font-mono">₹${discountedPrice}</span>
-              </div>
+              ${priceBlockHtml}
               <div class="flex gap-1.5">
-                <button onclick="event.stopPropagation(); initiateCheckout('${course.id}', ${course.price})" class="px-3.5 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white font-black rounded-xl text-3xs shadow-md shadow-orange-100 hover:shadow-orange-200 transition cursor-pointer">Buy now</button>
+                ${actionBtnHtml}
                 <button onclick="event.stopPropagation(); openCourseDetailsPageView('${course.id}')" class="px-2.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold rounded-xl text-3xs transition cursor-pointer">Details</button>
               </div>
             </div>
           </div>
         `;
-        container.appendChild(card);
+
+        if (isFree) {
+          freeCount++;
+          if (freeContainer) freeContainer.appendChild(card);
+        } else {
+          premiumCount++;
+          if (premiumContainer) premiumContainer.appendChild(card);
+        }
       });
+
+      // Show empty state placeholders if counts are zero
+      if (freeCount === 0 && freeContainer) {
+        freeContainer.innerHTML = `
+          <div class="col-span-full py-8 text-center text-slate-400 italic text-2xs bg-slate-50 border border-dashed rounded-3xl p-6">
+            <p class="font-bold text-slate-500 mb-0.5">No free courses published yet</p>
+            <p class="text-[10px]">Unlock regular premium prep courses below or check back later!</p>
+          </div>
+        `;
+      }
+      if (premiumCount === 0 && premiumContainer) {
+        premiumContainer.innerHTML = `
+          <div class="col-span-full py-8 text-center text-slate-400 italic text-2xs bg-slate-50 border border-dashed rounded-3xl p-6">
+            <p class="font-bold text-slate-500 mb-0.5">No premium target batches live</p>
+            <p class="text-[10px]">Our expert team is compiling high-yield CTET, KVS & SuperTET courses.</p>
+          </div>
+        `;
+      }
     }
 
     function renderHomeBannersAndSlider() {
@@ -2393,7 +2519,7 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
       });
     }
 
-    // 3. CASHFREE PAYMENTS SECURITY ENGINE & SUBSCRIPTION UNLOCKING
+    // 3. RAZORPAY PAYMENTS SECURITY ENGINE & SUBSCRIPTION UNLOCKING
     let activeCheckoutCourseId = "";
     let activeCheckoutCoursePrice = 0;
     let currentNetPrice = 0;
@@ -2402,6 +2528,63 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
     let lastFailedCourseId = "";
     let lastFailedPrice = 0;
     let pendingTimerInterval = null;
+
+    window.enrollInFreeCourse = function(courseId) {
+      if (!currentUser) {
+        alert("Please authorize your profile first by logging in/signing up to enroll in this free course!");
+        document.getElementById("auth-screen").classList.remove("hidden");
+        return;
+      }
+
+      if (localDBInstance.purchasedCourses && localDBInstance.purchasedCourses[courseId]) {
+        alert("Awesome! You are already enrolled in this course!");
+        navigateTab('mycourses', document.querySelector('[onclick*="mycourses"]'));
+        return;
+      }
+
+      const courseTitle = localDBInstance.courses[courseId]?.title || "Free Preparatory Course";
+      const orderId = "FREE-" + Date.now() + "-" + Math.floor(1000 + Math.random() * 9000);
+
+      // Write entitlement changes to Firebase database
+      const userSubsRef = ref(db, `users/${currentUser.uid}/purchasedCourses/${courseId}`);
+      
+      set(userSubsRef, {
+        unlockedAt: Date.now(),
+        orderId: orderId,
+        amountPaid: "0",
+        discountApplied: "0",
+        couponCode: "FREE",
+        courseTitle: courseTitle,
+        isFree: true
+      }).then(() => {
+        // Post unified transaction record under /transactions for analytical integrity on admin board
+        const txRef = ref(db, `transactions/${orderId}`);
+        set(txRef, {
+          orderId,
+          uid: currentUser.uid,
+          name: currentUser.displayName || "Verified Scholar",
+          email: currentUser.email || "student@edachievers.com",
+          courseId,
+          courseName: courseTitle,
+          amount: "0",
+          discount: "0",
+          coupon: "FREE",
+          isFree: true,
+          status: "SUCCESS",
+          timestamp: new Date().toISOString()
+        }).then(() => {
+          alert("Instant Enrollment Successful!\nThe free preparatory courses have been successfully unlocked and mapped to your Classroom dashboard.");
+          
+          // Refresh details view if open
+          window.openCourseDetailsPageView(courseId);
+          
+          // Re-route to my classroom tab
+          navigateTab('mycourses', document.querySelector('[onclick*="mycourses"]'));
+        });
+      }).catch(err => {
+        alert("Enrollment Sync Error: " + err.message);
+      });
+    };
 
     window.initiateCheckout = function(courseId, price) {
       if (!currentUser) {
@@ -2697,7 +2880,7 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
       // Rule 7: Add Payment Debug Logs: Order Created
       console.log("%c[PAYMENT_DEBUG] Order Created Triggered on client side", "color: #f97316; font-weight: bold", payload);
 
-      // Rule 1: Never create Cashfree orders directly from frontend JavaScript. Order creation triggers secure backend API.
+      // Rule 1: Never create Razorpay orders directly from frontend JavaScript. Order creation triggers secure backend API.
       fetch("/api/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -2710,10 +2893,10 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
             ? `${data.error}${data.details ? " - " + JSON.stringify(data.details) : ""}`
             : "Payment gateway is temporarily unavailable. Please try again later.";
           
-          console.error("=== CASHFREE PAYMENT SETUP FAILURE ===");
+          console.error("=== RAZORPAY PAYMENT SETUP FAILURE ===");
           console.error("Order Request:", payload);
           if (data) {
-            console.error("Order Response / Cashfree Error:", data);
+            console.error("Order Response / Razorpay Error:", data);
           }
           
           throw new Error(errorMsg);
@@ -2721,29 +2904,122 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
         return res.json();
       })
       .then(orderData => {
-        // Prevent checkout opening if payment_session_id is missing
-        if (!orderData.paymentSessionId) {
-          console.error("=== CASHFREE PAYMENT COMPLIANCE FAILURE ===");
+        // Prevent checkout opening if razorpayOrderId is missing
+        if (!orderData.razorpayOrderId) {
+          console.error("=== RAZORPAY PAYMENT COMPLIANCE FAILURE ===");
           console.error("Order Request:", payload);
           console.error("Order Response:", orderData);
-          console.error("Cashfree Error: Handshake missing valid paymentSessionId.");
-          throw new Error("Unable to open checkout: Missing paymentSessionId in gateway response.");
+          console.error("Razorpay Error: Handshake missing valid razorpayOrderId.");
+          throw new Error("Unable to open checkout: Missing razorpayOrderId in gateway response.");
         }
 
-        console.log("=== CASHFREE PAYMENT SETUP SUCCESS ===");
+        console.log("=== RAZORPAY PAYMENT SETUP SUCCESS ===");
         console.log("Order Request:", payload);
         console.log("Order Response:", orderData);
-        console.log("Session ID:", orderData.paymentSessionId);
 
-        // Open checkout url
-        window.location.href = orderData.paymentUrl;
+        // Find selected choice
+        const methodCheck = document.querySelector('input[name="checkoutPaymentMethod"]:checked');
+        const selectedMethod = methodCheck ? methodCheck.value : "UPI";
+
+        // Restore pay button
+        if (pBtn) {
+          pBtn.disabled = false;
+          pBtn.innerHTML = `<i class="fas fa-lock"></i> <span>SECURE PAY</span> <i class="fa fa-arrow-right text-[10px]"></i>`;
+        }
+
+        if (selectedMethod === "QRCODE") {
+          // Stage 5: Show the Dynamic QR Code overlay
+          document.getElementById("payment-status-prompter").classList.remove("hidden");
+          document.getElementById("pay-prompter-loading-pane").classList.add("hidden");
+          document.getElementById("pay-prompter-success-pane").classList.add("hidden");
+          document.getElementById("pay-prompter-pending-pane").classList.add("hidden");
+          document.getElementById("pay-prompter-failed-pane").classList.add("hidden");
+          
+          document.getElementById("pay-prompter-qr-pane").classList.remove("hidden");
+          
+          // Set dynamic QR attributes
+          const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&color=f97316&data=${encodeURIComponent(orderData.upiLink)}`;
+          document.getElementById("pay-qr-image").src = qrUrl;
+          document.getElementById("pay-qr-amount").innerText = "₹" + orderData.finalAmount.toFixed(2);
+
+          let isPolling = false;
+          window.checkQrPaymentStatus = function() {
+            if (isPolling) return;
+            isPolling = true;
+            const spinner = document.getElementById("pay-qr-spinner");
+            if (spinner) spinner.className = "fa fa-sync animate-spin";
+            
+            fetch(`/api/check-payment-status?orderId=${orderData.orderId}`)
+            .then(res => res.json())
+            .then(checkResult => {
+              if (spinner) spinner.className = "fa fa-sync";
+              isPolling = false;
+              
+              if (checkResult.status === "SUCCESS") {
+                console.log("[PAYMENT_DEBUG] UPI QR scan payment detected as paid!");
+                window.location.href = `/user.html?payment_status=SUCCESS&order_id=${orderData.orderId}&course_id=${orderData.courseId || orderData.courseName}&amount=${orderData.finalAmount}&discount=${orderData.discount}&coupon=${payload.couponCode || ""}&razorpay_payment_id=${checkResult.transactionId || 'TXN_QR_CONFIRM'}&razorpay_order_id=${orderData.razorpayOrderId}`;
+              } else {
+                alert("Payment Verification:\nNo completed payment has been captured yet. Please scan the QR code and authorize payment in your UPI app first.");
+              }
+            })
+            .catch(err => {
+              if (spinner) spinner.className = "fa fa-sync";
+              isPolling = false;
+              console.error("Error polling QR payment:", err);
+              alert("Connection latency checked. Please retry Verify shortly.");
+            });
+          };
+          return;
+        }
+
+        // If server indicated mock simulation mode is engaged
+        if (orderData.simulated === true) {
+          console.log("[PAYMENT_DEBUG] Simulated mode bypass online.");
+          alert("Development Sandbox Active:\nSimulating custom Razorpay transaction checkout page flow.");
+          window.location.href = `/user.html?payment_status=SUCCESS&order_id=${orderData.orderId}&course_id=${orderData.courseId}&amount=${orderData.finalAmount}&discount=${orderData.discount}&coupon=${payload.couponCode || ""}&razorpay_payment_id=TXN_SIM_${Date.now()}&razorpay_order_id=${orderData.razorpayOrderId}`;
+          return;
+        }
+
+        // Initialize Native Razorpay Web Checkout Integration
+        const options = {
+          "key": orderData.keyId || "rzp_test_T0HmDojSRbiVEr",
+          "amount": Math.round(orderData.finalAmount * 100), // in paise
+          "currency": "INR",
+          "name": "Ed Achievers",
+          "description": orderData.courseName || "Teacher Training Prep course",
+          "order_id": orderData.razorpayOrderId,
+          "handler": function (response) {
+            console.log("%c[PAYMENT_DEBUG] Razorpay Payment Handshake Complete", "color: #10b981; font-weight: bold", response);
+            window.location.href = `/user.html?payment_status=SUCCESS&order_id=${orderData.orderId}&course_id=${orderData.courseId}&amount=${orderData.finalAmount}&discount=${orderData.discount}&coupon=${payload.couponCode || ""}&razorpay_payment_id=${response.razorpay_payment_id}&razorpay_order_id=${response.razorpay_order_id}&razorpay_signature=${response.razorpay_signature}`;
+          },
+          "prefill": {
+            "name": payload.studentName,
+            "email": payload.studentEmail,
+            "contact": payload.studentPhone
+          },
+          "theme": {
+            "color": "#f97316"
+          },
+          "modal": {
+            "ondismiss": function() {
+              console.log("[PAYMENT_DEBUG] Razorpay checkout dismiss handler completed");
+              if (pBtn) {
+                pBtn.disabled = false;
+                pBtn.innerHTML = `<i class="fas fa-lock"></i> <span>SECURE PAY</span> <i class="fa fa-arrow-right text-[10px]"></i>`;
+              }
+            }
+          }
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.open();
       })
       .catch(err => {
-        console.error("=== CASHFREE CONNECT ERROR ===");
+        console.error("=== RAZORPAY CONNECT ERROR ===");
         console.error("Detailed network or protocol error:", err);
         
-        // Show actual Cashfree error details
-        alert("Payment Gateaway Error:\n" + err.message);
+        // Show actual Razorpay error details
+        alert("Payment Gateway Error:\n" + err.message);
         if (pBtn) {
           pBtn.disabled = false;
           pBtn.innerHTML = `<i class="fas fa-lock"></i> <span>SECURE PAY</span> <i class="fa fa-arrow-right text-[10px]"></i>`;
@@ -2786,7 +3062,12 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
 
       const uid = currentUser ? currentUser.uid : "anonymous";
       
-      fetch(`/api/verify-payment?orderId=${orderId}&courseId=${courseId}&uid=${uid}`)
+      const qParams = new URLSearchParams(window.location.search);
+      const rPayId = qParams.get("razorpay_payment_id") || "";
+      const rOrderId = qParams.get("razorpay_order_id") || "";
+      const rSig = qParams.get("razorpay_signature") || "";
+
+      fetch(`/api/verify-payment?orderId=${orderId}&courseId=${courseId}&uid=${uid}&razorpayPaymentId=${rPayId}&razorpayOrderId=${rOrderId}&razorpaySignature=${rSig}`)
       .then(res => res.json())
       .then(verifiedData => {
         if (verifiedData.status === "SUCCESS") {
@@ -3290,10 +3571,22 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
       });
 
       // Load Pricing details & Action Button
+      const isFree = course.courseType === "free";
       const discPrice = Math.round(parseFloat(course.price) * (1 - parseFloat(course.discountPercent) / 100));
-      document.getElementById("details-pricing-final").innerText = `₹${discPrice}`;
-      document.getElementById("details-pricing-base").innerText = `₹${course.price}`;
-      document.getElementById("details-pricing-discount").innerText = `${course.discountPercent || "0"}% OFF`;
+      
+      if (isFree) {
+        document.getElementById("details-pricing-final").innerText = `FREE`;
+        document.getElementById("details-pricing-base").innerText = `Original Value: ₹0`;
+        document.getElementById("details-pricing-discount").innerText = `🟢 NO COST`;
+      } else {
+        document.getElementById("details-pricing-final").innerText = `₹${discPrice}`;
+        document.getElementById("details-pricing-base").innerText = `₹${course.price}`;
+        document.getElementById("details-pricing-discount").innerText = `${course.discountPercent || "0"}% OFF`;
+      }
+
+      // Course Type badges on Details Page Header Tag
+      const typeBadgeString = isFree ? "🟢 FREE COURSE" : "🟠 PAID COURSE";
+      document.getElementById("details-course-exam").innerText = `${course.examType || 'CTET'} Prep Special | ${typeBadgeString}`;
 
       const actionBtnContainer = document.getElementById("details-action-button-container");
       const isOwned = localDBInstance.purchasedCourses && localDBInstance.purchasedCourses[courseId];
@@ -3305,11 +3598,19 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
           </button>
         `;
       } else {
-        actionBtnContainer.innerHTML = `
-          <button onclick="initiateCheckout('${courseId}', ${course.price})" class="w-full py-3.5 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-650 text-white font-extrabold text-xs rounded-2xl shadow-md hover:shadow-orange-200/50 hover:scale-[1.01] transition-all flex items-center justify-center gap-1.5 cursor-pointer">
-            <i class="fa fa-bolt"></i> Enroll Now &amp; Unlock
-          </button>
-        `;
+        if (isFree) {
+          actionBtnContainer.innerHTML = `
+            <button onclick="enrollInFreeCourse('${courseId}')" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-650 text-white font-extrabold text-xs rounded-2xl shadow-md hover:shadow-emerald-250/50 hover:scale-[1.01] transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+              <i class="fa fa-unlock"></i> Enroll Now ↓ Instant Access
+            </button>
+          `;
+        } else {
+          actionBtnContainer.innerHTML = `
+            <button onclick="initiateCheckout('${courseId}', ${course.price})" class="w-full py-3.5 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-650 text-white font-extrabold text-xs rounded-2xl shadow-md hover:shadow-orange-200/50 hover:scale-[1.01] transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+              <i class="fa fa-bolt"></i> Buy Now ↓ Unlock Course
+            </button>
+          `;
+        }
       }
 
       // Render Related exam batches slider recommendation list (excluding current)

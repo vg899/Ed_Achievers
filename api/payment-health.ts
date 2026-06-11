@@ -1,4 +1,4 @@
-import { checkCashfreeHealth, readFromRtdb } from "./lib/payment-service";
+import { checkRazorpayHealth, readFromRtdb } from "./lib/payment-service";
 
 export default async function handler(req: any, res: any) {
   res.setHeader("Access-Control-Allow-Credentials", "true");
@@ -14,7 +14,7 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const health = await checkCashfreeHealth();
+    const health = await checkRazorpayHealth();
     
     // Supplement with operational statistics from our database
     const draftStats = await readFromRtdb("cashfree_draft_orders") || {};

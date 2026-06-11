@@ -70,23 +70,24 @@ app.post("/api/gemini/assistant", async (req, res) => {
   }
 });
 
-// 2. Production Cashfree Payment System Gateway & Verification
+// 2. Production Razorpay Payment System Gateway & Verification
 import createOrderHandler from "./api/create-order";
 import verifyPaymentHandler from "./api/verify-payment";
 import checkPaymentStatusHandler from "./api/check-payment-status";
 import paymentHealthHandler from "./api/payment-health";
-import webhookHandler from "./api/payment-webhook";
 
-// Bind routes to ensure backward compatibility and Vercel standards
+// Bind routes to ensure backward compatibility and Razorpay standards
 app.post("/api/create-order", createOrderHandler);
-app.post("/api/cashfree/create-order", createOrderHandler);
+app.post("/api/razorpay/create-order", createOrderHandler);
 
 app.get("/api/verify-payment", verifyPaymentHandler);
-app.get("/api/cashfree/verify-payment", verifyPaymentHandler);
+app.get("/api/razorpay/verify-payment", verifyPaymentHandler);
+
+app.post("/api/verify-payment", verifyPaymentHandler);
+app.post("/api/razorpay/verify-payment", verifyPaymentHandler);
 
 app.get("/api/check-payment-status", checkPaymentStatusHandler);
 app.get("/api/payment-health", paymentHealthHandler);
-app.post("/api/payment-webhook", webhookHandler);
 
 // Serve frontend assets
 if (process.env.NODE_ENV !== "production") {

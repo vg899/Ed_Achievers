@@ -242,6 +242,38 @@
         </div>
       </div>
 
+      <!-- Course Type & Enrollment metrics row -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded-3xl border border-slate-104 shadow-sm flex items-center gap-3">
+          <div class="w-10 h-10 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 shrink-0"><i class="fas fa-unlock"></i></div>
+          <div>
+            <span class="text-5xs text-slate-400 uppercase tracking-wider font-bold block">Free Courses</span>
+            <span id="stat-free-courses" class="text-md font-extrabold text-slate-850 block leading-none">0</span>
+          </div>
+        </div>
+        <div class="bg-white p-4 rounded-3xl border border-slate-104 shadow-sm flex items-center gap-3">
+          <div class="w-10 h-10 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600 shrink-0"><i class="fas fa-lock"></i></div>
+          <div>
+            <span class="text-5xs text-slate-400 uppercase tracking-wider font-bold block">Premium Paid Courses</span>
+            <span id="stat-paid-courses" class="text-md font-extrabold text-slate-850 block leading-none">0</span>
+          </div>
+        </div>
+        <div class="bg-white p-4 rounded-3xl border border-slate-104 shadow-sm flex items-center gap-3">
+          <div class="w-10 h-10 bg-teal-50 rounded-2xl flex items-center justify-center text-teal-650 shrink-0"><i class="fas fa-graduation-cap"></i></div>
+          <div>
+            <span class="text-5xs text-slate-400 uppercase tracking-wider font-bold block">Free Enrollments</span>
+            <span id="stat-free-enrolls" class="text-md font-extrabold text-slate-850 block leading-none">0</span>
+          </div>
+        </div>
+        <div class="bg-white p-4 rounded-3xl border border-slate-104 shadow-sm flex items-center gap-3">
+          <div class="w-10 h-10 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-650 shrink-0"><i class="fas fa-coins"></i></div>
+          <div>
+            <span class="text-5xs text-slate-400 uppercase tracking-wider font-bold block">Paid Purchases</span>
+            <span id="stat-paid-purchases" class="text-md font-extrabold text-slate-850 block leading-none">0</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Financial Transaction logs ledger -->
       <div class="bg-white rounded-3xl p-5 border border-slate-100 shadow-xl space-y-4">
         <h3 class="font-bold text-slate-850 text-xs uppercase tracking-widest"><i class="fas fa-file-invoice-dollar text-emerald-600 mr-1.5"></i> Secure Payment Transaction Ledger</h3>
@@ -479,7 +511,7 @@
             <span>Enterprise Billing & Financial Center</span>
             <span class="text-5xs bg-emerald-100 text-emerald-800 font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Live RTDB Logs</span>
           </h2>
-          <p class="text-3xs text-slate-400 mt-0.5">Track live student cashfree payments, daily payouts, billing reports, and product revenue splits</p>
+          <p class="text-3xs text-slate-400 mt-0.5">Track live student Razorpay payments, daily payouts, billing reports, and product revenue splits</p>
         </div>
         <div class="flex items-center gap-2">
           <button onclick="downloadFinancialCSV()" class="py-2.5 px-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-3xs flex items-center gap-1.5 transition">
@@ -599,7 +631,7 @@
             </thead>
             <tbody id="adv-ledger-rows">
               <tr>
-                <td colspan="7" class="text-center py-8 text-slate-400 italic font-light text-3xs">No recorded Cashfree logs matching current filter profiles.</td>
+                <td colspan="7" class="text-center py-8 text-slate-400 italic font-light text-3xs">No recorded Razorpay logs matching current filter profiles.</td>
               </tr>
             </tbody>
           </table>
@@ -624,7 +656,7 @@
               </span>
             </div>
             <div class="flex justify-between items-center">
-              <span class="text-slate-400 font-semibold">Cashfree Primary Link:</span>
+              <span class="text-slate-400 font-semibold">Razorpay Primary Link:</span>
               <span id="diag-api-status" class="font-bold text-slate-800 flex items-center gap-1">
                 <span class="text-slate-500 font-extrabold flex items-center gap-1"><i class="fa fa-circle text-[5px]"></i> UNINITIALIZED</span>
               </span>
@@ -713,10 +745,10 @@
         <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div>
             <div class="flex items-center gap-1.5">
-              <h3 class="text-xs font-bold text-slate-800 flex items-center gap-1"><i class="fa fa-terminal text-slate-750"></i> Cashfree Payment Security Audit & Telemetry Trace</h3>
+              <h3 class="text-xs font-bold text-slate-800 flex items-center gap-1"><i class="fa fa-terminal text-slate-750"></i> Razorpay Payment Security Audit & Telemetry Trace</h3>
               <span class="text-[8px] bg-red-100 text-red-700 font-extrabold px-2 py-0.5 rounded-full uppercase">Realtime Monitor</span>
             </div>
-            <p class="text-[9px] text-slate-450 mt-1">Tracks system authentication logs, Cashfree error trace, duplicate purchase locks, and auto-unlock states.</p>
+            <p class="text-[9px] text-slate-450 mt-1">Tracks system authentication logs, Razorpay error trace, duplicate purchase locks, and auto-unlock states.</p>
           </div>
         </div>
         <div class="overflow-x-auto">
@@ -728,7 +760,7 @@
                 <th class="py-3 px-4">Level</th>
                 <th class="py-3 px-4">Action Event</th>
                 <th class="py-3 px-4">Trace Details</th>
-                <th class="py-3 px-4 text-center">Cashfree Response</th>
+                <th class="py-3 px-4 text-center">Razorpay Response</th>
               </tr>
             </thead>
             <tbody id="payment-audit-rows">
@@ -751,7 +783,7 @@
             <span class="text-5xs bg-rose-100 text-rose-850 font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">PCI Compliant Monitor</span>
           </h2>
           <p class="text-[11px] text-slate-400 font-semibold mt-1">
-            Debug and audit all real-time Cashfree attempts, checkout sessions, success states, and actual API failure reasons.
+            Debug and audit all real-time Razorpay attempts, checkout sessions, success states, and actual API failure reasons.
           </p>
         </div>
         <button onclick="refreshPaymentDebugData()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">
@@ -790,7 +822,7 @@
                 <th class="py-3 px-4 text-right">Amount</th>
                 <th class="py-3 px-4 text-center">Payment Status</th>
                 <th class="py-3 px-4">Failure Reason</th>
-                <th class="py-3 px-4 text-center">Cashfree Response</th>
+                <th class="py-3 px-4 text-center">Razorpay Response</th>
               </tr>
             </thead>
             <tbody id="payment-debug-table-rows">
@@ -841,12 +873,23 @@
             </select>
           </div>
           <div>
+            <label class="block font-semibold text-slate-500">Course Type</label>
+            <select id="add-course-type" onchange="toggleCoursePricingFields()" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+              <option value="paid">Paid Course</option>
+              <option value="free">Free Course</option>
+            </select>
+          </div>
+          <div id="course-pricing-price-container">
             <label class="block font-semibold text-slate-500">Price tag (₹ INR)</label>
             <input type="number" id="add-course-price" placeholder="1999" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
           </div>
-          <div>
+          <div id="course-pricing-disc-container">
             <label class="block font-semibold text-slate-500">Percent Discount Promo (%)</label>
             <input type="number" id="add-course-disc" placeholder="40" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div id="free-course-settings-alert" class="hidden col-span-full py-3.5 px-4 bg-emerald-50 border border-emerald-150 rounded-2xl text-emerald-800 space-y-1">
+            <p class="font-extrabold flex items-center gap-1.5 text-[11px]">🟢 Free Course Settings Active</p>
+            <p class="font-semibold text-4xs text-emerald-650 opacity-90 leading-tight">No payment required ● Instant enrollment ● Instant access to all lectures ● Instant access to PDFs ● Instant access to tests</p>
           </div>
 
           <!-- Extended Course Meta Specifications -->
@@ -1788,6 +1831,42 @@
         // Display dashboard summary counter
         const revStat = document.getElementById("stat-revenue");
         if (revStat) revStat.innerText = "₹" + Math.round(totalRevenue);
+
+        // Calculate free and paid courses counts
+        let freeCoursesCount = 0;
+        let paidCoursesCount = 0;
+        Object.values(localDB.courses || {}).forEach(c => {
+          if (c.courseType === "free") {
+            freeCoursesCount++;
+          } else {
+            paidCoursesCount++;
+          }
+        });
+
+        // Calculate free enrollments vs paid purchases
+        let freeEnrollmentsCount = 0;
+        let paidPurchasesCount = 0;
+        txArray.forEach(tx => {
+          const tStatus = (tx.status || "SUCCESS").toUpperCase();
+          if (tStatus === "SUCCESS") {
+            if (tx.isFree === true || tx.coupon === "FREE" || tx.amount === 0) {
+              freeEnrollmentsCount++;
+            } else {
+              paidPurchasesCount++;
+            }
+          }
+        });
+
+        // Update elements if they exist
+        const freeCoursesEl = document.getElementById("stat-free-courses");
+        const paidCoursesEl = document.getElementById("stat-paid-courses");
+        const freeEnrollsEl = document.getElementById("stat-free-enrolls");
+        const paidPurchasesEl = document.getElementById("stat-paid-purchases");
+
+        if (freeCoursesEl) freeCoursesEl.innerText = freeCoursesCount;
+        if (paidCoursesEl) paidCoursesEl.innerText = paidCoursesCount;
+        if (freeEnrollsEl) freeEnrollsEl.innerText = freeEnrollmentsCount;
+        if (paidPurchasesEl) paidPurchasesEl.innerText = paidPurchasesCount;
         
         // Advanced metrics display
         const totalRevEl = document.getElementById("adv-stat-total-rev");
@@ -1917,7 +1996,7 @@
         if (renderedCount === 0) {
           dest.innerHTML = `
             <tr>
-              <td colspan="7" class="text-center py-8 text-slate-450 italic text-2xs">No recorded Cashfree logs matched search criteria. Type another query.</td>
+              <td colspan="7" class="text-center py-8 text-slate-450 italic text-2xs">No recorded Razorpay logs matched search criteria. Type another query.</td>
             </tr>
           `;
         }
@@ -2653,15 +2732,27 @@
         const div = document.createElement("div");
         div.className = "bg-white p-4 rounded-3xl border border-slate-100 shadow flex items-center justify-between gap-4";
         div.id = `admin-course-row-${c.id}`;
+        
+        const badge = c.courseType === "free"
+          ? `<span class="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 rounded font-bold text-5xs block w-max uppercase tracking-wider mb-0.5">🟢 FREE COURSE</span>`
+          : `<span class="px-1.5 py-0.5 bg-orange-100 text-orange-650 rounded font-bold text-5xs block w-max uppercase tracking-wider mb-0.5">🟠 PAID COURSE</span>`;
+        
+        const pricingText = c.courseType === "free"
+          ? `<span class="text-4xs font-bold text-emerald-600">Free Access (Instant Unlock)</span>`
+          : `<span class="text-4xs font-bold text-orange-600">₹${c.price} (Discounted -${c.discountPercent || "0"}%)</span>`;
+
         div.innerHTML = `
           <div class="flex items-center gap-3">
             <div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-550 shrink-0">
               <img src="${c.thumbnail}" class="w-full h-full object-cover">
             </div>
             <div>
-              <span class="px-1.5 py-0.5 bg-orange-150 text-orange-650 rounded font-bold text-5xs block w-max uppercase tracking-wider mb-0.5">${c.examType} Category</span>
+              <div class="flex items-center gap-1">
+                <span class="px-1.5 py-0.5 bg-slate-100 text-slate-650 rounded font-bold text-5xs block w-max uppercase tracking-wider mb-0.5">${c.examType} Category</span>
+                ${badge}
+              </div>
               <h4 class="font-bold text-slate-800 text-xs line-clamp-1">${c.title}</h4>
-              <span class="text-4xs font-bold text-orange-600">₹${c.price} (Discounted -${c.discountPercent || "0"}%)</span>
+              ${pricingText}
             </div>
           </div>
           <div class="flex gap-1 shrink-0">
@@ -2679,6 +2770,7 @@
       const title = document.getElementById("add-course-title").value.trim();
       const subtitle = document.getElementById("add-course-subtitle").value.trim();
       const exam = document.getElementById("add-course-exam").value;
+      const courseType = document.getElementById("add-course-type").value;
       const thumb = document.getElementById("add-course-thumb").value.trim();
       const banner = document.getElementById("add-course-banner").value.trim();
       const price = document.getElementById("add-course-price").value.trim();
@@ -2699,8 +2791,8 @@
 
       const desc = document.getElementById("add-course-desc").value.trim();
 
-      if (!cId || !title || !price) {
-        alert("Required error: Must provide Course ID, Title, and Catalog price tags.");
+      if (!cId || !title || (!price && courseType !== "free")) {
+        alert("Required error: Must provide Course ID, Title, and Catalog price tags (for paid courses).");
         return;
       }
 
@@ -2735,10 +2827,11 @@
         title,
         subtitle: subtitle || "Premium Live Target Classroom Series",
         examType: exam,
+        courseType: courseType || "paid",
         thumbnail: thumb || "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=200",
         bannerImage: banner || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800",
-        price,
-        discountPercent: disc || "0",
+        price: courseType === "free" ? "0" : price,
+        discountPercent: courseType === "free" ? "0" : (disc || "0"),
         description: desc || "Comprehensive test preparation, detailed video solutions, assignments, and print-friendly notes.",
         
         duration: duration || "120+ Hours Live Class",
@@ -2771,9 +2864,36 @@
         syncAllAdminData();
       })
       .catch(err => alert("Sync Error: " + err.message));
-    }
+    };
+
+    window.toggleCoursePricingFields = function() {
+      const type = document.getElementById("add-course-type").value;
+      const priceContainer = document.getElementById("course-pricing-price-container");
+      const discContainer = document.getElementById("course-pricing-disc-container");
+      const freeAlert = document.getElementById("free-course-settings-alert");
+
+      if (type === "free") {
+        if (priceContainer) priceContainer.classList.add("hidden");
+        if (discContainer) discContainer.classList.add("hidden");
+        if (freeAlert) freeAlert.classList.remove("hidden");
+        document.getElementById("add-course-price").value = "0";
+        document.getElementById("add-course-disc").value = "0";
+      } else {
+        if (priceContainer) priceContainer.classList.remove("hidden");
+        if (discContainer) discContainer.classList.remove("hidden");
+        if (freeAlert) freeAlert.classList.add("hidden");
+        if (document.getElementById("add-course-price").value === "0") {
+          document.getElementById("add-course-price").value = "";
+        }
+        if (document.getElementById("add-course-disc").value === "0") {
+          document.getElementById("add-course-disc").value = "";
+        }
+      }
+    };
 
     window.clearCourseFormState = function() {
+      document.getElementById("add-course-type").value = "paid";
+      window.toggleCoursePricingFields();
       document.getElementById("add-course-id").value = "";
       document.getElementById("add-course-id").disabled = false;
       document.getElementById("add-course-title").value = "";
@@ -2828,6 +2948,8 @@
       document.getElementById("add-course-title").value = course.title || "";
       document.getElementById("add-course-subtitle").value = course.subtitle || "";
       document.getElementById("add-course-exam").value = course.examType || "CTET";
+      document.getElementById("add-course-type").value = course.courseType || "paid";
+      window.toggleCoursePricingFields();
       document.getElementById("add-course-thumb").value = course.thumbnail || "";
       document.getElementById("add-course-banner").value = course.bannerImage || "";
       document.getElementById("add-course-price").value = course.price || "";
