@@ -73,27 +73,37 @@ app.post("/api/gemini/assistant", async (req, res) => {
 // 2. Production Cashfree Payment System Gateway & Verification
 const verifiedOrdersStore = new Set<string>();
 
-app.post("/api/cashfree/create-order", async (req, res) => {
+// Express handler for order creation
+const createOrderHandler = async (req: any, res: any) => {
   try {
     const { courseId, courseName, price, couponCode, studentId, studentName, studentEmail, studentPhone } = req.body;
 
-    // Rule 4: Validate Course ID exists
+    console.log("[PAYMENT_DEBUG] Order Request Payload:", req.body);
+
+    const appId = process.env.CASHFREE_APP_ID;
+    const secretKey = process.env.CASHFREE_SECRET_KEY;
+    const mode = process.env.CASHFREE_MODE || "sandbox";
+
+    if (!appId || !secretKey) {
+      console.error("[CASHFREE_ERROR] Missing Cashfree API credentials in environment.");
+      return res.status(500).json({
+        error: "Cashfree API configuration is incomplete. Missing CASHFREE_APP_ID or CASHFREE_SECRET_KEY in server environment.",
+        details: "Please configure CASHFREE_APP_ID and CASHFREE_SECRET_KEY in application settings."
+      });
+    }
+
     if (!courseId) {
-      return res.status(400).json({ error: "Validation Failure: Missing classroom course identifier." });
+      return res.status(400).json({ error: "Validation Failure: Missing classroom course identifier (courseId)." });
     }
-
-    // Rule 4: Validate User logged in
     if (!studentId) {
-      return res.status(400).json({ error: "Validation Failure: User must be logged in to create orders." });
+      return res.status(400).json({ error: "Validation Failure: Student must be logged in to create orders (studentId)." });
     }
 
-    // Rule 4: Validate Amount > 0
     const rawPrice = parseFloat(price);
     if (isNaN(rawPrice) || rawPrice <= 0) {
       return res.status(400).json({ error: "Validation Failure: Subtotal price must be greater than zero." });
     }
 
-    // Rule 4: Validate Customer details available
     if (!studentName || studentName.trim() === "") {
       return res.status(400).json({ error: "Validation Failure: Billing Full Name is required." });
     }
@@ -123,237 +133,82 @@ app.post("/api/cashfree/create-order", async (req, res) => {
       finalAmount = Math.max(0, finalAmount - discount);
     }
 
-    // Rule 4: Validate Order ID generated starting with ORD_
     const orderId = "ORD_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
 
-    const appId = process.env.CASHFREE_APP_ID;
-    const secretKey = process.env.CASHFREE_SECRET_KEY;
-    const isSandbox = process.env.CASHFREE_MODE !== "production";
+    const url = mode === "production" 
+      ? "https://api.cashfree.com/pg/orders" 
+      : "https://sandbox.cashfree.com/pg/orders";
 
-    // Dynamic return url template matching Cashfree placeholders
-    let paymentUrl = `/api/cashfree/mock-checkout?orderId=${orderId}&courseId=${courseId}&amount=${finalAmount}&studentId=${encodeURIComponent(studentId)}&studentName=${encodeURIComponent(studentName)}&studentEmail=${encodeURIComponent(studentEmail)}&studentPhone=${encodeURIComponent(cleanPhone)}&courseName=${encodeURIComponent(courseName)}&discount=${discount}&couponCode=${couponCode || ""}`;
-    let paymentSessionId = "session_" + Math.random().toString(36).substring(7);
+    const host = req.get("host") || "localhost:3000";
+    const protocol = req.protocol || "http";
+    const returnUrl = `${protocol}://${host}/user.html?payment_status={payment_status}&order_id={order_id}&course_id=${courseId}&amount=${Math.round(finalAmount * 100) / 100}&discount=${Math.round(discount * 100) / 100}&coupon=${couponCode || ""}`;
 
-    // Rule 1: Securely generate order backend side. If actual Cashfree API credentials are set, call official PG REST API.
-    if (appId && secretKey) {
-      try {
-        const url = isSandbox 
-          ? "https://sandbox.cashfree.com/pg/orders" 
-          : "https://api.cashfree.com/pg/orders";
-
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            "x-client-id": appId,
-            "x-client-secret": secretKey,
-            "x-api-version": "2023-08-01",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            order_id: orderId,
-            order_amount: Math.round(finalAmount * 100) / 100,
-            order_currency: "INR",
-            customer_details: {
-              customer_id: studentId.toString().substring(0, 50),
-              customer_name: studentName,
-              customer_email: studentEmail,
-              customer_phone: cleanPhone
-            },
-            order_meta: {
-              return_url: `${req.protocol}://${req.get("host")}/user.html?payment_status={payment_status}&order_id={order_id}&course_id=${courseId}&amount=${Math.round(finalAmount * 100) / 100}&discount=${Math.round(discount * 100) / 100}&coupon=${couponCode || ""}`
-            }
-          })
-        });
-
-        if (response.ok) {
-          const apiData: any = await response.json();
-          // Rule 5: Generate dynamic payment_session_id from live gateway response
-          paymentSessionId = apiData.payment_session_id;
-          paymentUrl = apiData.payment_link || apiData.payments?.payment_link || `https://payments.cashfree.com/order/#${paymentSessionId}`;
-          
-          // Rule 7: Add Payment Debug Logs: Order Created & Session Generated
-          console.log(`[PAYMENT_DEBUG] Order Created: orderId = ${orderId}, courseId = ${courseId}, Amount = ${finalAmount}`);
-          console.log(`[PAYMENT_DEBUG] Session Generated: paymentSessionId = ${paymentSessionId}`);
-        } else {
-          const errText = await response.text();
-          console.error("[PAYMENT_DEBUG] Cashfree order creation API rejected check:", response.status, errText);
-          return res.status(400).json({ error: "Unable to create payment session. Cashfree gateway rejection." });
-        }
-      } catch (err: any) {
-        console.error("[PAYMENT_DEBUG] Cashfree API integration failure:", err);
-        return res.status(500).json({ error: "Payment gateway is temporarily unavailable. Please try again." });
+    const requestBody = {
+      order_id: orderId,
+      order_amount: Math.round(finalAmount * 100) / 100,
+      order_currency: "INR",
+      customer_details: {
+        customer_id: studentId.toString().substring(0, 50),
+        customer_name: studentName,
+        customer_email: studentEmail,
+        customer_phone: cleanPhone
+      },
+      order_meta: {
+        return_url: returnUrl
       }
-    } else {
-      // In Mock Mode, print the simulated logs as well
-      console.log(`[PAYMENT_DEBUG] Order Created (Mock): orderId = ${orderId}, courseId = ${courseId}, Amount = ${finalAmount}`);
-      console.log(`[PAYMENT_DEBUG] Session Generated (Mock): paymentSessionId = ${paymentSessionId}`);
-    }
+    };
 
-    res.json({
-      orderId,
-      finalAmount: Math.round(finalAmount * 100) / 100,
-      discount: Math.round(discount * 100) / 100,
-      status: "ACTIVE",
-      courseId,
-      courseName,
-      studentId,
-      paymentSessionId,
-      paymentUrl
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "x-client-id": appId,
+        "x-client-secret": secretKey,
+        "x-api-version": "2023-08-01",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(requestBody)
     });
+
+    const responseData = await response.json().catch(() => null);
+
+    if (response.ok && responseData) {
+      console.log("[PAYMENT_DEBUG] Cashfree API Order response:", responseData);
+      console.log("[PAYMENT_DEBUG] Session Generated paymentSessionId:", responseData.payment_session_id);
+
+      return res.json({
+        orderId: responseData.order_id || orderId,
+        paymentSessionId: responseData.payment_session_id,
+        paymentUrl: responseData.payment_link || responseData.payments?.payment_link || `https://payments.cashfree.com/order/#${responseData.payment_session_id}`,
+        finalAmount: Math.round(finalAmount * 100) / 100,
+        discount: Math.round(discount * 100) / 100,
+        courseId,
+        courseName,
+        studentId
+      });
+    } else {
+      console.error("[CASHFREE_ERROR] Cashfree order creation API rejected integration:", response.status, responseData);
+      
+      const errorMsg = responseData && responseData.message 
+        ? `${responseData.message} (Code: ${responseData.code || responseData.type || response.status})`
+        : `Server returned HTTP Status ${response.status}`;
+
+      return res.status(response.status || 400).json({
+        error: errorMsg,
+        details: responseData
+      });
+    }
   } catch (err: any) {
-    console.error("Cashfree Secure Order Registry Error:", err);
-    res.status(500).json({ error: err.message || "Failed to establish secure gateway session. Try again." });
+    console.error("[CASHFREE_ERROR] Order registry network or runtime failure:", err);
+    return res.status(500).json({ 
+      error: `Payment gateway connection is temporarily unavailable: ${err.message || err}`
+    });
   }
-});
+};
 
-// Mock interactive checkout gateway that matches "Premium Android App Feel"
-app.get("/api/cashfree/mock-checkout", (req, res) => {
-  const { orderId, courseId, amount, studentId, courseName, discount, couponCode } = req.query;
-
-  res.send(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Ed Achievers Secured Secure Gateway</title>
-      <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-      <!-- Load Tailwind directly via script for the checkout portal -->
-      <script src="https://cdn.tailwindcss.com"></script>
-      <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f19; }
-      </style>
-    </head>
-    <body class="flex items-center justify-center min-h-screen p-4 bg-[radial-gradient(ellipse_at_top,rgba(249,115,22,0.1),transparent_50%)]">
-      <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-[32px] shadow-2xl overflow-hidden text-slate-100">
-        <!-- Secure Header -->
-        <div class="bg-gradient-to-b from-orange-500/20 to-transparent p-6 text-center relative border-b border-slate-800/60">
-          <div class="absolute top-4 left-4 text-xs font-bold px-2.5 py-1 bg-orange-500/10 border border-orange-500/30 text-orange-400 rounded-full flex items-center gap-1.5 uppercase tracking-wider">
-            <span class="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></span> SECURE GATEWAY
-          </div>
-          <div class="w-14 h-14 bg-orange-500 border border-orange-400/30 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-orange-500/20">
-            <i class="fas fa-shield-halved text-white text-2xl"></i>
-          </div>
-          <h2 class="text-lg font-extrabold tracking-tight text-white">Cashfree Sandbox Gateway</h2>
-          <p class="text-slate-400 text-2xs mt-1">Authorized billing provider for Ed Achievers Enterprise</p>
-        </div>
-
-        <div class="p-6 space-y-5">
-          <!-- Summary Details Card -->
-          <div class="bg-slate-950/60 rounded-2xl p-4 border border-slate-800/80 space-y-2.5">
-            <div class="flex justify-between items-center text-xs">
-              <span class="text-slate-400">Exam Preparation Course</span>
-              <span class="font-extrabold text-slate-200 text-right max-w-[200px] truncate">${courseName || "Premium Prep Package"}</span>
-            </div>
-            <div class="flex justify-between items-center text-xs">
-              <span class="text-slate-400">Secure Order Reference</span>
-              <span class="font-mono font-bold text-orange-400">${orderId}</span>
-            </div>
-            <div class="flex justify-between items-center text-xs">
-              <span class="text-slate-400">Student ID Reference</span>
-              <span class="font-mono text-slate-300">${studentId || "Learner"}</span>
-            </div>
-            <div class="h-px bg-slate-800/80 my-1"></div>
-            <div class="flex justify-between items-center">
-              <span class="text-slate-200 text-xs font-bold">Amt Payable (INR)</span>
-              <span class="text-xl font-black text-orange-500 font-mono">₹${amount}</span>
-            </div>
-          </div>
-
-          <!-- Checkout Gateway Diagnosis Selection -->
-          <div>
-            <label class="block text-4xs font-bold text-orange-400 uppercase tracking-widest mb-3"><i class="fas fa-vial mr-1"></i> SIMULATE PAYMENT STATUS OUTCOME</label>
-            <div class="space-y-2">
-              <label class="flex items-center gap-3.5 p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:bg-slate-850 hover:border-slate-700 transition">
-                <input type="radio" name="paymentOutcome" value="SUCCESS" checked class="accent-orange-500">
-                <div class="flex items-center gap-2">
-                  <div class="w-7 h-7 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs rounded-lg flex items-center justify-center font-bold">
-                    <i class="fa fa-circle-check"></i>
-                  </div>
-                  <div>
-                    <span class="text-xs font-bold text-slate-100 block">SUCCESS (Approve Transaction)</span>
-                    <span class="text-[9px] text-slate-400 block -mt-0.5">Authorizes purchase, unlocks course content instantly</span>
-                  </div>
-                </div>
-              </label>
-
-              <label class="flex items-center gap-3.5 p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:bg-slate-850 hover:border-slate-700 transition">
-                <input type="radio" name="paymentOutcome" value="PENDING" class="accent-orange-500">
-                <div class="flex items-center gap-2">
-                  <div class="w-7 h-7 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs rounded-lg flex items-center justify-center font-bold animate-pulse">
-                    <i class="fa fa-spinner"></i>
-                  </div>
-                  <div>
-                    <span class="text-xs font-bold text-slate-100 block">PENDING (Awaiting Verification)</span>
-                    <span class="text-[9px] text-slate-400 block -mt-0.5">Holds order in query state, allows recursive manual/auto refresh</span>
-                  </div>
-                </div>
-              </label>
-
-              <label class="flex items-center gap-3.5 p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:bg-slate-850 hover:border-slate-700 transition">
-                <input type="radio" name="paymentOutcome" value="FAILED" class="accent-orange-500">
-                <div class="flex items-center gap-2">
-                  <div class="w-7 h-7 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs rounded-lg flex items-center justify-center font-bold">
-                    <i class="fa fa-circle-xmark"></i>
-                  </div>
-                  <div>
-                    <span class="text-xs font-bold text-slate-100 block">FAILED (Decline Transaction)</span>
-                    <span class="text-[9px] text-slate-400 block -mt-0.5">Simulates bank cancellation/card reject, supports retries</span>
-                  </div>
-                </div>
-              </label>
-            </div>
-          </div>
-
-          <!-- Checkout Action Buttons -->
-          <div class="grid grid-cols-2 gap-3 pt-1">
-            <button onclick="commitSimulatedPayment()" class="py-3 px-4 bg-orange-500 hover:bg-orange-600 text-white font-extrabold rounded-xl shadow-lg transition text-xs cursor-pointer flex items-center justify-center gap-1.5 uppercase tracking-wide">
-              <span>Pay Securely</span> <i class="fa fa-circle-arrow-right"></i>
-            </button>
-            <button onclick="cancelCheckout()" class="py-3 px-4 bg-slate-950 hover:bg-slate-850 hover:text-white border border-slate-800 text-slate-400 font-bold rounded-xl transition text-xs cursor-pointer flex items-center justify-center gap-1.5 uppercase tracking-wide">
-              <span>Cancel Pay</span> <i class="fa fa-circle-xmark"></i>
-            </button>
-          </div>
-        </div>
-
-        <!-- Trust Footer -->
-        <div class="bg-slate-950 p-4 border-t border-slate-800 flex items-center justify-around text-[10px] text-slate-400">
-          <span class="flex items-center gap-1"><i class="fa fa-shield text-orange-500"></i> PCI-DSS v3.2</span>
-          <span class="flex items-center gap-1"><i class="fa fa-lock text-orange-500"></i> SSL 256-Bit</span>
-          <span class="flex items-center gap-1"><i class="fa fa-building-columns text-orange-500"></i> RBI Authorized</span>
-        </div>
-      </div>
-
-      <script>
-        function commitSimulatedPayment() {
-          const outcome = document.querySelector('input[name="paymentOutcome"]:checked').value;
-          const redirectUrl = "/user.html?payment_status=" + outcome + 
-                              "&order_id=${orderId}" + 
-                              "&course_id=${courseId}" + 
-                              "&amount=${amount}" + 
-                              "&discount=${discount || 0}" + 
-                              "&coupon=${couponCode || ''}";
-          window.location.href = redirectUrl;
-        }
-
-        function cancelCheckout() {
-          const redirectUrl = "/user.html?payment_status=CANCELLED" + 
-                              "&order_id=${orderId}" + 
-                              "&course_id=${courseId}" + 
-                              "&amount=${amount}";
-          window.location.href = redirectUrl;
-        }
-      </script>
-    </body>
-    </html>
-  `);
-});
-
-// Payment Verification API with Duplicate Check Ledger Block
-app.get("/api/cashfree/verify-payment", async (req, res) => {
+// Express handler for payment verification
+const verifyPaymentHandler = async (req: any, res: any) => {
   try {
-    const { orderId, paymentStatus, courseId, amount, uid } = req.query;
+    const { orderId, courseId, uid } = req.query;
 
     if (!orderId) {
       return res.status(400).json({ error: "Missing required orderId parameter" });
@@ -361,123 +216,92 @@ app.get("/api/cashfree/verify-payment", async (req, res) => {
 
     const appId = process.env.CASHFREE_APP_ID;
     const secretKey = process.env.CASHFREE_SECRET_KEY;
-    const isSandbox = process.env.CASHFREE_MODE !== "production";
+    const mode = process.env.CASHFREE_MODE || "sandbox";
 
-    // 1. If real Cashfree setup exists, verify directly with Cashfree Cloud servers
-    if (appId && secretKey) {
-      try {
-        const url = isSandbox 
-          ? `https://sandbox.cashfree.com/pg/orders/${orderId}` 
-          : `https://api.cashfree.com/pg/orders/${orderId}`;
+    if (!appId || !secretKey) {
+      console.error("[CASHFREE_ERROR] Missing Cashfree API verification credentials.");
+      return res.status(500).json({
+        error: "Cashfree verification failed: Server missing CASHFREE_APP_ID or CASHFREE_SECRET_KEY."
+      });
+    }
 
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "x-client-id": appId,
-            "x-client-secret": secretKey,
-            "x-api-version": "2023-08-01",
-            "Content-Type": "application/json"
-          }
-        });
+    const url = mode === "production" 
+      ? `https://api.cashfree.com/pg/orders/${orderId}` 
+      : `https://sandbox.cashfree.com/pg/orders/${orderId}`;
 
-        if (response.ok) {
-          const orderInfo: any = await response.json();
-          const pStatus = orderInfo.order_status; // PAID, ACTIVE, EXPIRED, etc.
-          let finalStatus = "PENDING";
-          if (pStatus === "PAID") {
-            finalStatus = "SUCCESS";
-            // Rule 7: Add Payment Debug Logs: Payment Success
-            console.log(`[PAYMENT_DEBUG] Payment Success for Order ID: ${orderId}`);
-          } else if (pStatus === "EXPIRED" || pStatus === "FAILED") {
-            finalStatus = "FAILED";
-            // Rule 7: Add Payment Debug Logs: Payment Failed
-            console.log(`[PAYMENT_DEBUG] Payment Failed for Order ID: ${orderId}`);
-          } else {
-            // Rule 7: Add Payment Debug Logs: Payment Pending
-            console.log(`[PAYMENT_DEBUG] Payment Pending status for Order ID: ${orderId}`);
-          }
-
-          let alreadyProcessed = false;
-          if (finalStatus === "SUCCESS") {
-            if (verifiedOrdersStore.has(orderId as string)) {
-              alreadyProcessed = true;
-            } else {
-              verifiedOrdersStore.add(orderId as string);
-            }
-          }
-
-          return res.json({
-            verified: true,
-            status: finalStatus,
-            alreadyProcessed,
-            orderId,
-            amount: orderInfo.order_amount,
-            courseId: courseId || null,
-            uid: uid || null,
-            cashfreeDetails: {
-              status: orderInfo.order_status,
-              currency: orderInfo.order_currency,
-              message: "Verified with Cashfree Gateway API servers"
-            }
-          });
-        } else {
-          const errText = await response.text();
-          console.error("[PAYMENT_DEBUG] Cashfree verification API rejected check, status:", response.status, errText);
-          return res.status(response.status).json({
-            verified: false,
-            status: "FAILED",
-            error: "Unable to verify transaction history at Cashfree secure servers."
-          });
-        }
-      } catch (err: any) {
-        console.error("[PAYMENT_DEBUG] Cashfree API Verification request failure:", err);
-        return res.status(500).json({
-          verified: false,
-          status: "FAILED",
-          error: "Network latency error reaching Cashfree verification API."
-        });
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "x-client-id": appId,
+        "x-client-secret": secretKey,
+        "x-api-version": "2023-08-01",
+        "Content-Type": "application/json"
       }
-    }
-
-    // 2. Mock Gateway and testing pipeline
-    let status = "FAILED";
-    if (paymentStatus === "SUCCESS") {
-      status = "SUCCESS";
-      // Rule 7: Add Payment Debug Logs: Payment Success
-      console.log(`[PAYMENT_DEBUG] Payment Success for Order ID (Mock): ${orderId}`);
-    } else if (paymentStatus === "PENDING") {
-      status = "PENDING";
-      // Rule 7: Add Payment Debug Logs: Payment Pending
-      console.log(`[PAYMENT_DEBUG] Payment Pending status for Order ID (Mock): ${orderId}`);
-    } else {
-      status = "FAILED";
-      // Rule 7: Add Payment Debug Logs: Payment Failed
-      console.log(`[PAYMENT_DEBUG] Payment Failed for Order ID (Mock): ${orderId}`);
-    }
-
-    let alreadyProcessed = false;
-    if (status === "SUCCESS") {
-      if (verifiedOrdersStore.has(orderId as string)) {
-        alreadyProcessed = true;
-      } else {
-        verifiedOrdersStore.add(orderId as string);
-      }
-    }
-
-    return res.json({
-      verified: true,
-      status: status,
-      alreadyProcessed,
-      orderId,
-      amount,
-      courseId,
-      uid
     });
+
+    const orderInfo = await response.json().catch(() => null);
+
+    if (response.ok && orderInfo) {
+      const pStatus = orderInfo.order_status; // PAID, ACTIVE, EXPIRED, FAILED
+      let finalStatus = "PENDING";
+      if (pStatus === "PAID") {
+        finalStatus = "SUCCESS";
+        console.log(`[PAYMENT_DEBUG] Live Payment Verification Success for Order ID: ${orderId}`);
+      } else if (pStatus === "EXPIRED" || pStatus === "FAILED") {
+        finalStatus = "FAILED";
+        console.log(`[PAYMENT_DEBUG] Live Payment Verification Failed for Order ID: ${orderId}`);
+      } else {
+        console.log(`[PAYMENT_DEBUG] Live Payment is in ${pStatus} state for Order ID: ${orderId}`);
+      }
+
+      let alreadyProcessed = false;
+      if (finalStatus === "SUCCESS") {
+        if (verifiedOrdersStore.has(orderId as string)) {
+          alreadyProcessed = true;
+        } else {
+          verifiedOrdersStore.add(orderId as string);
+        }
+      }
+
+      return res.json({
+        verified: true,
+        status: finalStatus,
+        alreadyProcessed,
+        orderId,
+        amount: orderInfo.order_amount,
+        courseId: courseId || null,
+        uid: uid || null,
+        cashfreeDetails: {
+          status: orderInfo.order_status,
+          currency: orderInfo.order_currency,
+          message: "Verified with Cashfree Gateway API servers"
+        }
+      });
+    } else {
+      console.error("[CASHFREE_ERROR] Cashfree verification API rejected check, status:", response.status, orderInfo);
+      return res.status(response.status || 400).json({
+        verified: false,
+        status: "FAILED",
+        error: orderInfo?.message || `Cashfree verification failed with status ${response.status}`,
+        details: orderInfo
+      });
+    }
   } catch (err: any) {
-    console.error("Security verify error:", err);
-    res.status(500).json({ error: "Failed inside the central verification gateway." });
+    console.error("[CASHFREE_ERROR] Live cashfree verification route network/runtime failure:", err);
+    return res.status(500).json({
+      verified: false,
+      status: "FAILED",
+      error: `Verification connection error: ${err.message || err}`
+    });
   }
-});
+};
+
+// Bind both routes to ensure backward compatibility and Vercel standards
+app.post("/api/create-order", createOrderHandler);
+app.post("/api/cashfree/create-order", createOrderHandler);
+
+app.get("/api/verify-payment", verifyPaymentHandler);
+app.get("/api/cashfree/verify-payment", verifyPaymentHandler);
 
 // Serve frontend assets
 if (process.env.NODE_ENV !== "production") {

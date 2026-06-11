@@ -2695,46 +2695,55 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
       };
 
       // Rule 7: Add Payment Debug Logs: Order Created
-      console.log("%c[PAYMENT_DEBUG] Order Created Triggered on client size", "color: #f97316; font-weight: bold", payload);
+      console.log("%c[PAYMENT_DEBUG] Order Created Triggered on client side", "color: #f97316; font-weight: bold", payload);
 
       // Rule 1: Never create Cashfree orders directly from frontend JavaScript. Order creation triggers secure backend API.
-      fetch("/api/cashfree/create-order", {
+      fetch("/api/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       })
-      .then(res => {
-        // Rule 11: Show user-friendly messages instead of raw gateway system errors
+      .then(async res => {
         if (!res.ok) {
-          return res.json().then(data => {
-            throw new Error(data.error || "Unable to create payment session. Please try again.");
-          }).catch(() => {
-            throw new Error("Payment gateway is temporarily unavailable. Please try again later.");
-          });
+          const data = await res.json().catch(() => null);
+          const errorMsg = data && data.error 
+            ? `${data.error}${data.details ? " - " + JSON.stringify(data.details) : ""}`
+            : "Payment gateway is temporarily unavailable. Please try again later.";
+          
+          console.error("=== CASHFREE PAYMENT SETUP FAILURE ===");
+          console.error("Order Request:", payload);
+          if (data) {
+            console.error("Order Response / Cashfree Error:", data);
+          }
+          
+          throw new Error(errorMsg);
         }
         return res.json();
       })
       .then(orderData => {
-        // Rule 5: Generate a valid payment_session_id before opening checkout.
-        // Rule 6: If payment_session_id is invalid: Show proper error, Do not open checkout.
+        // Prevent checkout opening if payment_session_id is missing
         if (!orderData.paymentSessionId) {
-          throw new Error("Unable to create payment session. Invalid cashfree gateway token.");
+          console.error("=== CASHFREE PAYMENT COMPLIANCE FAILURE ===");
+          console.error("Order Request:", payload);
+          console.error("Order Response:", orderData);
+          console.error("Cashfree Error: Handshake missing valid paymentSessionId.");
+          throw new Error("Unable to open checkout: Missing paymentSessionId in gateway response.");
         }
 
-        // Rule 7: Add Payment Debug Logs: Session Generated
-        console.log("%c[PAYMENT_DEBUG] Order Created securely: ID = " + orderData.orderId, "color: #10b981; font-weight: bold;");
-        console.log("%c[PAYMENT_DEBUG] Session Generated successfully: SessionId = " + orderData.paymentSessionId, "color: #10b981; font-weight: bold;");
-        console.log("%c[PAYMENT_DEBUG] Checkout Opened: Redirection to payment page initiated.", "color: #f59e0b; font-weight: bold;");
+        console.log("=== CASHFREE PAYMENT SETUP SUCCESS ===");
+        console.log("Order Request:", payload);
+        console.log("Order Response:", orderData);
+        console.log("Session ID:", orderData.paymentSessionId);
 
-        // Open checkout (hosted/mock) url
+        // Open checkout url
         window.location.href = orderData.paymentUrl;
       })
       .catch(err => {
-        // Rule 7: Add Payment Debug Logs: Payment Failed
-        console.error("%c[PAYMENT_DEBUG] Payment Failed during setup:", "color: #ef4444; font-weight: bold;", err);
+        console.error("=== CASHFREE CONNECT ERROR ===");
+        console.error("Detailed network or protocol error:", err);
         
-        // Rule 11: Decent user error prompter
-        alert(err.message || "Unable to create payment session. Please try again.");
+        // Show actual Cashfree error details
+        alert("Payment Gateaway Error:\n" + err.message);
         if (pBtn) {
           pBtn.disabled = false;
           pBtn.innerHTML = `<i class="fas fa-lock"></i> <span>SECURE PAY</span> <i class="fa fa-arrow-right text-[10px]"></i>`;
@@ -2777,7 +2786,7 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
 
       const uid = currentUser ? currentUser.uid : "anonymous";
       
-      fetch(`/api/cashfree/verify-payment?orderId=${orderId}&paymentStatus=${responseStatus}&courseId=${courseId}&amount=${amount}&uid=${uid}`)
+      fetch(`/api/verify-payment?orderId=${orderId}&courseId=${courseId}&uid=${uid}`)
       .then(res => res.json())
       .then(verifiedData => {
         if (verifiedData.status === "SUCCESS") {
