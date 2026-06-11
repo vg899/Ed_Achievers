@@ -116,9 +116,27 @@ export default async function handler(req: any, res: any) {
     }, "PUT");
 
     // Construct return URL pointing to user.html callback
-    const host = req.headers.host || "localhost:3000";
-    const protocol = host.includes("localhost") ? "http" : "https";
-    const returnUrl = `${protocol}://${host}/user.html?payment_status={payment_status}&order_id={order_id}&course_id=${courseId}&amount=${Math.round(finalAmount * 100) / 100}&discount=${Math.round(discount * 100) / 100}&coupon=${couponCode || ""}`;
+    let clientOrigin = "";
+    if (req.headers.referer) {
+      try {
+        const refUrl = new URL(req.headers.referer);
+        clientOrigin = refUrl.origin;
+      } catch (err) {
+        // Fallback
+      }
+    }
+    if (!clientOrigin) {
+      const forwardedHost = req.headers["x-forwarded-host"] as string;
+      const forwardedProto = (req.headers["x-forwarded-proto"] as string) || "https";
+      if (forwardedHost) {
+        clientOrigin = `${forwardedProto}://${forwardedHost}`;
+      } else {
+        const host = req.headers.host || "localhost:3000";
+        const protocol = host.includes("localhost") ? "http" : "https";
+        clientOrigin = `${protocol}://${host}`;
+      }
+    }
+    const returnUrl = `${clientOrigin}/user.html?payment_status={payment_status}&order_id={order_id}&course_id=${courseId}&amount=${Math.round(finalAmount * 100) / 100}&discount=${Math.round(discount * 100) / 100}&coupon=${couponCode || ""}`;
 
     if (isSimulated) {
       await writeToRtdb(orderRef, { status: "ACTIVE", paymentSessionId: "SIM_SESSION_" + Date.now() }, "PATCH");

@@ -2948,6 +2948,11 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
     let userWatchProgress = {};
     let userCompletedLectures = {};
 
+    function isCourseSubscribed(courseId) {
+      if (!courseId) return false;
+      return !!(userPurchasedCourses && userPurchasedCourses[courseId]);
+    }
+
     // List user subscriptions and load state logs
     function syncUserPurchasedAndStreakData() {
       if (!currentUser) return;
