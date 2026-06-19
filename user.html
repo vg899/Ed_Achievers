@@ -1677,16 +1677,19 @@
       <!-- Drawer Content Scroll -->
       <div class="p-6 space-y-5 overflow-y-auto flex-1">
         
-        <!-- Course Meta Preview Banner -->
-        <div class="flex gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100/80">
-          <div class="w-16 h-12 bg-orange-600 rounded-lg flex flex-col items-center justify-center text-white font-mono text-[11px] font-bold shrink-0 shadow-sm shadow-orange-500/10">
-            <i class="fas fa-graduation-cap text-[10px] mb-0.5"></i>
-            <span id="co-meta-id" class="text-4xs scale-90 tracking-tighter">CTET</span>
-          </div>
-          <div class="space-y-1">
-            <span class="text-[9px] bg-orange-100 text-orange-700 font-black px-2 py-0.5 rounded-full uppercase tracking-wider">Premium Prep Unit</span>
-            <h4 id="co-meta-title" class="text-xs font-black text-slate-800 line-clamp-1">Exam preparation pack</h4>
-            <p id="co-meta-price" class="text-4xs font-medium text-slate-400">Default Catalog Value: ₹0.00</p>
+        <!-- Section 1: Course Information -->
+        <div class="space-y-2.5">
+          <label class="block text-4xs font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-graduation-cap text-orange-500 mr-1 animate-pulse"></i> Section 1: Course Information</label>
+          <div class="flex gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100/80">
+            <div class="w-16 h-12 bg-orange-600 rounded-lg flex flex-col items-center justify-center text-white font-mono text-[11px] font-bold shrink-0 shadow-sm shadow-orange-500/10">
+              <i class="fas fa-graduation-cap text-[10px] mb-0.5"></i>
+              <span id="co-meta-id" class="text-4xs scale-90 tracking-tighter">CTET</span>
+            </div>
+            <div class="space-y-1">
+              <span class="text-[9px] bg-orange-100 text-orange-700 font-black px-2 py-0.5 rounded-full uppercase tracking-wider">Premium Prep Unit</span>
+              <h4 id="co-meta-title" class="text-xs font-black text-slate-800 line-clamp-1">Exam preparation pack</h4>
+              <p id="co-meta-price" class="text-4xs font-medium text-slate-400">Default Catalog Value: ₹0.00</p>
+            </div>
           </div>
         </div>
 
@@ -1721,49 +1724,51 @@
           <p id="co-coupon-status-lbl" class="hidden text-5xs font-bold flex items-center gap-1 mt-1"></p>
         </div>
 
-        <!-- Billing Contact Information Segment (Required by Cashfree APIs) -->
+        <!-- Section 2: Student Information -->
         <div id="co-billing-wrapper" class="space-y-2.5">
-          <div class="flex items-center justify-between">
-            <label class="block text-4xs font-bold text-slate-450 uppercase tracking-widest"><i class="fa-solid fa-address-card text-orange-500 mr-1 animate-pulse"></i> BILLING CONTACT INFO</label>
-            <span id="co-billing-autofilled-badge" class="hidden text-[9px] text-emerald-600 font-extrabold bg-emerald-50 border border-emerald-105 px-2.5 py-0.5 rounded-lg flex items-center gap-1">
-              <i class="fa fa-circle-check"></i> SECURELY AUTO-FILLED
-            </span>
-          </div>
-          <!-- Inputs sub-wrapper -->
+          <label class="block text-4xs font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-address-card text-orange-500 mr-1 animate-pulse"></i> Section 2: Student Information</label>
           <div id="co-billing-inputs" class="grid grid-cols-1 gap-2.5">
-            <div class="relative">
-              <span class="absolute left-3 top-2.5 text-slate-450 text-[10px]"><i class="fa fa-user"></i></span>
-              <input type="text" id="co-student-name" placeholder="Billing Full Name (e.g., Harsh Tiwari)" class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-3xs font-extrabold text-slate-800 uppercase focus:outline-none focus:border-orange-500" required>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div class="space-y-1">
+                <span class="text-[10px] text-slate-400 font-bold block ml-1">Full Name: <span class="text-rose-500">*</span></span>
+                <div class="relative">
+                  <span class="absolute left-3 top-2.5 text-slate-450 text-[10px]"><i class="fa fa-user"></i></span>
+                  <input type="text" id="co-student-name" placeholder="Full Name" class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-3xs font-extrabold text-slate-850 uppercase focus:outline-none focus:border-orange-500" required>
+                </div>
+              </div>
+              <div class="space-y-1">
+                <span class="text-[10px] text-slate-400 font-bold block ml-1">User ID (Auto-filled):</span>
+                <div class="relative">
+                  <span class="absolute left-3 top-2.5 text-slate-400 text-[10px]"><i class="fa-regular fa-id-card"></i></span>
+                  <input type="text" id="co-student-uid" placeholder="User ID" class="w-full pl-8 pr-3 py-2 bg-slate-100 border border-slate-200 rounded-xl text-3xs font-extrabold text-slate-400 font-mono focus:outline-none cursor-not-allowed" readonly disabled>
+                </div>
+              </div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              <div class="relative">
-                <span class="absolute left-3 top-2.5 text-slate-450 text-[10px]"><i class="fa fa-envelope"></i></span>
-                <input type="email" id="co-student-email" placeholder="Billing Email Address" class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-3xs font-extrabold text-slate-850 focus:outline-none focus:border-orange-500" required>
+              <div class="space-y-1">
+                <span class="text-[10px] text-slate-400 font-bold block ml-1">Email Address: <span class="text-rose-500">*</span></span>
+                <div class="relative">
+                  <span class="absolute left-3 top-2.5 text-slate-450 text-[10px]"><i class="fa fa-envelope"></i></span>
+                  <input type="email" id="co-student-email" placeholder="Email Address" class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-3xs font-extrabold text-slate-850 focus:outline-none focus:border-orange-500" required>
+                </div>
               </div>
-              <div class="relative">
-                <span class="absolute left-3 top-2.5 text-slate-450 text-[10px]"><i class="fa fa-phone"></i></span>
-                <input type="tel" id="co-student-phone" placeholder="10-Digit Mobile" maxlength="10" class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-3xs font-extrabold text-slate-850 focus:outline-none focus:border-orange-500 font-mono" required>
+              <div class="space-y-1">
+                <span class="text-[10px] text-slate-400 font-bold block ml-1">Mobile Number: <span class="text-rose-500">*</span></span>
+                <div class="relative">
+                  <span class="absolute left-3 top-2.5 text-slate-450 text-[10px]"><i class="fa fa-phone"></i></span>
+                  <input type="tel" id="co-student-phone" placeholder="10-Digit Mobile" maxlength="10" class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-3xs font-extrabold text-slate-855 focus:outline-none focus:border-orange-500 font-mono" required>
+                </div>
               </div>
             </div>
           </div>
-          <div id="co-billing-readonly-summary" class="hidden bg-slate-50 p-3 rounded-2xl border border-slate-100/80 flex items-center justify-between">
-            <div class="space-y-0.5 text-left">
-              <p class="text-3xs font-black text-slate-800 uppercase animate-pulse" id="co-summary-name"></p>
-              <p class="text-[10px] font-bold text-slate-450 flex flex-wrap items-center gap-1.5 leading-none mt-1">
-                <span id="co-summary-email" class="font-semibold text-slate-500"></span>
-                <span class="text-slate-300">•</span>
-                <span id="co-summary-phone" class="font-mono text-slate-500"></span>
-              </p>
-            </div>
-            <button type="button" onclick="navigateTab('profile', document.querySelector('[onclick*=\'profile\']')); closeCheckoutDrawer();" class="text-4xs text-orange-600 font-extrabold hover:underline select-none">
-              Edit Profile
-            </button>
-          </div>
+          <!-- Keep for compatibility / hidden -->
+          <div id="co-billing-readonly-summary" class="hidden"></div>
+          <span id="co-billing-autofilled-badge" class="hidden"></span>
         </div>
 
-        <!-- WhatsApp-based QR Payment Verification System -->
+        <!-- Section 3: QR Payment -->
         <div class="space-y-4">
-          <label class="block text-4xs font-bold text-slate-450 uppercase tracking-widest"><i class="fa-solid fa-qrcode text-orange-500 mr-1 animate-pulse"></i> UPI QR SCAN &amp; PAY</label>
+          <label class="block text-4xs font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-qrcode text-orange-500 mr-1 animate-pulse"></i> Section 3: QR Payment</label>
           
           <div class="bg-orange-50/40 border border-orange-200/50 rounded-2xl p-4 text-center flex flex-col items-center justify-center space-y-3 shadow-xs">
             <span class="text-5xs font-black text-orange-650 uppercase tracking-wider bg-orange-100/50 px-2.5 py-1 rounded-full"><i class="fas fa-qrcode mr-1"></i> Scan to Pay via Any UPI App</span>
@@ -1779,39 +1784,42 @@
             </div>
           </div>
 
-          <!-- WhatsApp Payment Page Fields -->
-          <div class="space-y-2.5 p-3.5 bg-slate-50 border border-slate-150 rounded-2xl text-[10px] font-medium text-slate-600">
+          <!-- Real-time Verified Ledger Mapping -->
+          <div class="space-y-2.5 p-3.5 bg-slate-50 border border-slate-150 rounded-2xl text-[10px] font-medium text-slate-500">
             <div class="flex justify-between items-center py-1 border-b border-slate-200/50">
-              <span class="text-slate-400">1. Course Name</span>
+              <span>Verified Course Name:</span>
               <span id="co-wp-course-name" class="font-extrabold text-slate-800 text-right truncate max-w-[190px]">Loading Selection...</span>
             </div>
             <div class="flex justify-between items-center py-1 border-b border-slate-200/50">
-              <span class="text-slate-400">2. Course Price</span>
-              <span id="co-wp-course-price" class="font-black text-orange-650 font-mono text-xs">₹0.00</span>
+              <span>Verified Course Price:</span>
+              <span id="co-wp-course-price" class="font-black text-orange-655 font-mono text-xs">₹0.00</span>
             </div>
             <div class="flex justify-between items-center py-1 border-b border-slate-200/50">
-              <span class="text-slate-400">3. User Name</span>
+              <span>Verified Username:</span>
               <span id="co-wp-student-name" class="font-bold text-slate-800">---</span>
             </div>
             <div class="flex justify-between items-center py-1 border-b border-slate-200/50">
-              <span class="text-slate-400">4. User ID</span>
+              <span>Verified User ID:</span>
               <span id="co-wp-student-id" class="font-mono text-slate-500 font-semibold text-[9px]">---</span>
             </div>
             <div class="flex justify-between items-center py-1 border-b border-slate-200/50">
-              <span class="text-slate-400">5. Mobile Number</span>
+              <span>Verified Mobile:</span>
               <span id="co-wp-student-phone" class="font-mono text-slate-850 font-bold text-[9px]">---</span>
             </div>
-            
-            <!-- Required Transfer ID Input -->
-            <div class="space-y-1.5 pt-2">
-              <label class="block text-4xs font-black text-orange-600 uppercase tracking-widest leading-none flex items-center justify-between">
-                <span>6. Transfer ID (UTR / Transaction ID) <span class="text-rose-500">*</span></span>
-                <span class="text-[8px] font-normal text-slate-400 capitalize whitespace-nowrap">Enter 12-digit UPI Transaction ID</span>
-              </label>
-              <div class="relative">
-                <span class="absolute left-3 top-2.5 text-orange-500 text-xs"><i class="fas fa-receipt"></i></span>
-                <input type="text" id="co-transfer-id" placeholder="Enter Transaction ID or 12-Digit UTR" class="w-full pl-8 pr-3 py-2.5 bg-white border-2 border-orange-105 hover:border-orange-200 focus:border-orange-500 focus:outline-none rounded-xl text-xs font-black uppercase font-mono tracking-widest placeholder:tracking-normal placeholder:font-sans placeholder:font-normal placeholder:text-slate-400" required>
-              </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Transaction ID Entry -->
+        <div class="space-y-2.5">
+          <label class="block text-4xs font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-receipt text-orange-500 mr-1"></i> Section 4: Transaction ID Entry</label>
+          <div class="space-y-1.5 p-3.5 bg-slate-50 border border-slate-150 rounded-2xl">
+            <label class="block text-4xs font-black text-orange-600 uppercase tracking-widest leading-none flex items-center justify-between">
+              <span>Transfer ID (UTR / Transaction ID) <span class="text-rose-500">*</span></span>
+              <span class="text-[8px] font-normal text-slate-400 capitalize whitespace-nowrap">Enter 12-digit UPI Transaction ID</span>
+            </label>
+            <div class="relative">
+              <span class="absolute left-3 top-2.5 text-orange-500 text-xs"><i class="fas fa-receipt"></i></span>
+              <input type="text" id="co-transfer-id" placeholder="Enter Transaction ID or 12-Digit UTR" class="w-full pl-8 pr-3 py-2.5 bg-white border-2 border-orange-105 hover:border-orange-200 focus:border-orange-500 focus:outline-none rounded-xl text-xs font-black uppercase font-mono tracking-widest placeholder:tracking-normal placeholder:font-sans placeholder:font-normal placeholder:text-slate-400" required>
             </div>
           </div>
         </div>
@@ -3223,15 +3231,7 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
         if (!email) email = localStorage.getItem(`edach_email_${currentUser.uid}`) || currentUser.email || "";
         if (!phone) phone = localStorage.getItem(`edach_phone_${currentUser.uid}`) || "";
 
-        // Verify Full Name, Email, and correct Mobile Number presence
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!name || !email || !emailRegex.test(email) || !phone || phone.replace(/\D/g, "").length !== 10) {
-          // Rule: Show a popup "Please complete your profile before making a payment." with "Complete Profile" button
-          document.getElementById("profile-incomplete-modal").classList.remove("hidden");
-          return;
-        }
-
-        // If all available, auto-fill details and do not ask again repeatedly
+        // If all available or partially available, auto-fill details and open checkout directly without any popup
         activeCheckoutCourseId = courseId;
         activeCheckoutCoursePrice = parseFloat(price);
         currentNetPrice = activeCheckoutCoursePrice;
@@ -3265,17 +3265,36 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
         const pBtn = document.getElementById("co-pay-proceed-btn");
         if (pBtn) {
           pBtn.disabled = false;
-          pBtn.innerHTML = `<i class="fas fa-lock"></i> <span>SECURE PAY</span> <i class="fa fa-arrow-right text-[10px]"></i>`;
+          pBtn.innerHTML = `<i class="fas fa-lock"></i> <span>SECURE PAY NOW</span> <i class="fa fa-arrow-right text-[10px]"></i>`;
         }
 
         // Fill Cashier elements safely
         const nInp = document.getElementById("co-student-name");
         const eInp = document.getElementById("co-student-email");
         const pInp = document.getElementById("co-student-phone");
+        const uInp = document.getElementById("co-student-uid");
 
-        if (nInp) nInp.value = name;
-        if (eInp) eInp.value = email;
-        if (pInp) pInp.value = phone.replace(/\D/g, "");
+        if (nInp) {
+          nInp.value = name;
+          nInp.oninput = () => {
+             const checkStudentName = document.getElementById("co-wp-student-name");
+             if (checkStudentName) checkStudentName.innerText = nInp.value;
+          };
+        }
+        if (eInp) {
+          eInp.value = email;
+        }
+        if (pInp) {
+          pInp.value = phone.replace(/\D/g, "");
+          pInp.oninput = () => {
+             const cleanPh = pInp.value.replace(/\D/g, "");
+             const checkStudentPhone = document.getElementById("co-wp-student-phone");
+             if (checkStudentPhone) checkStudentPhone.innerText = cleanPh;
+          };
+        }
+        if (uInp) {
+          uInp.value = currentUser.uid;
+        }
 
         // Rule 5 & 6: Fill and toggle billing details from user profile during payment
         const bBadge = document.getElementById("co-billing-autofilled-badge");
@@ -3285,9 +3304,9 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
         const sumEmail = document.getElementById("co-summary-email");
         const sumPhone = document.getElementById("co-summary-phone");
 
-        if (bBadge) bBadge.classList.remove("hidden");
-        if (bInputs) bInputs.classList.add("hidden");
-        if (bSummary) bSummary.classList.remove("hidden");
+        if (bBadge) bBadge.classList.add("hidden");
+        if (bInputs) bInputs.classList.remove("hidden");
+        if (bSummary) bSummary.classList.add("hidden");
 
         if (sumName) sumName.innerText = name;
         if (sumEmail) sumEmail.innerText = email;
@@ -3317,7 +3336,49 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
         document.getElementById("checkout-drawer-modal").classList.remove("hidden");
       }).catch(err => {
         console.error("Central profile authentication resolution failure:", err);
-        document.getElementById("profile-incomplete-modal").classList.remove("hidden");
+        // Fallback: Launch Drawer anyway
+        activeCheckoutCourseId = courseId;
+        activeCheckoutCoursePrice = parseFloat(price);
+        currentNetPrice = activeCheckoutCoursePrice;
+        currentActiveDiscount = 0;
+        currentActiveCoupon = "";
+
+        const courseObj = localDBInstance.courses[courseId];
+        if (courseObj) {
+          const metaIdEl = document.getElementById("co-meta-id");
+          const metaTitleEl = document.getElementById("co-meta-title");
+          const metaPriceEl = document.getElementById("co-meta-price");
+          if (metaIdEl) metaIdEl.innerText = courseObj.examType || "EXAM";
+          if (metaTitleEl) metaTitleEl.innerText = courseObj.title;
+          if (metaPriceEl) metaPriceEl.innerText = `Catalog Base Value: ₹${activeCheckoutCoursePrice.toFixed(2)}`;
+        }
+
+        const nInp = document.getElementById("co-student-name");
+        const eInp = document.getElementById("co-student-email");
+        const pInp = document.getElementById("co-student-phone");
+        const uInp = document.getElementById("co-student-uid");
+
+        if (nInp) nInp.value = "";
+        if (eInp) eInp.value = currentUser.email || "";
+        if (pInp) pInp.value = "";
+        if (uInp) uInp.value = currentUser.uid;
+
+        const checkCourseName = document.getElementById("co-wp-course-name");
+        const checkCoursePrice = document.getElementById("co-wp-course-price");
+        const checkStudentName = document.getElementById("co-wp-student-name");
+        const checkStudentID = document.getElementById("co-wp-student-id");
+        const checkStudentPhone = document.getElementById("co-wp-student-phone");
+        const checkTransferId = document.getElementById("co-transfer-id");
+
+        if (checkCourseName && courseObj) checkCourseName.innerText = courseObj.title;
+        if (checkCoursePrice) checkCoursePrice.innerText = "₹" + currentNetPrice.toFixed(2);
+        if (checkStudentName) checkStudentName.innerText = "";
+        if (checkStudentID) checkStudentID.innerText = currentUser.uid;
+        if (checkStudentPhone) checkStudentPhone.innerText = "";
+        if (checkTransferId) checkTransferId.value = "";
+
+        // Launch Drawer
+        document.getElementById("checkout-drawer-modal").classList.remove("hidden");
       });
     };
 
@@ -3516,43 +3577,65 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
       // Enable Loading Button state
       if (pBtn) {
         pBtn.disabled = true;
-        pBtn.innerHTML = `<i class="fas fa-spinner animate-spin"></i> CREATING CONFIRMATION...`;
+        pBtn.innerHTML = `<i class="fas fa-spinner animate-spin"></i> SAVING PROFILE DATA...`;
       }
 
-      // Cache elements in localStorage for seamless repeat purchases
-      localStorage.setItem(`edach_phone_${currentUser.uid}`, studentPhone);
-      localStorage.setItem(`edach_name_${currentUser.uid}`, studentName);
-      localStorage.setItem(`edach_email_${currentUser.uid}`, studentEmail);
+      // Automatically save updated profile information to Firebase
+      const profileRef = ref(db, `users/${currentUser.uid}/profile`);
+      get(profileRef).then(snap => {
+        let existingProfile = snap.exists() ? snap.val() : {};
+        existingProfile.name = studentName;
+        existingProfile.phone = studentPhone;
+        existingProfile.email = studentEmail;
+        existingProfile.updatedAt = new Date().toISOString();
 
-      // Generate a new reference order ID
-      const orderId = "TX-WA-" + Date.now() + "-" + Math.floor(1000 + Math.random() * 9050);
+        return set(profileRef, existingProfile);
+      }).then(() => {
+        // Trigger local UI refresh if defined
+        if (typeof window.updateUserProfileUI === "function") {
+          window.updateUserProfileUI();
+        }
 
-      const requestPayload = {
-        orderId: orderId,
-        courseId: activeCheckoutCourseId,
-        courseName: courseObj.title,
-        price: currentNetPrice,
-        studentId: currentUser.uid,
-        studentName: studentName,
-        studentEmail: studentEmail,
-        studentPhone: studentPhone,
-        transactionId: transactionId,
-        status: "PENDING",
-        timestamp: Date.now()
-      };
+        // Cache elements in localStorage for seamless repeat purchases fallback
+        localStorage.setItem(`edach_phone_${currentUser.uid}`, studentPhone);
+        localStorage.setItem(`edach_name_${currentUser.uid}`, studentName);
+        localStorage.setItem(`edach_email_${currentUser.uid}`, studentEmail);
 
-      console.log("[PAYMENT_DEBUG] Pushing WhatsApp verification request to Realtime Database...", requestPayload);
+        // Generate a new reference order ID
+        const orderId = "TX-WA-" + Date.now() + "-" + Math.floor(1000 + Math.random() * 9050);
 
-      // Push to Firebase database node 'paymentRequests' as PENDING
-      set(ref(db, `paymentRequests/${orderId}`), requestPayload)
-        .then(() => {
-          console.log("[PAYMENT_DEBUG] Realtime database write success. Preparing WhatsApp URL redirect...");
+        const requestPayload = {
+          orderId: orderId,
+          courseId: activeCheckoutCourseId,
+          courseName: courseObj.title,
+          price: currentNetPrice,
+          studentId: currentUser.uid,
+          studentName: studentName,
+          studentEmail: studentEmail,
+          studentPhone: studentPhone,
+          transactionId: transactionId,
+          status: "PENDING",
+          timestamp: Date.now()
+        };
 
-          // Reset button
-          if (pBtn) {
-            pBtn.disabled = false;
-            pBtn.innerHTML = `<i class="fas fa-lock"></i> <span>SECURE PAY</span> <i class="fa fa-arrow-right text-[10px]"></i>`;
-          }
+        if (pBtn) {
+          pBtn.innerHTML = `<i class="fas fa-spinner animate-spin"></i> CREATING CONFIRMATION...`;
+        }
+
+        console.log("[PAYMENT_DEBUG] Pushing WhatsApp payment request to Realtime Database...", requestPayload);
+
+        // Push to Firebase database node 'paymentRequests' as PENDING
+        return set(ref(db, `paymentRequests/${orderId}`), requestPayload).then(() => {
+          return orderId; // Pass orderId along to the next step
+        });
+      }).then((orderId) => {
+        console.log("[PAYMENT_DEBUG] Realtime database write success. Preparing WhatsApp URL redirect...");
+
+        // Reset button
+        if (pBtn) {
+          pBtn.disabled = false;
+          pBtn.innerHTML = `<i class="fas fa-lock"></i> <span>SECURE PAY NOW</span> <i class="fa fa-arrow-right text-[10px]"></i>`;
+        }
 
           // Build exact pre-filled message format requested
           const messageText = `Hello Ed Achievers Team,
@@ -3628,7 +3711,7 @@ Thank You.`;
           
           if (pBtn) {
             pBtn.disabled = false;
-            pBtn.innerHTML = `<i class="fas fa-lock"></i> <span>SECURE PAY</span> <i class="fa fa-arrow-right text-[10px]"></i>`;
+            pBtn.innerHTML = `<i class="fas fa-lock"></i> <span>SECURE PAY NOW</span> <i class="fa fa-arrow-right text-[10px]"></i>`;
           }
         });
     };
