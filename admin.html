@@ -942,7 +942,7 @@
           </div>
 
           <!-- Cloudinary Upload Fields -->
-          <div class="col-span-full grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+          <div class="col-span-full grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
             <!-- Thumbnail upload -->
             <div>
               <label class="block font-semibold text-slate-500 text-3xs">Course Thumbnail Card Image</label>
@@ -974,6 +974,30 @@
               <div class="hidden mt-2 relative border border-slate-100 rounded-2xl overflow-hidden bg-slate-150 h-16 w-full" id="course-banner-preview-container">
                 <img id="course-banner-preview" class="w-full h-full object-cover">
                 <span class="absolute top-1.5 right-1.5 bg-emerald-500 text-white font-bold text-[8px] px-1.5 py-0.5 rounded shadow">BANNER LOADED</span>
+              </div>
+            </div>
+
+            <!-- Payment QR code upload -->
+            <div>
+              <label class="block font-semibold text-slate-500 text-3xs">Course-Specific Payment QR Code Image</label>
+              <input type="hidden" id="add-course-qr">
+              <input type="file" id="add-course-qr-file" accept="image/*" class="hidden" onchange="handleCourseQRSelection(this)">
+              
+              <div onclick="document.getElementById('add-course-qr-file').click()" class="border border-dashed border-slate-200 hover:border-orange-500 rounded-2xl p-3 flex flex-col items-center justify-center cursor-pointer bg-slate-50 transition min-h-[90px] mt-1 text-center" id="course-qr-droparea">
+                <i class="fas fa-qrcode text-lg text-orange-500 mb-1"></i>
+                <span class="text-4xs font-bold text-slate-500" id="course-qr-status">Select Course QR Code</span>
+              </div>
+              
+              <div class="hidden mt-2 relative border border-slate-100 rounded-2xl p-2 bg-slate-55 flex flex-col gap-2" id="course-qr-preview-container">
+                <div class="relative h-[90px] w-full bg-slate-200 rounded-lg overflow-hidden flex items-center justify-center">
+                  <img id="course-qr-preview" class="max-h-full max-w-full object-contain">
+                  <span class="absolute top-1.5 right-1.5 bg-emerald-500 text-white font-bold text-[8px] px-1.5 py-0.5 rounded shadow">QR CODE ACTIVE</span>
+                </div>
+                <div class="grid grid-cols-3 gap-1">
+                  <button type="button" onclick="document.getElementById('add-course-qr-file').click()" class="py-1 bg-white hover:bg-slate-50 text-slate-700 hover:text-orange-500 text-[9px] font-bold rounded-lg shadow-2xs border border-slate-200 transition text-center cursor-pointer">Replace</button>
+                  <button type="button" onclick="deleteCourseQRAction()" class="py-1 bg-red-50 hover:bg-red-650 hover:text-white text-red-500 text-[9px] font-bold rounded-lg shadow-2xs border border-red-250 transition text-center cursor-pointer">Delete</button>
+                  <button type="button" onclick="previewCourseQRAction()" class="py-1 bg-orange-500 hover:bg-orange-600 text-white text-[9px] font-bold rounded-lg shadow-2xs transition text-center cursor-pointer">Preview</button>
+                </div>
               </div>
             </div>
           </div>
@@ -2561,6 +2585,56 @@
       }
     };
 
+    // Course Specific Payment QR Selection & Management
+    window.handleCourseQRSelection = async function(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const statusText = document.getElementById("course-qr-status");
+      const droparea = document.getElementById("course-qr-droparea");
+      const previewContainer = document.getElementById("course-qr-preview-container");
+      const previewImg = document.getElementById("course-qr-preview");
+
+      statusText.innerHTML = '<i class="fa fa-spinner animate-spin text-orange-500 mr-1.5"></i> Transmitting QR Code...';
+      droparea.classList.add("border-orange-500", "bg-orange-50/10");
+
+      try {
+        const secureUrl = await uploadToCloudinary(file, 'image');
+        document.getElementById("add-course-qr").value = secureUrl;
+        
+        statusText.innerHTML = '<i class="fa fa-circle-check text-emerald-500 mr-1.5"></i> QR Code uploaded successfully!';
+        previewImg.src = secureUrl;
+        previewContainer.classList.remove("hidden");
+        droparea.classList.add("hidden");
+      } catch (err) {
+        alert("Cloudinary QR image upload failed: " + err.message);
+        statusText.innerHTML = '<i class="fa fa-circle-xmark text-red-500 mr-1.5"></i> Upload failed';
+        droparea.classList.remove("hidden");
+      }
+    };
+
+    window.deleteCourseQRAction = function() {
+      if (confirm("Are you sure you want to delete this course's specific payment QR code?")) {
+        document.getElementById("add-course-qr").value = "";
+        document.getElementById("add-course-qr-file").value = "";
+        document.getElementById("course-qr-preview-container").classList.add("hidden");
+        
+        const droparea = document.getElementById("course-qr-droparea");
+        droparea.classList.remove("hidden", "border-orange-500", "bg-orange-50/10");
+        document.getElementById("course-qr-status").innerHTML = "Select Course QR Code";
+      }
+    };
+
+    window.previewCourseQRAction = function() {
+      const qrUrl = document.getElementById("add-course-qr").value;
+      if (!qrUrl) {
+        alert("No QR Code image is currently uploaded to preview.");
+        return;
+      }
+      document.getElementById("course-qr-modal-image").src = qrUrl;
+      document.getElementById("course-qr-modal").classList.remove("hidden");
+    };
+
     // Recorded Video selector with live upload progress percentage bar and duration extraction
     window.handleRecordedVideoSelection = async function(input) {
       const file = input.files[0];
@@ -2922,6 +2996,7 @@
       const courseType = document.getElementById("add-course-type").value;
       const thumb = document.getElementById("add-course-thumb").value.trim();
       const banner = document.getElementById("add-course-banner").value.trim();
+      const qrUrl = document.getElementById("add-course-qr").value.trim();
       const price = document.getElementById("add-course-price").value.trim();
       const disc = document.getElementById("add-course-disc").value.trim();
       
@@ -2979,6 +3054,7 @@
         courseType: courseType || "paid",
         thumbnail: thumb || "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=200",
         bannerImage: banner || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800",
+        paymentQRCode: qrUrl || "",
         price: courseType === "free" ? "0" : price,
         discountPercent: courseType === "free" ? "0" : (disc || "0"),
         description: desc || "Comprehensive test preparation, detailed video solutions, assignments, and print-friendly notes.",
@@ -3071,6 +3147,8 @@
 
       document.getElementById("add-course-thumb").value = "";
       document.getElementById("add-course-banner").value = "";
+      document.getElementById("add-course-qr").value = "";
+      document.getElementById("add-course-qr-file").value = "";
 
       // Hide containers and reset guides
       document.getElementById("course-thumb-preview-container").classList.add("hidden");
@@ -3078,6 +3156,10 @@
       
       document.getElementById("course-banner-preview-container").classList.add("hidden");
       document.getElementById("course-banner-status").innerText = "Select Course Banner Graphic";
+
+      document.getElementById("course-qr-preview-container").classList.add("hidden");
+      document.getElementById("course-qr-droparea").classList.remove("hidden");
+      document.getElementById("course-qr-status").innerText = "Select Course QR Code";
 
       document.getElementById("course-teacher-photo-preview-container").classList.add("hidden");
       document.getElementById("course-teacher-photo-status").innerText = "Upload Portrait Photo";
@@ -3101,6 +3183,7 @@
       window.toggleCoursePricingFields();
       document.getElementById("add-course-thumb").value = course.thumbnail || "";
       document.getElementById("add-course-banner").value = course.bannerImage || "";
+      document.getElementById("add-course-qr").value = course.paymentQRCode || "";
       document.getElementById("add-course-price").value = course.price || "";
       document.getElementById("add-course-disc").value = course.discountPercent || "";
       document.getElementById("add-course-desc").value = course.description || "";
@@ -3151,6 +3234,17 @@
         document.getElementById("course-teacher-photo-status").innerHTML = '<i class="fa fa-circle-check text-emerald-500 mr-1"></i> Portrait Loaded';
       } else {
         document.getElementById("course-teacher-photo-preview-container").classList.add("hidden");
+      }
+
+      if (course.paymentQRCode) {
+        document.getElementById("course-qr-preview").src = course.paymentQRCode;
+        document.getElementById("course-qr-preview-container").classList.remove("hidden");
+        document.getElementById("course-qr-droparea").classList.add("hidden");
+        document.getElementById("course-qr-status").innerHTML = '<i class="fa fa-circle-check text-emerald-500 mr-1"></i> QR Code Loaded';
+      } else {
+        document.getElementById("course-qr-preview-container").classList.add("hidden");
+        document.getElementById("course-qr-droparea").classList.remove("hidden");
+        document.getElementById("course-qr-status").innerHTML = 'Select Course QR Code';
       }
 
       panel.scrollIntoView({ behavior: 'smooth' });
@@ -3863,7 +3957,21 @@
         container.appendChild(item);
       });
     };
-
   </script>
+
+  <!-- QR Code Preview Modal -->
+  <div id="course-qr-modal" class="hidden fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl border border-slate-105 relative text-center">
+      <h3 class="font-black text-slate-800 text-sm"><i class="fa-solid fa-qrcode text-orange-500 mr-1 animate-pulse"></i> Payment QR Code Preview</h3>
+      
+      <div class="mx-auto w-56 h-56 border-4 border-slate-50 rounded-2xl bg-slate-50 flex items-center justify-center overflow-hidden">
+        <img id="course-qr-modal-image" class="max-w-full max-h-full object-contain shadow-xs" src="">
+      </div>
+      
+      <p class="text-3xs text-slate-400">This QR Code is unique to this course and will be displayed during student checkout.</p>
+      
+      <button onclick="document.getElementById('course-qr-modal').classList.add('hidden')" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition text-3xs uppercase tracking-wider cursor-pointer">Close Preview</button>
+    </div>
+  </div>
 </body>
 </html>

@@ -3377,6 +3377,11 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
         if (checkStudentPhone) checkStudentPhone.innerText = "";
         if (checkTransferId) checkTransferId.value = "";
 
+        // Trigger QR Code refresh on screen
+        if (typeof window.refreshCheckoutQR === "function") {
+          window.refreshCheckoutQR();
+        }
+
         // Launch Drawer
         document.getElementById("checkout-drawer-modal").classList.remove("hidden");
       });
@@ -3393,9 +3398,16 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
       
       const priceVal = currentNetPrice || activeCheckoutCoursePrice || 0;
       
+      const courseObj = localDBInstance.courses[activeCheckoutCourseId];
       if (qrImg) {
-        const upiLink = `upi://pay?pa=9580404600@okbizaxis&pn=Ed%20Achievers&am=${priceVal.toFixed(2)}&cu=INR`;
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&color=f97316&data=${encodeURIComponent(upiLink)}`;
+        if (courseObj && courseObj.paymentQRCode) {
+          // Display course-specific QR stored in Cloudinary
+          qrImg.src = courseObj.paymentQRCode;
+        } else {
+          // Generate default dynamic UPI QR code
+          const upiLink = `upi://pay?pa=9580404600@okbizaxis&pn=Ed%20Achievers&am=${priceVal.toFixed(2)}&cu=INR`;
+          qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&color=f97316&data=${encodeURIComponent(upiLink)}`;
+        }
       }
       if (qrAmtDisplay) {
         qrAmtDisplay.innerText = `PAY EXACTLY: ₹${priceVal.toFixed(2)}`;
