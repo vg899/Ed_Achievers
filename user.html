@@ -1778,9 +1778,10 @@
               <img id="co-whatsapp-qr-img" src="" class="w-44 h-44 object-contain transition duration-200" alt="UPI QR Code">
             </div>
             
-            <div class="space-y-0.5">
+            <div class="space-y-1 w-full max-w-[280px]">
               <p id="co-qr-amount-display" class="text-base font-black text-slate-900 font-mono">PAY EXACTLY: ₹0.00</p>
-              <p class="text-[9px] text-slate-450 font-mono">Admissions UPI ID: <span class="font-bold text-slate-800">9580404600@okbizaxis</span></p>
+              <p id="co-instructions-text" class="text-[9px] text-orange-700 bg-orange-50 border border-orange-100 rounded-xl px-2.5 py-1.5 font-bold leading-normal text-center select-none">Please scan the QR code above through Google Pay, PhonePe, Paytm, transfer exact net price, paste your 12-digit UTR below, and hit Pay Now to notify Admissions!</p>
+              <p id="co-course-notes-container" class="hidden text-[9px] text-emerald-800 bg-emerald-50 border border-emerald-100 rounded-xl px-2.5 py-1.5 font-bold leading-normal text-center select-none"></p>
             </div>
           </div>
 
@@ -2330,6 +2331,11 @@
           localDBInstance.banners = {};
         }
         renderHomeBannersAndSlider();
+      });
+
+      // Synchronize Admin WhatsApp Payment Settings on Client
+      onValue(ref(db, "paymentSettings"), (snap) => {
+        localDBInstance.paymentSettings = snap.val() || {};
       });
     }
 
@@ -3206,6 +3212,12 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
         return;
       }
 
+      // Check if WhatsApp QR manual payment system is enabled by Admin
+      if (localDBInstance.paymentSettings && localDBInstance.paymentSettings.systemEnabled === false) {
+        alert("Notice: Online admissions via manual WhatsApp QR verification are temporarily paused by administrative team. Please reach out to center coordinators directly or check back later.");
+        return;
+      }
+
       // Prevent duplicate purchases check
       if (localDBInstance.purchasedCourses && localDBInstance.purchasedCourses[courseId]) {
         alert("Awesome! You already hold active premium access to this classroom under 'My Courses'!");
@@ -3414,6 +3426,28 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
       }
       if (checkCoursePrice) {
         checkCoursePrice.innerText = `₹${priceVal.toFixed(2)}`;
+      }
+
+      // Sync default payment instructions dynamically from Admin Settings
+      const instEl = document.getElementById("co-instructions-text");
+      if (instEl) {
+        if (localDBInstance.paymentSettings && localDBInstance.paymentSettings.paymentInstructions) {
+          instEl.innerText = localDBInstance.paymentSettings.paymentInstructions;
+        } else {
+          instEl.innerText = "Please scan the QR code above through Google Pay, PhonePe, Paytm, transfer exact net price, paste your 12-digit UTR below, and hit Pay Now to notify Admissions!";
+        }
+      }
+
+      // Sync course-specific custom payment notes dynamically
+      const notesEl = document.getElementById("co-course-notes-container");
+      if (notesEl) {
+        if (courseObj && courseObj.paymentNotes) {
+          notesEl.innerText = courseObj.paymentNotes;
+          notesEl.classList.remove("hidden");
+        } else {
+          notesEl.innerText = "";
+          notesEl.classList.add("hidden");
+        }
       }
     };
 
@@ -3649,28 +3683,31 @@ Check the PDF tab inside the Course Viewer for instant worksheets.</p>`
           pBtn.innerHTML = `<i class="fas fa-lock"></i> <span>SECURE PAY NOW</span> <i class="fa fa-arrow-right text-[10px]"></i>`;
         }
 
-          // Build exact pre-filled message format requested
-          const messageText = `Hello Ed Achievers Team,
+          // Build exact pre-filled message format requested dynamically from Admin settings
+          const contactNum = (localDBInstance.paymentSettings && localDBInstance.paymentSettings.whatsappNumber) || "919580404600";
+          const displayNm = (localDBInstance.paymentSettings && localDBInstance.paymentSettings.whatsappDisplayName) || "Ed Achievers Team";
 
-Payment Request
+          const messageText = `Hello ${displayNm},
+
+I have submitted a Payment Verification Request on Ed Achievers.
 
 Student Name: ${studentName}
-
 User ID: ${currentUser.uid}
-
 Mobile Number: ${studentPhone}
+Email Address: ${currentUser.email || "Not Provided"}
 
 Course Name: ${courseObj.title}
-
+Course ID: ${activeCheckoutCourseId}
 Course Price: ₹${currentNetPrice.toFixed(2)}
 
 Transaction / UTR ID: ${transactionId}
+Date & Time: ${new Date().toLocaleString("en-IN")}
 
 Please verify my payment and activate my course access.
 
 Thank You.`;
 
-          const adminWhatsapp = "919580404600";
+          const adminWhatsapp = contactNum.replace(/\D/g, "");
           const wpUrl = `https://api.whatsapp.com/send?phone=${adminWhatsapp}&text=${encodeURIComponent(messageText)}`;
 
           // Launch WhatsApp Automatically

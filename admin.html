@@ -791,28 +791,102 @@
         </button>
       </div>
 
-      <!-- Quick Metrics Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-white p-5 rounded-3xl border border-slate-150 shadow-xs flex items-center justify-between">
+      <!-- Quick Metrics Grid with Financial Revenue Reports -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div class="bg-white p-4 rounded-2xl border border-slate-150 shadow-xs flex items-center justify-between">
           <div class="space-y-0.5">
-            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Awaiting Validation</span>
-            <h3 id="metric-pendings-count" class="text-xl font-black text-slate-850 font-mono">0</h3>
+            <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Pending</span>
+            <h3 id="metric-pendings-count" class="text-sm font-black text-slate-850 font-mono">0</h3>
           </div>
-          <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center"><i class="fas fa-clock text-sm"></i></div>
+          <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center"><i class="fas fa-clock text-xs"></i></div>
         </div>
-        <div class="bg-white p-5 rounded-3xl border border-slate-150 shadow-xs flex items-center justify-between">
+        <div class="bg-white p-4 rounded-2xl border border-slate-150 shadow-xs flex items-center justify-between">
           <div class="space-y-0.5">
-            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Approved / Unlocked</span>
-            <h3 id="metric-approved-count" class="text-xl font-black text-emerald-600 font-mono">0</h3>
+            <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Approved</span>
+            <h3 id="metric-approved-count" class="text-sm font-black text-emerald-600 font-mono">0</h3>
           </div>
-          <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center"><i class="fas fa-circle-check text-sm"></i></div>
+          <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center"><i class="fas fa-circle-check text-xs"></i></div>
         </div>
-        <div class="bg-white p-5 rounded-3xl border border-slate-150 shadow-xs flex items-center justify-between">
+        <div class="bg-white p-4 rounded-2xl border border-slate-150 shadow-xs flex items-center justify-between">
           <div class="space-y-0.5">
-            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Rejected Submissions</span>
-            <h3 id="metric-rejected-count" class="text-xl font-black text-rose-600 font-mono">0</h3>
+            <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Rejected</span>
+            <h3 id="metric-rejected-count" class="text-sm font-black text-rose-600 font-mono">0</h3>
           </div>
-          <div class="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center"><i class="fas fa-ban text-sm"></i></div>
+          <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center"><i class="fas fa-ban text-xs"></i></div>
+        </div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-150 shadow-xs flex items-center justify-between">
+          <div class="space-y-0.5">
+            <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Daily Sales (Today)</span>
+            <h3 id="metric-daily-revenue-count" class="text-sm font-black text-blue-600 font-mono">₹0.00</h3>
+          </div>
+          <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center"><i class="fas fa-calendar-day text-xs"></i></div>
+        </div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-150 shadow-xs flex items-center justify-between">
+          <div class="space-y-0.5">
+            <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Monthly Sales</span>
+            <h3 id="metric-monthly-revenue-count" class="text-sm font-black text-indigo-600 font-mono">₹0.00</h3>
+          </div>
+          <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center"><i class="fas fa-calendar-alt text-xs"></i></div>
+        </div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-150 shadow-xs flex items-center justify-between">
+          <div class="space-y-0.5">
+            <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Total Revenue</span>
+            <h3 id="metric-total-revenue-count" class="text-sm font-black text-orange-600 font-mono">₹0.00</h3>
+          </div>
+          <div class="w-8 h-8 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center"><i class="fas fa-sack-dollar text-xs"></i></div>
+        </div>
+      </div>
+
+      <!-- WHATSAPP MANUAL PAYMENT SETTINGS CARD -->
+      <div class="bg-white p-6 rounded-3xl border border-slate-150 shadow-xs space-y-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-slate-100 pb-3 gap-2">
+          <h3 class="font-black text-slate-800 text-xs flex items-center gap-2">
+            <i class="fab fa-whatsapp text-emerald-500 text-base"></i>
+            <span>Admin WhatsApp QR Payment Verification Settings</span>
+          </h3>
+          <label class="relative inline-flex items-center cursor-pointer select-none">
+            <input type="checkbox" id="adm-pay-system-enabled" onchange="window.saveAdminPaymentSettings()" class="sr-only peer">
+            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+            <span class="ml-2 text-3xs font-black text-slate-500 uppercase tracking-wide" id="adm-pay-system-status-text">🟢 SYSTEM ENABLED</span>
+          </label>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-[11px]">
+          <!-- WhatsApp Number & Display Name -->
+          <div class="space-y-1">
+            <label class="block font-bold text-slate-500 uppercase tracking-wide">WhatsApp Support Number (with Country Code, eg. 919580404600)</label>
+            <input type="text" id="adm-pay-whatsapp-number" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono focus:outline-none focus:border-orange-500 text-xs font-bold" placeholder="919580404600">
+          </div>
+          <div class="space-y-1">
+            <label class="block font-bold text-slate-500 uppercase tracking-wide">WhatsApp Support Display Name</label>
+            <input type="text" id="adm-pay-display-name" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 text-xs font-bold" placeholder="Ed Achievers Admissions Team">
+          </div>
+          
+          <!-- Support Request Template & Payment Instruction Message -->
+          <div class="col-span-full grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="block font-bold text-slate-500 uppercase tracking-wide">Support Thread Query Template Message</label>
+              <textarea id="adm-pay-support-message" rows="2" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 text-xs" placeholder="Hello, I need assistance regarding my CTET preparatory courses. Please assist."></textarea>
+            </div>
+            <div class="space-y-1">
+              <label class="block font-bold text-slate-500 uppercase tracking-wide">Default Secured Payment Instructions Message</label>
+              <textarea id="adm-pay-instructions-message" rows="2" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 text-xs" placeholder="Please scan the QR code above through Google Pay, PhonePe, Paytm, transfer exact net price, paste your 12-digit UTR below, and hit Pay Now to notify Admissions!"></textarea>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-2 border-t border-slate-100">
+          <div class="text-[10px] text-slate-400 font-semibold">
+            <i class="fas fa-circle-exclamation text-emerald-500 mr-1 animate-pulse"></i> Changes stored here update the customer secured checkout gate instantaneously. No code edits required.
+          </div>
+          <div class="flex items-center gap-2 justify-end">
+            <button onclick="window.previewPaymentFlowAction()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-705 font-extrabold rounded-xl text-3xs uppercase tracking-wider transition cursor-pointer">
+              <i class="fas fa-eye mr-1"></i> Preview Flow
+            </button>
+            <button onclick="window.saveAdminPaymentSettings()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl text-3xs uppercase tracking-wider transition cursor-pointer shadow-md shadow-emerald-100">
+              <i class="fas fa-check-circle mr-1"></i> Save Settings
+            </button>
+          </div>
         </div>
       </div>
 
@@ -826,6 +900,9 @@
             <option value="VERIFIED">Verified / Approved</option>
             <option value="REJECTED">Rejected</option>
           </select>
+          <button onclick="window.exportPaymentRequestsToCSV()" class="px-3 py-2 bg-slate-100 hover:bg-slate-250 border border-slate-200 text-slate-700 font-extrabold rounded-xl text-3xs uppercase tracking-wider transition cursor-pointer">
+            <i class="fas fa-file-csv text-emerald-600 mr-1.5"></i> Export CSV
+          </button>
         </div>
         <div class="w-full sm:w-80 relative">
           <span class="absolute left-3 top-2.5 text-slate-400 text-3xs"><i class="fas fa-search"></i></span>
@@ -917,11 +994,23 @@
             </div>
             <div id="course-pricing-price-container">
               <label class="block font-semibold text-slate-500">Price tag (₹ INR)</label>
-              <input type="number" id="add-course-price" placeholder="1999" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500">
+              <input type="number" id="add-course-price" oninput="window.recalculateOfferPriceForm()" placeholder="1999" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500">
             </div>
             <div id="course-pricing-disc-container">
               <label class="block font-semibold text-slate-500">Percent Discount Promo (%)</label>
-              <input type="number" id="add-course-disc" placeholder="40" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500">
+              <input type="number" id="add-course-disc" oninput="window.recalculateOfferPriceForm()" placeholder="40" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500">
+            </div>
+            <div id="course-pricing-offer-container">
+              <label class="block font-semibold text-slate-500">Offer Price (₹ INR)</label>
+              <input type="number" id="add-course-offer-price" placeholder="1199" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500">
+            </div>
+            <div id="course-pricing-discount-info-container">
+              <label class="block font-semibold text-slate-500">Discount Info (Descriptive, e.g. Special Launch Offer)</label>
+              <input type="text" id="add-course-discount-info" placeholder="Maha Bachat / Flat 500 Off" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500">
+            </div>
+            <div id="course-pricing-notes-container" class="col-span-full">
+              <label class="block font-semibold text-slate-500">Syllabus / Course-Specific Payment Notes (Displayed on Checkout screen)</label>
+              <textarea id="add-course-payment-notes" rows="2" placeholder="Pay after selection guarantee, or additional course features, validity extendable etc." class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500"></textarea>
             </div>
             <div id="free-course-settings-alert" class="hidden col-span-full py-3.5 px-4 bg-emerald-50 border border-emerald-150 rounded-2xl text-emerald-800 space-y-1">
               <p class="font-extrabold flex items-center gap-1.5 text-[11px]">🟢 Free Course Settings Active</p>
@@ -2023,6 +2112,42 @@
         }
       });
 
+      // Synchronize Admin WhatsApp Payment Settings and populate UI inputs
+      onValue(ref(db, "paymentSettings"), (snap) => {
+        const settings = snap.val() || {};
+        localDB.paymentSettings = settings;
+
+        const isEnabled = settings.systemEnabled !== false;
+        const chk = document.getElementById("adm-pay-system-enabled");
+        if (chk) {
+          chk.checked = isEnabled;
+        }
+        const lbl = document.getElementById("adm-pay-system-status-text");
+        if (lbl) {
+          lbl.innerText = isEnabled ? "🟢 SYSTEM ENABLED" : "🔴 SYSTEM DISABLED";
+        }
+
+        const numInput = document.getElementById("adm-pay-whatsapp-number");
+        if (numInput) {
+          numInput.value = settings.whatsappNumber || "919580404600";
+        }
+
+        const nameInput = document.getElementById("adm-pay-display-name");
+        if (nameInput) {
+          nameInput.value = settings.whatsappDisplayName || "Ed Achievers Admissions Team";
+        }
+
+        const supInput = document.getElementById("adm-pay-support-message");
+        if (supInput) {
+          supInput.value = settings.supportMessage || "Hello, I need assistance regarding my CTET preparatory courses. Please assist.";
+        }
+
+        const instInput = document.getElementById("adm-pay-instructions-message");
+        if (instInput) {
+          instInput.value = settings.paymentInstructions || "Please scan the QR code above through Google Pay, PhonePe, Paytm, transfer exact net price, paste your 12-digit UTR below, and hit Pay Now to notify Admissions!";
+        }
+      });
+
       // Advanced financial accounting pipeline & analytics reporting
       window.recomputeFinancialDashboard = function() {
         const txArray = Object.values(localDB.transactions || {});
@@ -2379,17 +2504,43 @@
           }
         }
       };
+
       window.updatePaymentRequestsMetrics = function() {
         const requests = Object.values(localDB.paymentRequests || {});
         let pending = 0;
         let approved = 0;
         let rejected = 0;
 
+        let totalRevenue = 0;
+        let dailyRevenue = 0;
+        let monthlyRevenue = 0;
+
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+
         requests.forEach(r => {
           const stat = (r.status || "PENDING").toUpperCase();
-          if (stat === "VERIFIED" || stat === "SUCCESS") approved++;
-          else if (stat === "REJECTED" || stat === "FAILED") rejected++;
-          else pending++;
+          const isVerified = stat === "VERIFIED" || stat === "SUCCESS";
+          const isRejected = stat === "REJECTED" || stat === "FAILED";
+
+          if (isVerified) {
+            approved++;
+            const priceVal = parseFloat(r.price || 0);
+            totalRevenue += priceVal;
+
+            const t = r.timestamp || r.createdAt || 0;
+            if (t >= startOfToday) {
+              dailyRevenue += priceVal;
+            }
+            if (t >= startOfMonth) {
+              monthlyRevenue += priceVal;
+            }
+          } else if (isRejected) {
+            rejected++;
+          } else {
+            pending++;
+          }
         });
 
         const mPend = document.getElementById("metric-pendings-count");
@@ -2399,6 +2550,15 @@
         if (mPend) mPend.innerText = pending;
         if (mApp) mApp.innerText = approved;
         if (mRej) mRej.innerText = rejected;
+
+        // Custom manual earnings tracking indicators
+        const totRevEl = document.getElementById("metric-total-revenue-count");
+        const dayRevEl = document.getElementById("metric-daily-revenue-count");
+        const monRevEl = document.getElementById("metric-monthly-revenue-count");
+
+        if (totRevEl) totRevEl.innerText = "₹" + totalRevenue.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        if (dayRevEl) dayRevEl.innerText = "₹" + dailyRevenue.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        if (monRevEl) monRevEl.innerText = "₹" + monthlyRevenue.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       };
 
       window.renderPaymentRequestsRows = function() {
@@ -2459,47 +2619,53 @@
           let actionHtml = "";
           if (stat === "PENDING") {
             actionHtml = `
-              <div class="flex items-center justify-center gap-2">
-                <button onclick="approvePaymentRequest('${oId}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl text-[10px] uppercase transition cursor-pointer flex items-center gap-1 shadow-sm shadow-emerald-100">
+              <div class="flex flex-col gap-1 items-center justify-center">
+                <button onclick="approvePaymentRequest('${oId}')" class="w-full px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-lg text-[10px] uppercase transition cursor-pointer flex items-center justify-center gap-1 shadow-xs shadow-emerald-105">
                   <i class="fa fa-circle-check"></i> Approve
                 </button>
-                <button onclick="rejectPaymentRequest('${oId}')" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-extrabold rounded-xl text-[10px] uppercase transition cursor-pointer flex items-center gap-1 shadow-sm shadow-rose-100">
+                <button onclick="rejectPaymentRequest('${oId}')" class="w-full px-2.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-extrabold rounded-lg text-[10px] uppercase transition cursor-pointer flex items-center justify-center gap-1 shadow-xs shadow-rose-105">
                   <i class="fa fa-circle-xmark"></i> Reject
                 </button>
               </div>
             `;
-          } else if (stat === "VERIFIED" || stat === "SUCCESS") {
-            actionHtml = `
-              <div class="text-center">
-                <span class="text-[10px] text-slate-400 font-bold flex items-center justify-center gap-1"><i class="fa-solid fa-lock-open text-emerald-600"></i> Course Unlocked</span>
-              </div>
-            `;
           } else {
             actionHtml = `
-              <div class="flex items-center justify-center gap-1">
-                <button onclick="approvePaymentRequest('${oId}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-650 font-bold rounded-lg text-[9px] uppercase transition cursor-pointer flex items-center gap-1">
-                  <i class="fa fa-rotate"></i> Override Approve
+              <div class="flex flex-col gap-1 items-center justify-center">
+                <span class="text-[9px] text-slate-400 font-extrabold uppercase whitespace-nowrap"><i class="fas fa-lock text-[8px] mr-1"></i> Gate Locked</span>
+                <button onclick="markPaymentRequestPending('${oId}')" class="px-2 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-650 hover:text-orange-650 font-bold rounded-lg text-[9px] uppercase transition cursor-pointer flex items-center gap-1">
+                  <i class="fa fa-rotate"></i> Reset Pending
                 </button>
               </div>
             `;
           }
 
+          // Generate student detail html with interactive utility support links
+          const normalizedPhone = sPhone.startsWith("91") ? sPhone : "91" + sPhone.replace(/\D/g, "");
+          const waChatUrl = `https://api.whatsapp.com/send?phone=${normalizedPhone}&text=Dear ${sName}, regarding your payment request ${oId} for ${cName}...`;
+
+          const sDetailsHtml = `
+            <div class="space-y-1">
+              <span class="font-bold text-slate-800 block">${sName}</span>
+              <span class="text-[10px] text-slate-400 block font-mono">ID: ${sId}</span>
+              <div class="flex items-center gap-2 mt-1">
+                <button onclick="viewStudentProfile('${oId}')" class="px-2 py-0.5 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded text-[9px] font-black uppercase transition cursor-pointer"><i class="fas fa-id-card-clip mr-1"></i> Profile</button>
+                <a href="${waChatUrl}" target="_blank" class="px-2 py-0.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded text-[9px] font-black uppercase transition flex items-center justify-center gap-1"><i class="fab fa-whatsapp text-[10px]"></i> Chat</a>
+              </div>
+            </div>
+          `;
+
           html += `
             <tr class="border-b border-slate-100 hover:bg-slate-50/65 text-[11px] text-slate-705 font-medium transition">
               <td class="py-3.5 px-4 font-mono text-slate-450 text-[10px] whitespace-nowrap">${tStr}</td>
               <td class="py-3.5 px-4 font-mono font-black text-slate-800 whitespace-nowrap">${oId}</td>
-              <td class="py-3.5 px-4">
-                <span class="font-bold text-slate-800 block">${sName}</span>
-                <span class="text-[10px] text-slate-400 block font-mono">ID: ${sId}</span>
-                <span class="text-[10px] text-emerald-600 block font-mono font-semibold">${sPhone}</span>
-              </td>
+              <td class="py-3.5 px-4">${sDetailsHtml}</td>
               <td class="py-3.5 px-4">
                 <span class="font-extrabold text-slate-800 block truncate max-w-[150px]" title="${cName}">${cName}</span>
                 <span class="text-[10px] text-slate-400 block font-mono">ID: ${o.courseId}</span>
               </td>
               <td class="py-3.5 px-4">
                 <span class="px-2 py-1 bg-slate-100 border border-slate-200 text-slate-800 font-extrabold font-mono rounded-lg tracking-wider text-[10px] uppercase block w-max select-all" title="Click to Select and Copy">${transId}</span>
-                <span class="text-xs font-black text-orange-650 font-mono block mt-1">₹${amount.toFixed(2)}</span>
+                <span class="text-xs font-black text-orange-655 font-mono block mt-1">₹${amount.toFixed(2)}</span>
               </td>
               <td class="py-3.5 px-4 text-center">${badge}</td>
               <td class="py-3.5 px-4">${actionHtml}</td>
@@ -2516,6 +2682,139 @@
         } else {
           tbody.innerHTML = html;
         }
+      };
+
+      // NEW ADMIN ACTIONS HANDLERS SPECIFIED IN PROMPT
+      window.saveAdminPaymentSettings = function() {
+        const number = document.getElementById("adm-pay-whatsapp-number").value.trim();
+        const displayName = document.getElementById("adm-pay-display-name").value.trim();
+        const support = document.getElementById("adm-pay-support-message").value.trim();
+        const instructions = document.getElementById("adm-pay-instructions-message").value.trim();
+        const enabled = document.getElementById("adm-pay-system-enabled").checked;
+
+        if (!number) {
+          alert("WhatsApp support number cannot be empty.");
+          return;
+        }
+
+        const settingsRef = ref(db, "paymentSettings");
+        set(settingsRef, {
+          whatsappNumber: number,
+          whatsappDisplayName: displayName || "Ed Achievers Team",
+          supportMessage: support || "Hello, I need assistance regarding my CTET preparatory courses. Please assist.",
+          paymentInstructions: instructions || "Please scan the QR code above through Google Pay, PhonePe, Paytm, transfer exact net price, paste your 12-digit UTR below, and hit Pay Now to notify Admissions!",
+          systemEnabled: enabled,
+          updatedAt: Date.now()
+        }).then(() => {
+          alert("Success: WhatsApp QR Payment Settings updated dynamically across the entire application!");
+        }).catch(err => {
+          alert("Error saving payment configuration: " + err.message);
+        });
+      };
+
+      window.previewPaymentFlowAction = function() {
+        const number = document.getElementById("adm-pay-whatsapp-number").value.trim();
+        const displayName = document.getElementById("adm-pay-display-name").value.trim();
+        const instructions = document.getElementById("adm-pay-instructions-message").value.trim();
+        const sysEnabled = document.getElementById("adm-pay-system-enabled").checked;
+
+        alert(`PREVIEW: WhatsApp Manual QR Payment Flow
+Status: ${sysEnabled ? "ENABLED" : "DISABLED"}
+Recipient Brand: ${displayName} (${number})
+
+Secure Checkout Instructions:
+"${instructions}"
+
+User View Checklist:
+1. Load course-specific custom QR Code
+2. Present student metadata contextually
+3. Retrieve Admissions WhatsApp gateway dynamically
+4. Generate automated confirmation preflight message template`);
+      };
+
+      window.exportPaymentRequestsToCSV = function() {
+        const requests = Object.values(localDB.paymentRequests || {});
+        if (requests.length === 0) {
+          alert("No records available to export.");
+          return;
+        }
+
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Timestamp,Order ID,Student ID,Student Name,Student Email,Student Phone,Course ID,Course Name,Transaction ID,Price,Status\r\n";
+
+        requests.forEach(r => {
+          const tStr = r.timestamp || r.createdAt ? new Date(r.timestamp || r.createdAt).toISOString() : "N/A";
+          const row = [
+            tStr,
+            r.orderId || "",
+            r.studentId || "",
+            `"${(r.studentName || "").replace(/"/g, '""')}"`,
+            r.studentEmail || "",
+            r.studentPhone || "",
+            r.courseId || "",
+            `"${(r.courseName || "").replace(/"/g, '""')}"`,
+            r.transactionId || r.utrId || "",
+            r.price || "0",
+            r.status || "PENDING"
+          ].join(",");
+          csvContent += row + "\r\n";
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `payment_requests_ledger_${Date.now()}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
+
+      window.markPaymentRequestPending = function(orderId) {
+        const item = localDB.paymentRequests[orderId];
+        if (!item) {
+          alert("Error: Verification payment request not found internally.");
+          return;
+        }
+
+        const confirmReset = confirm(`Reset Status to Pending:\nAre you sure you want to revert "${orderId}" back to a PENDING validation status?`);
+        if (!confirmReset) return;
+
+        const rRef = ref(db, `paymentRequests/${orderId}`);
+        update(rRef, {
+          status: "PENDING",
+          rejectionReason: null,
+          approvedAt: null,
+          rejectedAt: null
+        }).then(() => {
+          set(ref(db, `verifiedPayments/${orderId}`), null);
+          set(ref(db, `rejectedPayments/${orderId}`), null);
+          alert("Status reverted successfully to PENDING.");
+        }).catch(err => {
+          alert("Sync error reverting state: " + err.message);
+        });
+      };
+
+      window.viewStudentProfile = function(orderId) {
+        const item = localDB.paymentRequests[orderId];
+        if (!item) {
+          alert("Error: Payment request metadata reference missing.");
+          return;
+        }
+        
+        alert(`Student Profile & Metadata Detail:
+------------------------------------------
+Full Name: ${item.studentName}
+User ID: ${item.studentId}
+Mobile Number: ${item.studentPhone}
+Email Address: ${item.studentEmail || "Not Provided"}
+
+Subscription Details:
+---------------------
+Course Selected: ${item.courseName} (ID: ${item.courseId})
+Course Price Offered: ₹${parseFloat(item.price || 0).toFixed(2)}
+Receipt Transaction/UTR: ${item.transactionId}
+Request Placed: ${item.timestamp ? new Date(item.timestamp).toLocaleString("en-IN") : "N/A"}
+Current Request Status: ${(item.status || "PENDING").toUpperCase()}`);
       };
 
       window.refreshPaymentRequestsData = function() {
@@ -3429,7 +3728,10 @@
         assignments: assignmentsList,
         seoTitle: seoTitle || title,
         seoKeywords: seoKeywords || "",
-        seoDescription: seoDescription || subtitle
+        seoDescription: seoDescription || subtitle,
+        paymentNotes: document.getElementById("add-course-payment-notes").value.trim(),
+        offerPrice: document.getElementById("add-course-offer-price").value.trim(),
+        discountInfo: document.getElementById("add-course-discount-info").value.trim()
       };
 
       set(ref(db, `courses/${cId}`), payload)
@@ -3442,27 +3744,56 @@
       .catch(err => alert("Sync Error: " + err.message));
     };
 
+    window.recalculateOfferPriceForm = function() {
+      const priceInput = document.getElementById("add-course-price");
+      const discInput = document.getElementById("add-course-disc");
+      const offerInput = document.getElementById("add-course-offer-price");
+      if (!priceInput || !discInput || !offerInput) return;
+      const price = parseFloat(priceInput.value) || 0;
+      const disc = parseFloat(discInput.value) || 0;
+      const offer = price - (price * disc / 100);
+      offerInput.value = offer > 0 ? Math.round(offer) : "";
+    };
+
     window.toggleCoursePricingFields = function() {
       const type = document.getElementById("add-course-type").value;
       const priceContainer = document.getElementById("course-pricing-price-container");
       const discContainer = document.getElementById("course-pricing-disc-container");
+      const offerContainer = document.getElementById("course-pricing-offer-container");
+      const discountInfoContainer = document.getElementById("course-pricing-discount-info-container");
+      const notesContainer = document.getElementById("course-pricing-notes-container");
       const freeAlert = document.getElementById("free-course-settings-alert");
 
       if (type === "free") {
         if (priceContainer) priceContainer.classList.add("hidden");
         if (discContainer) discContainer.classList.add("hidden");
+        if (offerContainer) offerContainer.classList.add("hidden");
+        if (discountInfoContainer) discountInfoContainer.classList.add("hidden");
+        if (notesContainer) notesContainer.classList.add("hidden");
         if (freeAlert) freeAlert.classList.remove("hidden");
         document.getElementById("add-course-price").value = "0";
         document.getElementById("add-course-disc").value = "0";
+        document.getElementById("add-course-offer-price").value = "0";
+        document.getElementById("add-course-discount-info").value = "Free";
+        document.getElementById("add-course-payment-notes").value = "";
       } else {
         if (priceContainer) priceContainer.classList.remove("hidden");
         if (discContainer) discContainer.classList.remove("hidden");
+        if (offerContainer) offerContainer.classList.remove("hidden");
+        if (discountInfoContainer) discountInfoContainer.classList.remove("hidden");
+        if (notesContainer) notesContainer.classList.remove("hidden");
         if (freeAlert) freeAlert.classList.add("hidden");
         if (document.getElementById("add-course-price").value === "0") {
           document.getElementById("add-course-price").value = "";
         }
         if (document.getElementById("add-course-disc").value === "0") {
           document.getElementById("add-course-disc").value = "";
+        }
+        if (document.getElementById("add-course-offer-price").value === "0") {
+          document.getElementById("add-course-offer-price").value = "";
+        }
+        if (document.getElementById("add-course-discount-info").value === "Free") {
+          document.getElementById("add-course-discount-info").value = "";
         }
       }
     };
@@ -3482,6 +3813,9 @@
       document.getElementById("add-course-subtitle").value = "";
       document.getElementById("add-course-price").value = "";
       document.getElementById("add-course-disc").value = "";
+      document.getElementById("add-course-offer-price").value = "";
+      document.getElementById("add-course-discount-info").value = "";
+      document.getElementById("add-course-payment-notes").value = "";
       document.getElementById("add-course-desc").value = "";
       
       document.getElementById("add-course-duration").value = "";
@@ -3569,6 +3903,9 @@
       document.getElementById("add-course-qr").value = course.paymentQRCode || "";
       document.getElementById("add-course-price").value = course.price || "";
       document.getElementById("add-course-disc").value = course.discountPercent || "";
+      document.getElementById("add-course-offer-price").value = course.offerPrice || "";
+      document.getElementById("add-course-discount-info").value = course.discountInfo || "";
+      document.getElementById("add-course-payment-notes").value = course.paymentNotes || "";
       document.getElementById("add-course-desc").value = course.description || "";
 
       document.getElementById("add-course-duration").value = course.duration || "";
