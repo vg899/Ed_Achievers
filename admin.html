@@ -870,79 +870,117 @@
 
       <!-- Add course form card droparea -->
       <div id="course-create-panel" class="hidden bg-white p-6 rounded-3xl border border-slate-100 shadow-xl space-y-4 text-xs">
-        <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5"><i class="fas fa-graduation-cap text-orange-500"></i> Configure Training Course Pack</h3>
+        <div class="flex items-center justify-between border-b pb-3 mb-3 border-slate-100">
+          <h3 id="course-form-title" class="font-black text-slate-800 text-sm flex items-center gap-1.5"><i class="fas fa-graduation-cap text-orange-500 animate-pulse"></i> Configure Training Course Pack</h3>
+          <span id="course-form-badge" class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[9px] font-black rounded uppercase">NEW COURSE</span>
+        </div>
+
+        <!-- Course publisher tabs segment -->
+        <div class="flex flex-wrap gap-1 bg-slate-50 p-1 rounded-2xl border border-slate-100 mb-4">
+          <button type="button" onclick="switchCourseFormTab('basic')" id="btn-form-tab-basic" class="flex-1 py-2 px-3 rounded-xl font-black text-3xs transition cursor-pointer bg-white text-orange-660 shadow-xs border border-orange-100">1. Basic & Branding</button>
+          <button type="button" onclick="switchCourseFormTab('syllabus')" id="btn-form-tab-syllabus" class="flex-1 py-2 px-3 rounded-xl font-bold text-3xs transition cursor-pointer text-slate-500 hover:bg-white/50">2. Syllabus & Reviews</button>
+          <button type="button" onclick="switchCourseFormTab('content')" id="btn-form-tab-content" class="flex-1 py-2 px-3 rounded-xl font-bold text-3xs transition cursor-pointer text-slate-500 hover:bg-white/50">3. Child Items (Lectures/PDFs)</button>
+          <button type="button" onclick="switchCourseFormTab('history')" id="btn-form-tab-history" class="flex-1 py-2 px-3 rounded-xl font-bold text-3xs transition cursor-pointer text-slate-500 hover:bg-white/50 animate-pulse">4. Safety & History</button>
+        </div>
         
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div>
-            <label class="block font-semibold text-slate-500">Course Identifier key (Unique, e.g. ctet_2026_CDP)</label>
-            <input type="text" id="add-course-id" placeholder="ctet_25_advance" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
-          </div>
-          <div>
-            <label class="block font-semibold text-slate-500">Full Course Title</label>
-            <input type="text" id="add-course-title" placeholder="CTET Paper 2 complete Child Psychology master batch" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
-          </div>
-          <div>
-            <label class="block font-semibold text-slate-500">Course Subtitle / Target tagline</label>
-            <input type="text" id="add-course-subtitle" placeholder="Bilingual complete theory, mock test series & personalized guidance" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
-          </div>
-          <div>
-            <label class="block font-semibold text-slate-500">Exam Category Group</label>
-            <select id="add-course-exam" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
-              <option value="CTET">CTET Prep</option>
-              <option value="KVS">KVS Central</option>
-              <option value="UPTET">UPTET Exams</option>
-              <option value="DSSSB">DSSSB Boards</option>
-              <option value="SUPERTET">UP State Super TET</option>
-            </select>
-          </div>
-          <div>
-            <label class="block font-semibold text-slate-500">Course Type</label>
-            <select id="add-course-type" onchange="toggleCoursePricingFields()" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
-              <option value="paid">Paid Course</option>
-              <option value="free">Free Course</option>
-            </select>
-          </div>
-          <div id="course-pricing-price-container">
-            <label class="block font-semibold text-slate-500">Price tag (₹ INR)</label>
-            <input type="number" id="add-course-price" placeholder="1999" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
-          </div>
-          <div id="course-pricing-disc-container">
-            <label class="block font-semibold text-slate-500">Percent Discount Promo (%)</label>
-            <input type="number" id="add-course-disc" placeholder="40" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
-          </div>
-          <div id="free-course-settings-alert" class="hidden col-span-full py-3.5 px-4 bg-emerald-50 border border-emerald-150 rounded-2xl text-emerald-800 space-y-1">
-            <p class="font-extrabold flex items-center gap-1.5 text-[11px]">🟢 Free Course Settings Active</p>
-            <p class="font-semibold text-4xs text-emerald-650 opacity-90 leading-tight">No payment required ● Instant enrollment ● Instant access to all lectures ● Instant access to PDFs ● Instant access to tests</p>
+        <!-- SECTION 1: BASIC INFO & BRANDING -->
+        <div id="course-form-section-basic" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div>
+              <label class="block font-semibold text-slate-500">Course Identifier key (Unique, e.g. ctet_2026_CDP)</label>
+              <input type="text" id="add-course-id" placeholder="ctet_25_advance" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 font-mono">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-500">Full Course Title</label>
+              <input type="text" id="add-course-title" placeholder="CTET Paper 2 complete Child Psychology master batch" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-500">Course Subtitle / Target tagline</label>
+              <input type="text" id="add-course-subtitle" placeholder="Bilingual complete theory, mock test series & personalized guidance" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-500">Exam Category Group</label>
+              <select id="add-course-exam" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+                <option value="CTET">CTET Prep</option>
+                <option value="KVS">KVS Central</option>
+                <option value="UPTET">UPTET Exams</option>
+                <option value="DSSSB">DSSSB Boards</option>
+                <option value="SUPERTET">UP State Super TET</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-500">Course Type</label>
+              <select id="add-course-type" onchange="toggleCoursePricingFields()" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+                <option value="paid">Paid Course</option>
+                <option value="free">Free Course</option>
+              </select>
+            </div>
+            <div id="course-pricing-price-container">
+              <label class="block font-semibold text-slate-500">Price tag (₹ INR)</label>
+              <input type="number" id="add-course-price" placeholder="1999" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500">
+            </div>
+            <div id="course-pricing-disc-container">
+              <label class="block font-semibold text-slate-500">Percent Discount Promo (%)</label>
+              <input type="number" id="add-course-disc" placeholder="40" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500">
+            </div>
+            <div id="free-course-settings-alert" class="hidden col-span-full py-3.5 px-4 bg-emerald-50 border border-emerald-150 rounded-2xl text-emerald-800 space-y-1">
+              <p class="font-extrabold flex items-center gap-1.5 text-[11px]">🟢 Free Course Settings Active</p>
+              <p class="font-semibold text-4xs text-emerald-650 opacity-90 leading-tight">No payment required ● Instant enrollment ● Instant access to all lectures ● Instant access to PDFs ● Instant access to tests</p>
+            </div>
+
+            <!-- New Fields required for course editing system -->
+            <div>
+              <label class="block font-semibold text-slate-500 text-3xs">Course Publication Status</label>
+              <select id="add-course-status" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-bold text-orange-650">
+                <option value="published">🟢 Published (Visible to users)</option>
+                <option value="draft">🟡 Draft (Visible to admin only)</option>
+                <option value="hidden">🔴 Hidden (Muted from student app)</option>
+                <option value="archived">📁 Archived (Read-only historical snap)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-500 text-3xs">Completion Certificate Trigger</label>
+              <select id="add-course-certificate" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-bold">
+                <option value="enabled">🛡️ Enabled (Auto generation)</option>
+                <option value="disabled">🚫 Disabled (No certificate)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-500">Language of Instruction</label>
+              <input type="text" id="add-course-language" placeholder="Bilingual: Hindi & English" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-500">Course Duration (e.g. 150+ Hours)</label>
+              <input type="text" id="add-course-duration" placeholder="150+ Hours" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-500">Course Validity Duration</label>
+              <input type="text" id="add-course-validity" placeholder="12 Months (Till Exam Date)" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-500">Enrolled Students Count Display</label>
+              <input type="text" id="add-course-enrolled" placeholder="2,450+ Enrolled" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-500">Average Completion Rate (%)</label>
+              <input type="text" id="add-course-completion" placeholder="85% Completion" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-500">Student Rating Score (out of 5)</label>
+              <input type="text" id="add-course-rating" placeholder="4.8" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+
+            <div class="col-span-full">
+              <label class="block font-semibold text-slate-500">Course Tags (comma separated lists for tags mapping)</label>
+              <input type="text" id="add-course-tags" placeholder="child development, pedagogy master, ctet 25, freebie, live-class" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
           </div>
 
-          <!-- Extended Course Meta Specifications -->
-          <div>
-            <label class="block font-semibold text-slate-500">Course Duration (e.g. 150+ Hours)</label>
-            <input type="text" id="add-course-duration" placeholder="150+ Hours" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          <!-- Cloudinary Upload Assets Fields -->
+          <div class="border-t border-slate-100 pt-4 mt-2">
+            <h4 class="font-bold text-slate-700 text-xs mb-2 flex items-center gap-1.5"><i class="fa fa-photo-film text-orange-500"></i> Course Graphics & Dynamic Payment QR Code</h4>
           </div>
-          <div>
-            <label class="block font-semibold text-slate-500">Language of Instruction</label>
-            <input type="text" id="add-course-language" placeholder="Bilingual: Hindi & English" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
-          </div>
-          <div>
-            <label class="block font-semibold text-slate-500">Course Validity Duration</label>
-            <input type="text" id="add-course-validity" placeholder="12 Months (Till Exam Date)" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
-          </div>
-          <div>
-            <label class="block font-semibold text-slate-500">Enrolled Students Count Display</label>
-            <input type="text" id="add-course-enrolled" placeholder="2,450+ Enrolled" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
-          </div>
-          <div>
-            <label class="block font-semibold text-slate-500">Average Completion Rate (%)</label>
-            <input type="text" id="add-course-completion" placeholder="85% Completion" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
-          </div>
-          <div>
-            <label class="block font-semibold text-slate-500">Student Rating Score (out of 5)</label>
-            <input type="text" id="add-course-rating" placeholder="4.8" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
-          </div>
-
-          <!-- Cloudinary Upload Fields -->
-          <div class="col-span-full grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <!-- Thumbnail upload -->
             <div>
               <label class="block font-semibold text-slate-500 text-3xs">Course Thumbnail Card Image</label>
@@ -1003,76 +1041,252 @@
           </div>
 
           <!-- Instructor / Faculty Portfolio -->
-          <div class="col-span-full border-t border-slate-100 pt-4 mt-2">
+          <div class="border-t border-slate-100 pt-4 mt-2">
             <h4 class="font-bold text-slate-700 text-xs mb-2 flex items-center gap-1.5"><i class="fa fa-user-tie text-orange-500"></i> Instructor / Faculty Portfolio Header</h4>
           </div>
-          <div>
-            <label class="block font-semibold text-slate-500">Instructor Name</label>
-            <input type="text" id="add-course-teacher-name" placeholder="Dr. Harsh Vardhan" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
-          </div>
-          <div>
-            <label class="block font-semibold text-slate-500">Academic Qualification Spec</label>
-            <input type="text" id="add-course-teacher-qualification" placeholder="Ph.D in Child Psychology, M.Ed (CTET Qualified)" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
-          </div>
-          <div>
-            <label class="block font-semibold text-slate-500">Instructing Experience Metrics</label>
-            <input type="text" id="add-course-teacher-experience" placeholder="12+ Years Coaching Experience" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
-          </div>
-          <div class="col-span-full grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
-            <div class="sm:col-span-2">
-              <label class="block font-semibold text-slate-500">Bio Description Paragraph</label>
-              <textarea id="add-course-teacher-desc" rows="3" placeholder="Explain lessons schedule, past selections record, and teaching style methodology..." class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"></textarea>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block font-semibold text-slate-500">Instructor Name</label>
+              <input type="text" id="add-course-teacher-name" placeholder="Dr. Harsh Vardhan" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500">
             </div>
             <div>
-              <label class="block font-semibold text-slate-500">Teacher Portrait Image Upload</label>
-              <input type="hidden" id="add-course-teacher-photo">
-              <input type="file" id="add-course-teacher-photo-file" accept="image/*" class="hidden" onchange="handleTeacherPhotoSelection(this)">
-              
-              <div onclick="document.getElementById('add-course-teacher-photo-file').click()" class="border border-dashed border-slate-200 hover:border-orange-500 rounded-2xl p-2.5 flex flex-col items-center justify-center cursor-pointer bg-slate-50 transition min-h-[80px] mt-1 text-center" id="course-teacher-photo-droparea">
-                <i class="fas fa-user-circle text-lg text-orange-500 mb-1"></i>
-                <span class="text-[9px] font-bold text-slate-500 leading-none" id="course-teacher-photo-status">Upload Portrait Photo</span>
+              <label class="block font-semibold text-slate-500">Academic Qualification Spec</label>
+              <input type="text" id="add-course-teacher-qualification" placeholder="Ph.D in Child Psychology, M.Ed (CTET Qualified)" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-500">Instructing Experience Metrics</label>
+              <input type="text" id="add-course-teacher-experience" placeholder="12+ Years Coaching Experience" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500">
+            </div>
+            <div class="col-span-full grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+              <div class="sm:col-span-2">
+                <label class="block font-semibold text-slate-500">Bio Description Paragraph</label>
+                <textarea id="add-course-teacher-desc" rows="3" placeholder="Explain lessons schedule, past selections record, and teaching style methodology..." class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500"></textarea>
               </div>
-              
-              <div class="hidden mt-2 relative border border-slate-100 rounded-2xl overflow-hidden bg-slate-150 h-16 w-full" id="course-teacher-photo-preview-container">
-                <img id="course-teacher-photo-preview" class="w-full h-full object-cover">
-                <span class="absolute top-1 right-1 bg-emerald-500 text-white font-bold text-[7px] px-1.5 py-0.5 rounded shadow">LOADED</span>
+              <div>
+                <label class="block font-semibold text-slate-500">Teacher Portrait Image Upload</label>
+                <input type="hidden" id="add-course-teacher-photo">
+                <input type="file" id="add-course-teacher-photo-file" accept="image/*" class="hidden" onchange="handleTeacherPhotoSelection(this)">
+                
+                <div onclick="document.getElementById('add-course-teacher-photo-file').click()" class="border border-dashed border-slate-200 hover:border-orange-500 rounded-2xl p-2.5 flex flex-col items-center justify-center cursor-pointer bg-slate-50 transition min-h-[80px] mt-1 text-center" id="course-teacher-photo-droparea">
+                  <i class="fas fa-user-circle text-lg text-orange-500 mb-1"></i>
+                  <span class="text-[9px] font-bold text-slate-500 leading-none" id="course-teacher-photo-status">Upload Portrait Photo</span>
+                </div>
+                
+                <div class="hidden mt-2 relative border border-slate-100 rounded-2xl overflow-hidden bg-slate-150 h-16 w-full" id="course-teacher-photo-preview-container">
+                  <img id="course-teacher-photo-preview" class="w-full h-full object-cover">
+                  <span class="absolute top-1 right-1 bg-emerald-500 text-white font-bold text-[7px] px-1.5 py-0.5 rounded shadow">LOADED</span>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- Syllabus, Chapters & Features checklists list -->
-          <div class="col-span-full border-t border-slate-100 pt-4 mt-2">
-            <h4 class="font-bold text-slate-700 text-xs mb-2 flex items-center gap-1.5"><i class="fa fa-list-check text-orange-500"></i> Course Syllabus, Chapters, & Accent Highlights</h4>
+          <!-- SEO Configuration -->
+          <div class="border-t border-slate-100 pt-4 mt-2">
+            <h4 class="font-bold text-slate-700 text-xs mb-2 flex items-center gap-1.5"><i class="fa fa-globe text-orange-500"></i> Search Engine Optimization (SEO) & Google Index Data</h4>
           </div>
-          <div>
-            <label class="block font-semibold text-slate-500">Syllabus Accent Features (comma separated list)</label>
-            <input type="text" id="add-course-features" placeholder="Live Daily Dialog, Printable CPD Notes, Weekly Simulated Quizzes, 1-on-1 Help Desk Support, Certificate Awarded" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block font-semibold text-slate-500">SEO Meta Title Override</label>
+              <input type="text" id="add-course-seo-title" placeholder="CTET Child Pedagogy Master Coaching Course" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-500">SEO Focus Keywords (comma separated)</label>
+              <input type="text" id="add-course-seo-keywords" placeholder="ctet coaching, master cdp notes, child pedagogy exam guides" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-500">SEO Snippet Description Metadata</label>
+              <input type="text" id="add-course-seo-desc" placeholder="Prepare for child psychology and pedagogy exams in Hindi & English, free online PDFs, complete live streaming lectures class." class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
           </div>
-          <div>
-            <label class="block font-semibold text-slate-500">Subject Structure list (comma separated list)</label>
-            <input type="text" id="add-course-subjects" placeholder="Child Development Theory, Pedagogy Metrics, Kohleberg Principles, NEP Guidelines, Classroom Socialization" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+        </div>
+
+
+        <!-- SECTION 2: COURSE SYLLABUS & REVIEWS -->
+        <div id="course-form-section-syllabus" class="space-y-4 hidden animate-fadeIn">
+          <div class="col-span-full">
+            <h4 class="font-extrabold text-slate-800 text-xs mb-2.5 flex items-center gap-1.5"><i class="fa fa-list-check text-orange-500 animate-bounce"></i> Course Syllabus, Chapters, & Accent Highlights</h4>
           </div>
-          <div>
-            <label class="block font-semibold text-slate-500">Chapter Indexes (comma separated list)</label>
-            <input type="text" id="add-course-chapters" placeholder="Chapter 1: Child Growth, Chapter 2: Cognitive Stages, Chapter 3: Inclusivity, Chapter 4: Formative Tests" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div>
+              <label class="block font-semibold text-slate-500">Syllabus Accent Features (comma separated list)</label>
+              <input type="text" id="add-course-features" placeholder="Live Daily Dialog, Printable CPD Notes, Weekly Simulated Quizzes, 1-on-1 Help Desk Support, Certificate Awarded" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-500">Key Course Highlights (icon list, comma separated)</label>
+              <input type="text" id="add-course-highlights" placeholder="100+ Bilingual Lectures, 15 Live Doubt Webinars, 12 Months High Stakes Validity" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-500">Subject Structure list (comma separated list)</label>
+              <input type="text" id="add-course-subjects" placeholder="Child Development Theory, Pedagogy Metrics, Kohleberg Principles, NEP Guidelines, Classroom Socialization" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+            <div class="col-span-full space-y-1.5">
+              <label class="block font-semibold text-slate-500">Chapters Index (comma separated list - required for Lecture organization!)</label>
+              <div class="flex gap-2">
+                <input type="text" id="add-course-chapters" onchange="renderInteractiveChaptersTags()" placeholder="Chapter 1: Child Growth, Chapter 2: Cognitive Stages, Chapter 3: Inclusivity, Chapter 4: Formative Tests" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-bold text-orange-660">
+                <button type="button" onclick="window.triggerQuickChapterAddPrompt()" class="px-4 py-2.5 bg-slate-900 border border-slate-705 text-white font-bold rounded-xl hover:bg-slate-800 transition shadow-xs text-3xs shrink-0 cursor-pointer">+ Add Chapter</button>
+              </div>
+              <div id="interactive-chapters-tag-bin" class="flex flex-wrap gap-1.5 pt-1"></div>
+            </div>
+            <div class="col-span-full">
+              <label class="block font-semibold text-slate-500">Practice Course Assignments list (comma separated)</label>
+              <input type="text" id="add-course-assignments" placeholder="Moral Developmental Stages Essay, Kohlberg Stage comparison worksheet, NEP 2020 major pillars essay" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
           </div>
 
           <div class="col-span-full pt-1">
-            <label class="block font-semibold text-slate-500">Detailed Course Description (supports paragraphs)</label>
-            <textarea id="add-course-desc" rows="3" placeholder="Provide general details about the exam, exam level prep guidelines, class structure etc." class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"></textarea>
+            <label class="block font-semibold text-slate-500">Detailed Course Description copy (supports paragraph formats)</label>
+            <textarea id="add-course-desc" rows="4" placeholder="Provide general details about the exam, exam level prep guidelines, class structure etc." class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"></textarea>
           </div>
 
           <!-- Student Reviews & ratings mockers -->
           <div class="col-span-full pt-1">
-            <label class="block font-semibold text-slate-500">Student Testimonial Reviews (Format: Name: Review Copy || Name2: Review Copy2)</label>
-            <textarea id="add-course-reviews" rows="2" placeholder="Naveen: Extremely structured! Coached me to score 28/30 in CDP. || Priyah: Best Pedagogy content on Super TET. Highly recommended!" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"></textarea>
+            <label class="block font-semibold text-slate-500">Student Reviews (Format is Name: Review Copy || Teacher: Review Copy2)</label>
+            <textarea id="add-course-reviews" rows="3" placeholder="Naveen: Extremely structured! Coached me to score 28/30 in CDP. || Priyah: Best Pedagogy content on Super TET. Highly recommended!" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"></textarea>
           </div>
-
         </div>
 
+
+        <!-- SECTION 3: CHILD CONTENT LIVE MANAGER -->
+        <div id="course-form-section-content" class="space-y-4 hidden">
+          <!-- Unsaved fallback alert -->
+          <div id="course-content-manager-unlocked-state" class="p-6 bg-slate-50 border border-slate-150 rounded-3xl text-center space-y-2">
+            <i class="fa fa-lock text-3xl text-slate-300 animate-bounce"></i>
+            <h4 class="font-bold text-slate-700 text-xs">Child Content Lists Muted</h4>
+            <p class="text-4xs text-slate-400 max-w-sm mx-auto">Please first select and LOAD an existing course by clicking <strong>Edit Course</strong> from the catalog tree below to live-reorder lectures, replace chapters, publish notes, schedule quizzes or move videos.</p>
+          </div>
+
+          <!-- Unlocked functional panels -->
+          <div id="course-content-manager-dashboard" class="hidden space-y-4">
+            <div class="flex items-center justify-between bg-orange-50/50 p-3 rounded-2xl border border-orange-100/50">
+              <div>
+                <p class="text-orange-700 font-extrabold text-[11px] leading-tight flex items-center gap-1">🔗 Active Content Core: <span id="cc-active-course-id" class="font-mono text-3xs font-black bg-white px-2 py-0.5 rounded">None</span></p>
+                <p class="text-4xs text-slate-550 mt-0.5">Publish lessons, replace videos, push PDFs or schedule simulated mock quizzes immediately.</p>
+              </div>
+              <span id="cc-active-course-badge" class="px-2 py-0.5 bg-orange-500 text-white font-extrabold rounded text-[8px]">LOADED</span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+              <!-- Left side content selectors (recorded lectures, chapter builder, order management) -->
+              <div class="lg:col-span-7 bg-slate-50 p-4 border rounded-2xl space-y-3.5">
+                <div class="flex items-center justify-between border-b pb-2">
+                  <h4 class="font-extrabold text-slate-800 text-xs"><i class="fa fa-video text-orange-500 mr-1"></i> Recorded Video Lectures & Order Swapper</h4>
+                  <button type="button" onclick="openLectureQuickAddModal()" class="px-2 py-1 bg-orange-500 hover:bg-orange-600 text-white font-black rounded text-[9px] cursor-pointer"><i class="fa fa-plus"></i> Push Lecture</button>
+                </div>
+
+                <!-- Lecture list renders dynamically here -->
+                <div id="course-content-lectures-bin" class="space-y-2 max-h-[350px] overflow-y-auto pr-1">
+                  <!-- dynamically injected lectures list -->
+                </div>
+              </div>
+
+              <!-- Right side content tabs (PDFs docs list, mock tests list, live classes list) -->
+              <div class="lg:col-span-5 flex flex-col gap-4">
+                <!-- PDF list container card -->
+                <div class="bg-white p-4 border rounded-2xl shadow-xs space-y-3">
+                  <div class="flex items-center justify-between pb-1 border-b">
+                    <h5 class="font-bold text-slate-800 text-[11px] flex items-center gap-1"><i class="fa fa-file-pdf text-red-500 animate-pulse"></i> Study Guides & PDF Booklets</h5>
+                    <button type="button" onclick="openPDFQuickAdd()" class="text-[9px] font-black text-orange-500 hover:text-orange-600 cursor-pointer"><i class="fa fa-plus"></i> Add Link</button>
+                  </div>
+                  <div id="cc-pdf-list-bin" class="space-y-2 max-h-[120px] overflow-y-auto pr-1">
+                    <!-- Dynamic pdf list -->
+                  </div>
+                </div>
+
+                <!-- Mock test container card -->
+                <div class="bg-white p-4 border rounded-2xl shadow-xs space-y-3">
+                  <div class="flex items-center justify-between pb-1 border-b">
+                    <h5 class="font-bold text-slate-800 text-[11px] flex items-center gap-1"><i class="fa fa-feather-pointed text-amber-500"></i> Simulated Mock Quizzes</h5>
+                    <button type="button" onclick="openQuizQuickAdd()" class="text-[9px] font-black text-orange-500 hover:text-orange-600 cursor-pointer"><i class="fa fa-plus"></i> Compose Question</button>
+                  </div>
+                  <div id="cc-test-list-bin" class="space-y-2 max-h-[120px] overflow-y-auto pr-1">
+                    <!-- Dynamic mock tests list -->
+                  </div>
+                </div>
+
+                <!-- Live Stream schedules container card -->
+                <div class="bg-white p-4 border rounded-2xl shadow-xs space-y-3">
+                  <div class="flex items-center justify-between pb-1 border-b">
+                    <h5 class="font-bold text-slate-800 text-[11px] flex items-center gap-1"><i class="fa fa-signal text-rose-500 animate-pulse"></i> Live Broadcast streams</h5>
+                    <button type="button" onclick="openLiveQuickAdd()" class="text-[9px] font-black text-orange-500 hover:text-orange-600 cursor-pointer"><i class="fa fa-plus"></i> Schedule stream</button>
+                  </div>
+                  <div id="cc-live-list-bin" class="space-y-2 max-h-[120px] overflow-y-auto pr-1">
+                    <!-- Dynamic live class list -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- SECTION 4: VERSION MANAGEMENT & SAFETY BACKUPS -->
+        <div id="course-form-section-history" class="space-y-4 hidden">
+          <div class="col-span-full">
+            <h4 class="font-extrabold text-slate-800 text-xs mb-1.5 flex items-center gap-1.5"><i class="fa fa-shield-halved text-orange-500 animate-bounce"></i> Admin Safety Audit Logs & Historical Restore Point Controls</h4>
+            <p class="text-4xs text-slate-400">Restore points are autosaved on every single properties save action. Admin can view differential side-by-side comparators or swap immediately.</p>
+          </div>
+
+          <!-- Operator validation console before saving -->
+          <div class="p-4 bg-orange-50/20 border border-orange-100 rounded-2xl grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block font-black text-slate-700 text-3xs uppercase tracking-wider">Required Verified Operator Name</label>
+              <input type="text" id="admin-operator-identity" placeholder="Enter Operator Name (e.g. Harsh Vardhan)" class="w-full mt-1 p-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 font-bold uppercase tracking-wide">
+            </div>
+            <div>
+              <label class="block font-black text-slate-700 text-3xs uppercase tracking-wider">Change Comment / Audit Notes</label>
+              <input type="text" id="admin-operator-comment" placeholder="Describe edits (e.g. Added chapter 3 outline, corrected pricing rules)" class="w-full mt-1 p-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-orange-500 font-semibold">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 xl:grid-cols-12 gap-4 pt-1">
+            <!-- Leftside history list -->
+            <div class="xl:col-span-5 bg-slate-50 p-4 border rounded-2xl space-y-2">
+              <h5 class="font-bold text-slate-800 text-[11px] border-b pb-1.5"><i class="fa fa-clock-rotate-left mr-1 text-slate-500"></i> Stored snapshots point index</h5>
+              
+              <div id="cc-history-list-bin" class="space-y-2 max-h-[300px] overflow-y-auto pr-1 text-4xs">
+                <!-- snap list -->
+                <p class="text-slate-400 text-center py-6 italic">No backup snapshots compiled yet for this course registry.</p>
+              </div>
+            </div>
+
+            <!-- Rightside interactive differential comparator -->
+            <div class="xl:col-span-7 bg-white p-4 border rounded-2xl shadow-2xs space-y-3">
+              <h5 class="font-bold text-slate-800 text-[11px] border-b pb-1.5 flex items-center gap-1"><i class="fa fa-code-compare text-orange-500"></i> Differential Side-by-Side Field comparison</h5>
+              
+              <div id="cc-compare-empty-state" class="text-center py-10 space-y-1.5">
+                <i class="fa fa-object-ungroup text-2xl text-slate-200"></i>
+                <p class="text-[10px] text-slate-400 font-semibold">Select and click "Compare" on a revision document snapshot on the left to review metrics.</p>
+              </div>
+
+              <!-- diff table details -->
+              <div id="cc-compare-table-pane" class="hidden text-3xs space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
+                <div class="bg-slate-50 p-2 border rounded-xl text-center font-bold text-slate-600 tracking-wider">
+                  Comparing current working form with snapshot: <span id="cc-compare-selected-id" class="font-mono text-orange-600 block sm:inline">None</span>
+                </div>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left border-collapse">
+                    <thead>
+                      <tr class="border-b border-slate-200 bg-slate-100 text-slate-700 font-extrabold uppercase text-[8px]">
+                        <th class="p-2">Property field Name</th>
+                        <th class="p-2">Current edited values</th>
+                        <th class="p-2 text-rose-600 bg-rose-50/10">Snapshot values</th>
+                      </tr>
+                    </thead>
+                    <tbody id="cc-compare-table-rows" class="font-medium text-slate-650">
+                      <!-- compare list rows -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Save controls -->
         <div class="flex gap-2 justify-end pt-3 border-t border-slate-100">
-          <button onclick="clearCourseFormState()" class="px-4 py-2 bg-slate-150 hover:bg-slate-200 rounded-xl font-bold text-slate-650 transition cursor-pointer">Discard / Clear</button>
-          <button onclick="publishNewCourseAction()" id="course-publish-btn" class="px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white font-extrabold rounded-xl transition shadow-md cursor-pointer">Publish Course Package</button>
+          <button onclick="clearCourseFormState()" class="px-4 py-2 bg-slate-150 hover:bg-slate-200 rounded-xl font-bold text-slate-650 transition cursor-pointer">Discard Form / Clear</button>
+          <button onclick="publishNewCourseAction()" id="course-publish-btn" class="px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white font-extrabold rounded-xl transition shadow-md cursor-pointer"><i class="fa fa-circle-check"></i> Save Properties &amp; Backup</button>
         </div>
       </div>
 
@@ -2987,7 +3201,95 @@
       });
     }
 
-    // COURSE MANAGER SUBMIT ACTIONS
+    // COURSE MANAGER SESSIONS AND ADAPTIVE SWITCHES
+    window.activeEditorCourseId = "";
+    window.activeFormTab = "basic";
+
+    window.switchCourseFormTab = function(tabName) {
+      window.activeFormTab = tabName;
+      const tabs = ["basic", "syllabus", "content", "history"];
+      tabs.forEach(t => {
+        const sect = document.getElementById("course-form-section-" + t);
+        const btn = document.getElementById("btn-form-tab-" + t);
+        if (sect) {
+          if (t === tabName) {
+            sect.classList.remove("hidden");
+          } else {
+            sect.classList.add("hidden");
+          }
+        }
+        if (btn) {
+          if (t === tabName) {
+            btn.className = "flex-1 py-1.5 px-3 rounded-xl font-black text-3xs transition cursor-pointer bg-white text-orange-660 shadow-xs border border-orange-100";
+          } else {
+            btn.className = "flex-1 py-1.5 px-3 rounded-xl font-bold text-3xs transition cursor-pointer text-slate-500 hover:bg-white/50";
+          }
+        }
+      });
+
+      if (tabName === "content") {
+        window.renderChildContentList();
+      }
+      if (tabName === "history") {
+        window.renderCourseHistoryTab();
+      }
+    };
+
+    // =========================================================================
+    // DYNAMIC SYLLABUS INTERACTIVE CHAPTER MANAGERS (ADD / REMOVE CHAPTER HANDLERS)
+    // =========================================================================
+    window.renderInteractiveChaptersTags = function() {
+      const bin = document.getElementById("interactive-chapters-tag-bin");
+      if (!bin) return;
+      bin.innerHTML = "";
+
+      const input = document.getElementById("add-course-chapters");
+      if (!input) return;
+
+      const chaptersRaw = input.value;
+      const chapters = chaptersRaw ? chaptersRaw.split(",").map(c => c.trim()).filter(Boolean) : [];
+
+      chapters.forEach((ch, idx) => {
+        const tag = document.createElement("div");
+        tag.className = "flex items-center gap-1.5 px-3 py-1 bg-orange-50 text-orange-700 border border-orange-100 rounded-xl text-4xs font-black shadow-xs";
+        tag.innerHTML = `
+          <span>${ch}</span>
+          <button type="button" onclick="window.deleteInteractiveChapter(${idx})" class="hover:text-red-550 font-extrabold text-[11px] cursor-pointer text-orange-400 font-sans" title="Remove Chapter">&times;</button>
+        `;
+        bin.appendChild(tag);
+      });
+    };
+
+    window.triggerQuickChapterAddPrompt = function() {
+      const name = prompt("Enter the title name of the new chapter/section module:");
+      if (!name || !name.trim()) return;
+
+      const input = document.getElementById("add-course-chapters");
+      if (!input) return;
+
+      const currentVal = input.value.trim();
+      const delim = currentVal ? ", " : "";
+      input.value = currentVal + delim + name.trim();
+
+      window.renderInteractiveChaptersTags();
+    };
+
+    window.deleteInteractiveChapter = function(idxToDelete) {
+      const input = document.getElementById("add-course-chapters");
+      if (!input) return;
+
+      const chapters = input.value ? input.value.split(",").map(c => c.trim()).filter(Boolean) : [];
+      if (idxToDelete < 0 || idxToDelete >= chapters.length) return;
+
+      const removed = chapters[idxToDelete];
+      if (confirm(`Remove custom chapter label model "${removed}" from course syllabus index?`)) {
+        chapters.splice(idxToDelete, 1);
+        input.value = chapters.join(", ");
+        window.renderInteractiveChaptersTags();
+      }
+    };
+
+    // COURSE MANAGER SUBMIT ACTIONS WITH AUTOMATIC SAFETY BACKUPS
     window.publishNewCourseAction = function() {
       const cId = document.getElementById("add-course-id").value.trim();
       const title = document.getElementById("add-course-title").value.trim();
@@ -3015,6 +3317,13 @@
 
       const desc = document.getElementById("add-course-desc").value.trim();
 
+      // New properties for advanced coursework edit system
+      const statusValue = document.getElementById("add-course-status").value;
+      const certificateValue = document.getElementById("add-course-certificate").value;
+      const seoTitle = document.getElementById("add-course-seo-title").value.trim();
+      const seoKeywords = document.getElementById("add-course-seo-keywords").value.trim();
+      const seoDescription = document.getElementById("add-course-seo-desc").value.trim();
+
       if (!cId || !title || (!price && courseType !== "free")) {
         alert("Required error: Must provide Course ID, Title, and Catalog price tags (for paid courses).");
         return;
@@ -3028,6 +3337,9 @@
       const featuresList = splitChecklist("add-course-features");
       const subjectsList = splitChecklist("add-course-subjects");
       const chaptersList = splitChecklist("add-course-chapters");
+      const tagsList = splitChecklist("add-course-tags");
+      const highlightsList = splitChecklist("add-course-highlights");
+      const assignmentsList = splitChecklist("add-course-assignments");
 
       // Parse simulated reviews
       const reviewsInput = document.getElementById("add-course-reviews").value.trim();
@@ -3044,6 +3356,35 @@
             });
           }
         });
+      }
+
+      // AUTO-BACKUP LOGIC WHEN EDITING TO MAINTAIN ENTIRE COURSE REVISION HISTORIES
+      if (window.activeEditorCourseId && localDB.courses && localDB.courses[window.activeEditorCourseId]) {
+        const previousData = localDB.courses[window.activeEditorCourseId];
+        const operatorName = document.getElementById("admin-operator-identity").value.trim();
+        const changeComment = document.getElementById("admin-operator-comment").value.trim();
+
+        if (!operatorName) {
+          alert("Administrative Security Halt: You are updating an existing course. Please go to Tab 4 (Safety & History) and complete the Operator Name field to capture this automated version backup.");
+          window.switchCourseFormTab("history");
+          document.getElementById("admin-operator-identity").focus();
+          return;
+        }
+
+        const snapshotId = "snap_" + Date.now();
+        const snapshotPayload = {
+          snapshotId,
+          courseId: window.activeEditorCourseId,
+          backupTimestamp: Date.now(),
+          backupDateFormatted: new Date().toLocaleString("en-IN"),
+          operatorName,
+          changeComment: changeComment || "Auto properties update release",
+          courseData: previousData
+        };
+
+        // Write historical restoration point snapshot asynchronously
+        set(ref(db, `courses_snapshots/${window.activeEditorCourseId}/${snapshotId}`), snapshotPayload);
+        localStorage.setItem("ed_operator_name", operatorName);
       }
 
       const payload = {
@@ -3078,13 +3419,23 @@
         reviewsList: reviewsList.length ? reviewsList : [
           { name: "Rohit K.", text: "Outstanding content blueprint! The custom pedagogy cards matched 90% of exam guidelines.", rating: 5, date: "12 May 2026" },
           { name: "Suresh P.", text: "Perfect syllabus pacing. The doubt resolution help desk responded in 10 minutes.", rating: 5, date: "02 Jun 2026" }
-        ]
+        ],
+
+        // Added values for custom course parameters
+        status: statusValue || "published",
+        certificateStatus: certificateValue || "enabled",
+        tags: tagsList,
+        highlights: highlightsList,
+        assignments: assignmentsList,
+        seoTitle: seoTitle || title,
+        seoKeywords: seoKeywords || "",
+        seoDescription: seoDescription || subtitle
       };
 
       set(ref(db, `courses/${cId}`), payload)
       .then(() => {
-        alert("Successful integration! Course properties mapped to Firebase database.");
-        clearCourseFormState();
+        alert("Successful integration! Course properties mapped and backup completed securely.");
+        window.clearCourseFormState();
         document.getElementById("course-create-panel").classList.add("hidden");
         syncAllAdminData();
       })
@@ -3117,6 +3468,12 @@
     };
 
     window.clearCourseFormState = function() {
+      window.activeEditorCourseId = "";
+      window.switchCourseFormTab("basic");
+
+      document.getElementById("course-form-title").innerHTML = `<i class="fas fa-graduation-cap text-orange-500"></i> Configure Training Course Pack`;
+      document.getElementById("course-form-badge").innerText = "NEW COURSE";
+
       document.getElementById("add-course-type").value = "paid";
       window.toggleCoursePricingFields();
       document.getElementById("add-course-id").value = "";
@@ -3145,10 +3502,26 @@
       document.getElementById("add-course-chapters").value = "";
       document.getElementById("add-course-reviews").value = "";
 
+      if (typeof window.renderInteractiveChaptersTags === "function") {
+        window.renderInteractiveChaptersTags();
+      }
+
       document.getElementById("add-course-thumb").value = "";
       document.getElementById("add-course-banner").value = "";
       document.getElementById("add-course-qr").value = "";
       document.getElementById("add-course-qr-file").value = "";
+
+      // Clear new advanced fields
+      document.getElementById("add-course-status").value = "published";
+      document.getElementById("add-course-certificate").value = "enabled";
+      document.getElementById("add-course-tags").value = "";
+      document.getElementById("add-course-highlights").value = "";
+      document.getElementById("add-course-assignments").value = "";
+      document.getElementById("add-course-seo-title").value = "";
+      document.getElementById("add-course-seo-keywords").value = "";
+      document.getElementById("add-course-seo-desc").value = "";
+
+      document.getElementById("admin-operator-comment").value = "";
 
       // Hide containers and reset guides
       document.getElementById("course-thumb-preview-container").classList.add("hidden");
@@ -3163,17 +3536,27 @@
 
       document.getElementById("course-teacher-photo-preview-container").classList.add("hidden");
       document.getElementById("course-teacher-photo-status").innerText = "Upload Portrait Photo";
-    }
+
+      // Reset active management state alerts and forms
+      document.getElementById("course-content-manager-unlocked-state").classList.remove("hidden");
+      document.getElementById("course-content-manager-dashboard").classList.add("hidden");
+    };
 
     window.editPublishedCourseAction = function(cId) {
       const course = localDB.courses[cId];
       if (!course) return;
 
+      window.activeEditorCourseId = cId;
+      window.switchCourseFormTab("basic");
+
+      document.getElementById("course-form-title").innerHTML = `<i class="fas fa-edit text-orange-500 animate-spin-slow"></i> Update Active Course Core`;
+      document.getElementById("course-form-badge").innerText = "EDIT MODE";
+
       // Make panel active
       const panel = document.getElementById("course-create-panel");
       panel.classList.remove("hidden");
 
-      // Seed forms
+      // Seed core forms
       document.getElementById("add-course-id").value = course.id || "";
       document.getElementById("add-course-id").disabled = true;
       document.getElementById("add-course-title").value = course.title || "";
@@ -3205,13 +3588,28 @@
       document.getElementById("add-course-subjects").value = (course.subjectsList || []).join(", ") || "";
       document.getElementById("add-course-chapters").value = (course.chaptersList || []).join(", ") || "";
       
+      // Populate new form attributes
+      document.getElementById("add-course-status").value = course.status || "published";
+      document.getElementById("add-course-certificate").value = course.certificateStatus || "enabled";
+      document.getElementById("add-course-tags").value = (course.tags || []).join(", ") || "";
+      document.getElementById("add-course-highlights").value = (course.highlights || []).join(", ") || "";
+      document.getElementById("add-course-assignments").value = (course.assignments || []).join(", ") || "";
+      document.getElementById("add-course-seo-title").value = course.seoTitle || "";
+      document.getElementById("add-course-seo-keywords").value = course.seoKeywords || "";
+      document.getElementById("add-course-seo-desc").value = course.seoDescription || "";
+
+      const identityField = document.getElementById("admin-operator-identity");
+      if (identityField && !identityField.value.trim()) {
+        identityField.value = localStorage.getItem("ed_operator_name") || "";
+      }
+
       let reviewsStr = "";
       if (course.reviewsList && Array.isArray(course.reviewsList)) {
         reviewsStr = course.reviewsList.map(r => `${r.name}:${r.text}`).join(" || ");
       }
       document.getElementById("add-course-reviews").value = reviewsStr;
 
-      // Render preview cards
+      // Render asset preview cards
       if (course.thumbnail) {
         document.getElementById("course-thumb-preview").src = course.thumbnail;
         document.getElementById("course-thumb-preview-container").classList.remove("hidden");
@@ -3231,7 +3629,7 @@
       if (course.teacherPhoto) {
         document.getElementById("course-teacher-photo-preview").src = course.teacherPhoto;
         document.getElementById("course-teacher-photo-preview-container").classList.remove("hidden");
-        document.getElementById("course-teacher-photo-status").innerHTML = '<i class="fa fa-circle-check text-emerald-500 mr-1"></i> Portrait Loaded';
+        document.getElementById("course-teacher-photo-status").innerHTML = '<i class="fa fa-circle-check text-emerald-500 mr-1"></i> Instructor Loaded';
       } else {
         document.getElementById("course-teacher-photo-preview-container").classList.add("hidden");
       }
@@ -3247,6 +3645,16 @@
         document.getElementById("course-qr-status").innerHTML = 'Select Course QR Code';
       }
 
+      // Live trigger content managers dashboard refresh
+      document.getElementById("course-content-manager-unlocked-state").classList.add("hidden");
+      document.getElementById("course-content-manager-dashboard").classList.remove("hidden");
+      document.getElementById("cc-active-course-id").innerText = cId;
+
+      // Render custom syllabus chapters as interactive tags
+      if (typeof window.renderInteractiveChaptersTags === "function") {
+        window.renderInteractiveChaptersTags();
+      }
+
       panel.scrollIntoView({ behavior: 'smooth' });
     };
 
@@ -3258,6 +3666,1024 @@
         });
       }
     }
+
+
+    // =========================================================================
+    // ADVANCED COURSEWORK MODULE: DYNAMIC CHILD CONTENT MANAGERS (TAB 3)
+    // =========================================================================
+    window.renderChildContentList = function() {
+      const unlockedState = document.getElementById("course-content-manager-unlocked-state");
+      const dashboard = document.getElementById("course-content-manager-dashboard");
+      
+      if (!window.activeEditorCourseId) {
+        if (unlockedState) unlockedState.classList.remove("hidden");
+        if (dashboard) dashboard.classList.add("hidden");
+        return;
+      }
+
+      if (unlockedState) unlockedState.classList.add("hidden");
+      if (dashboard) dashboard.classList.remove("hidden");
+
+      document.getElementById("cc-active-course-id").innerText = window.activeEditorCourseId;
+
+      // 1. Fetch & Render Recorded Lectures Grouped By Chapters
+      get(ref(db, "recorded_lectures")).then((snap) => {
+        const lectures = snap.exists() ? snap.val() : {};
+        window.renderLecturesTabList(lectures);
+      });
+
+      // 2. Fetch & Render Associated PDF Revision Notes
+      get(ref(db, "pdfNotes")).then((snap) => {
+        const PDFs = snap.exists() ? snap.val() : {};
+        window.renderPDFNotesTabList(PDFs);
+      });
+
+      // 3. Fetch & Render Associated Mock Quiz Test Papers
+      get(ref(db, "testSeries")).then((snap) => {
+        const tests = snap.exists() ? snap.val() : {};
+        window.renderTestsTabList(tests);
+      });
+
+      // 4. Fetch & Render bimonthly live streams
+      get(ref(db, "liveClasses")).then((snap) => {
+        const lives = snap.exists() ? snap.val() : {};
+        window.renderLiveClassesTabList(lives);
+      });
+    };
+
+    window.renderLecturesTabList = function(lectures) {
+      const container = document.getElementById("cc-lectures-bin");
+      if (!container) return;
+      container.innerHTML = "";
+
+      // Filter by active courseId relation
+      let activeLecs = Object.values(lectures).filter(l => l.courseId === window.activeEditorCourseId);
+      
+      // Sort by orderIndex
+      activeLecs.sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
+
+      if (activeLecs.length === 0) {
+        container.innerHTML = `
+          <div class="text-center p-4 border border-dashed rounded-xl text-4xs text-slate-450 bg-slate-50/50 italic">
+            No recording lecture capsules added yet. Click "Add Lecture" to push videos instantly to students.
+          </div>
+        `;
+        return;
+      }
+
+      // Read the chapters list defined for this course
+      const chaptersVal = document.getElementById("add-course-chapters").value;
+      const chNames = chaptersVal ? chaptersVal.split(",").map(c => c.trim()).filter(Boolean) : ["General Chapter"];
+      
+      // Grouping dictionary
+      const grouped = {};
+      chNames.forEach(ch => grouped[ch] = []);
+      grouped["Uncategorized"] = [];
+
+      activeLecs.forEach(l => {
+        const matchedCh = chNames.find(c => l.chapter && l.chapter.toLowerCase().trim() === c.toLowerCase().trim());
+        if (matchedCh) {
+          grouped[matchedCh].push(l);
+        } else {
+          const partialMatch = chNames.find(c => l.chapter && (l.chapter.toLowerCase().includes(c.toLowerCase()) || c.toLowerCase().includes(l.chapter.toLowerCase())));
+          if (partialMatch) {
+            grouped[partialMatch].push(l);
+          } else {
+            grouped["Uncategorized"].push(l);
+          }
+        }
+      });
+
+      // Render categories
+      Object.entries(grouped).forEach(([chName, lecs]) => {
+        if (lecs.length === 0 && chName === "Uncategorized") return;
+
+        const chDiv = document.createElement("div");
+        chDiv.className = "space-y-1.5 pb-2";
+        chDiv.innerHTML = `
+          <div class="px-2.5 py-1 bg-slate-50 border border-slate-100 rounded-lg text-4xs font-black text-slate-700 tracking-wide uppercase flex items-center justify-between">
+            <span>📚 ${chName}</span>
+            <span class="px-1.5 py-0.5 bg-white text-slate-500 rounded font-bold">${lecs.length} Lectures</span>
+          </div>
+          <div class="space-y-1.5 pl-1" id="ch-bin-${chName.replace(/[^A-Za-z0-9]/g, '-')}"></div>
+        `;
+
+        const lecsBin = chDiv.querySelector(`#ch-bin-${chName.replace(/[^A-Za-z0-9]/g, '-')}`);
+
+        if (lecs.length === 0) {
+          lecsBin.innerHTML = `<p class="text-5xs italic text-slate-400 pl-3">No active items in this chapter.</p>`;
+        } else {
+          lecs.forEach((l) => {
+            const row = document.createElement("div");
+            row.className = "flex items-center justify-between p-2.5 bg-white hover:bg-slate-550/10 border border-slate-105 rounded-xl text-3xs transition gap-2";
+            row.innerHTML = `
+              <div class="flex items-center gap-2 min-w-0">
+                <i class="fa ${l.isDraft ? 'fa-eye-slash text-slate-400' : 'fa-play-circle text-orange-500 animate-pulse'} shadow-xs text-xs"></i>
+                <div class="truncate">
+                  <p class="font-extrabold text-slate-800 truncate">${l.title}</p>
+                  <p class="text-5xs text-slate-450 font-mono flex items-center gap-1.5 mt-0.5">
+                    <span class="px-1 bg-orange-50 text-orange-650 rounded font-bold font-sans capitalize">${l.subject}</span> • 
+                    <span>⏰ ${l.duration || '0M'}</span> • 
+                    <span class="${l.isDraft ? 'text-amber-600' : 'text-emerald-600'} font-bold">${l.isDraft ? 'DRAFT' : 'LIVE'}</span>
+                  </p>
+                </div>
+              </div>
+              <div class="flex gap-1 shrink-0">
+                <button type="button" onclick="moveChildLecture('${l.id}', 'up')" class="p-1 px-1.5 border border-slate-100 rounded-lg hover:bg-orange-50 hover:text-orange-600 transition text-[9px] cursor-pointer" title="Move Up"><i class="fa fa-chevron-up"></i></button>
+                <button type="button" onclick="moveChildLecture('${l.id}', 'down')" class="p-1 px-1.5 border border-slate-100 rounded-lg hover:bg-orange-50 hover:text-orange-600 transition text-[9px] cursor-pointer" title="Move Down"><i class="fa fa-chevron-down"></i></button>
+                <button type="button" onclick="openLectureQuickEdit('${l.id}')" class="p-1 px-1.5 bg-slate-50 border border-slate-100 rounded hover:bg-slate-200 transition text-[9px] cursor-pointer" title="Edit Properties"><i class="fa fa-pen"></i></button>
+                <button type="button" onclick="deleteChildLecture('${l.id}')" class="p-1 px-1.5 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded border border-red-100 transition text-[9px] cursor-pointer" title="Delete Lecture"><i class="fa fa-trash-can"></i></button>
+              </div>
+            `;
+            lecsBin.appendChild(row);
+          });
+        }
+        container.appendChild(chDiv);
+      });
+    };
+
+    window.moveChildLecture = function(lecId, direction) {
+      get(ref(db, "recorded_lectures")).then((snap) => {
+        if (!snap.exists()) return;
+        const lectures = snap.val();
+        const lecture = lectures[lecId];
+        if (!lecture) return;
+
+        const activeLecs = Object.values(lectures)
+          .filter(l => l.courseId === window.activeEditorCourseId)
+          .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
+
+        const curIdx = activeLecs.findIndex(l => l.id === lecId);
+        if (curIdx === -1) return;
+
+        let targetIdx = curIdx + (direction === 'up' ? -1 : 1);
+        if (targetIdx < 0 || targetIdx >= activeLecs.length) return;
+
+        const otherLecture = activeLecs[targetIdx];
+        
+        const temp = lecture.orderIndex || 1;
+        lecture.orderIndex = otherLecture.orderIndex || 1;
+        otherLecture.orderIndex = temp;
+
+        const updates = {};
+        updates[`recorded_lectures/${lecture.id}/orderIndex`] = lecture.orderIndex;
+        updates[`recorded_lectures/${otherLecture.id}/orderIndex`] = otherLecture.orderIndex;
+
+        update(ref(db), updates).then(() => {
+          window.renderChildContentList();
+        });
+      });
+    };
+
+    window.renderPDFNotesTabList = function(PDFs) {
+      const container = document.getElementById("cc-pdf-list-bin");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const activePDFs = Object.values(PDFs).filter(p => p.subject === window.activeEditorCourseId || p.courseId === window.activeEditorCourseId);
+
+      if (activePDFs.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-4 text-4xs text-slate-400 italic bg-slate-50/50 rounded-xl border border-dashed">No study guides uploaded yet.</div>
+        `;
+        return;
+      }
+
+      activePDFs.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "flex items-center justify-between p-2 bg-white border border-slate-105 rounded-xl text-3xs transition hover:bg-slate-50/50 min-w-0";
+        div.innerHTML = `
+          <div class="flex items-center gap-2 min-w-0 truncate">
+            <i class="fa-solid fa-file-pdf text-red-500 shadow-xs text-xs"></i>
+            <div class="truncate">
+              <span class="font-extrabold text-slate-800 block truncate">${p.title}</span>
+              <span class="text-5xs text-slate-400 truncate block font-mono mt-0.5">${p.link || '#'}</span>
+            </div>
+          </div>
+          <div class="flex gap-1 shrink-0">
+            <button type="button" onclick="openPDFQuickEdit('${p.id}')" class="p-1 px-1.5 border border-slate-100 rounded-lg hover:bg-slate-100 transition text-[9px] cursor-pointer" title="Edit"><i class="fa fa-pen"></i></button>
+            <button type="button" onclick="deleteChildPDF('${p.id}')" class="p-1 px-1.5 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded border border-red-100 transition text-[9px] cursor-pointer" title="Delete"><i class="fa fa-trash-can"></i></button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    };
+
+    window.renderTestsTabList = function(tests) {
+      const container = document.getElementById("cc-test-list-bin");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const activeTests = Object.values(tests).filter(t => t.subject === window.activeEditorCourseId || t.courseId === window.activeEditorCourseId);
+
+      if (activeTests.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-4 text-4xs text-slate-400 italic bg-slate-50/50 rounded-xl border border-dashed">No mock quizzes designed yet.</div>
+        `;
+        return;
+      }
+
+      activeTests.forEach(t => {
+        const div = document.createElement("div");
+        div.className = "flex items-center justify-between p-2 bg-white border border-slate-105 rounded-xl text-3xs transition hover:bg-slate-50/50 min-w-0";
+        div.innerHTML = `
+          <div class="flex items-center gap-2 min-w-0 truncate">
+            <i class="fa-solid fa-circle-question text-emerald-600 shadow-sm text-xs animate-pulse"></i>
+            <div class="truncate">
+              <span class="font-extrabold text-slate-800 block truncate">${t.title}</span>
+              <span class="text-5xs text-slate-400 font-mono block mt-0.5">⏱️ ${t.duration || '15 mins'}</span>
+            </div>
+          </div>
+          <div class="flex gap-1 shrink-0">
+            <button type="button" onclick="openQuizQuickEdit('${t.id}')" class="p-1 px-1.5 border border-slate-100 rounded-lg hover:bg-slate-100 transition text-[9px] cursor-pointer" title="Edit"><i class="fa fa-pen"></i></button>
+            <button type="button" onclick="deleteChildTest('${t.id}')" class="p-1 px-1.5 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded border border-red-100 transition text-[9px] cursor-pointer" title="Delete"><i class="fa fa-trash-can"></i></button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    };
+
+    window.renderLiveClassesTabList = function(lives) {
+      const container = document.getElementById("cc-lives-bin");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const activeLives = Object.values(lives).filter(l => l.courseId === window.activeEditorCourseId || l.examType === window.activeEditorCourseId);
+
+      if (activeLives.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-4 text-4xs text-slate-400 italic bg-slate-50/50 rounded-xl border border-dashed">No live classroom streams bimonthly.</div>
+        `;
+        return;
+      }
+
+      activeLives.forEach(l => {
+        const div = document.createElement("div");
+        div.className = "flex items-center justify-between p-2 bg-white border border-slate-105 rounded-xl text-3xs transition hover:bg-slate-50/50 min-w-0";
+        div.innerHTML = `
+          <div class="flex items-center gap-2 min-w-0 truncate">
+            <i class="fa-solid fa-video text-amber-500 animate-pulse text-xs"></i>
+            <div class="truncate">
+              <span class="font-extrabold text-slate-800 block truncate">${l.title}</span>
+              <span class="text-5xs text-slate-500 block font-mono mt-0.5">💬 ${l.scheduledTime || 'Scheduled'}</span>
+            </div>
+          </div>
+          <div class="flex gap-1 shrink-0">
+            <button type="button" onclick="openLiveQuickEdit('${l.id}')" class="p-1 px-1.5 border border-slate-100 rounded-lg hover:bg-slate-100 transition text-[9px] cursor-pointer" title="Edit"><i class="fa fa-pen"></i></button>
+            <button type="button" onclick="deleteChildLive('${l.id}')" class="p-1 px-1.5 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded border border-red-100 transition text-[9px] cursor-pointer" title="Delete"><i class="fa fa-trash-can"></i></button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    };
+
+    // =========================================================================
+    // MODAL QUICK ADDS / EDITS CONTROLLER ROUTINES
+    // =========================================================================
+    window.closeQuickContentModal = function() {
+      document.getElementById("cc-quick-content-modal").classList.add("hidden");
+    };
+
+    window.openQuickContentModal = function(titleValue, fieldsHtml, actionObj) {
+      document.getElementById("cc-modal-title").innerHTML = titleValue;
+      document.getElementById("cc-modal-form-fields").innerHTML = fieldsHtml;
+      window.activeContentModalAction = actionObj;
+      document.getElementById("cc-modal-submit-btn").innerText = "Save Changes";
+      document.getElementById("cc-modal-submit-btn").onclick = function() {
+        window.saveQuickAddEditFormSubmit();
+      };
+      document.getElementById("cc-quick-content-modal").classList.remove("hidden");
+    };
+
+    // Recorded Lectures Quick Creators
+    window.openLectureQuickAdd = function() {
+      const chsVal = document.getElementById("add-course-chapters").value;
+      const chapters = chsVal ? chsVal.split(",").map(c => c.trim()).filter(Boolean) : ["General Learning Unit"];
+      
+      let chOptions = chapters.map(ch => `<option value="${ch}">${ch}</option>`).join("");
+
+      const html = `
+        <div class="space-y-1">
+          <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Target Chapter Category *</label>
+          <select id="modal-lec-chapter" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-200">
+            ${chOptions}
+          </select>
+        </div>
+        <div class="space-y-1">
+          <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Lecture Title Name *</label>
+          <input type="text" id="modal-lec-title" placeholder="Kohlberg moral stages solved analysis" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-orange-200">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Subject Group *</label>
+            <input type="text" id="modal-lec-subject" placeholder="CDP" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Duration Track *</label>
+            <input type="text" id="modal-lec-duration" placeholder="45:00 mins" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+        </div>
+        <div class="space-y-1">
+          <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">YouTube Stream link / Embed url *</label>
+          <input type="text" id="modal-lec-videourl" placeholder="https://www.youtube.com/embed/..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-mono">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Premium Access Rule *</label>
+            <select id="modal-lec-premium" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+              <option value="PREMIUM">Premium Restricted</option>
+              <option value="FREE">Free Preview Capsule</option>
+            </select>
+          </div>
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Release Status Rule *</label>
+            <select id="modal-lec-draft" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+              <option value="PUBLISHED">Published Live</option>
+              <option value="DRAFT">Saved Draft (Hidden)</option>
+            </select>
+          </div>
+        </div>
+        <div class="space-y-1">
+          <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Course Notes Description</label>
+          <textarea id="modal-lec-desc" placeholder="Special pedagogical class for deep analysis." rows="2" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"></textarea>
+        </div>
+      `;
+
+      window.openQuickContentModal(
+        `<i class="fa fa-circle-play text-orange-500"></i> Push Video Lecture Capsule`,
+         html,
+         { type: 'lecture', action: 'add' }
+      );
+    };
+
+    window.openLectureQuickEdit = function(lecId) {
+      get(ref(db, `recorded_lectures/${lecId}`)).then((snap) => {
+        if (!snap.exists()) return;
+        const lec = snap.val();
+
+        const chsVal = document.getElementById("add-course-chapters").value;
+        const chapters = chsVal ? chsVal.split(",").map(c => c.trim()).filter(Boolean) : ["General Learning Unit"];
+        
+        let chOptions = chapters.map(ch => {
+          const sel = (lec.chapter && lec.chapter.toLowerCase() === ch.toLowerCase()) ? "selected" : "";
+          return `<option value="${ch}" ${sel}>${ch}</option>`;
+        }).join("");
+
+        const html = `
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Target Chapter Category *</label>
+            <select id="modal-lec-chapter" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+              ${chOptions}
+            </select>
+          </div>
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Lecture Title Name *</label>
+            <input type="text" id="modal-lec-title" value="${lec.title || ''}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="space-y-1">
+              <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Subject Group *</label>
+              <input type="text" id="modal-lec-subject" value="${lec.subject || 'CDP'}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+            <div class="space-y-1">
+              <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Duration Track *</label>
+              <input type="text" id="modal-lec-duration" value="${lec.duration || '0:00 mins'}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+          </div>
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">YouTube Stream link / Embed url *</label>
+            <input type="text" id="modal-lec-videourl" value="${lec.videoUrl || ''}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-mono">
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="space-y-1">
+              <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Premium Access Rule *</label>
+              <select id="modal-lec-premium" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+                <option value="PREMIUM" ${lec.isFreePreview ? '' : 'selected'}>Premium Restricted</option>
+                <option value="FREE" ${lec.isFreePreview ? 'selected' : ''}>Free Preview Capsule</option>
+              </select>
+            </div>
+            <div class="space-y-1">
+              <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Release Status Rule *</label>
+              <select id="modal-lec-draft" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+                <option value="PUBLISHED" ${lec.isDraft ? '' : 'selected'}>Published Live</option>
+                <option value="DRAFT" ${lec.isDraft ? 'selected' : ''}>Saved Draft (Hidden)</option>
+              </select>
+            </div>
+          </div>
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Course Notes Description</label>
+            <textarea id="modal-lec-desc" rows="2" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">${lec.description || ''}</textarea>
+          </div>
+        `;
+
+        window.openQuickContentModal(
+          `<i class="fa fa-circle-play text-orange-500 animate-spin-slow"></i> Modify Video Lecture Capsule`,
+           html,
+           { type: 'lecture', action: 'edit', id: lecId, orderIndex: lec.orderIndex || 1, watchCount: lec.watchCount || 0 }
+        );
+      });
+    };
+
+    // Revision Study Material PDFs Quick Creators
+    window.openPDFQuickAdd = function() {
+      const html = `
+        <div class="space-y-1">
+          <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Study Guide / Booklet Title *</label>
+          <input type="text" id="modal-pdf-title" placeholder="KVS Child Pedagogy 2026 Special notes" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-bold">
+        </div>
+        <div class="space-y-1">
+          <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide font-mono">Download Link / Cloud booklet URL *</label>
+          <input type="text" id="modal-pdf-link" placeholder="https://drive.google.com/..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-mono">
+        </div>
+        <div class="space-y-1">
+          <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Subject Grouping Topic</label>
+          <input type="text" id="modal-pdf-subject" placeholder="General Study Guidelines" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+        </div>
+      `;
+
+      window.openQuickContentModal(
+        `<i class="fa fa-file-pdf text-rose-500 animate-pulse"></i> Host Study Guide Booklet`,
+         html,
+         { type: 'pdf', action: 'add' }
+      );
+    };
+
+    window.openPDFQuickEdit = function(pdfId) {
+      get(ref(db, `pdfNotes/${pdfId}`)).then((snap) => {
+        if (!snap.exists()) return;
+        const pdf = snap.val();
+
+        const html = `
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Study Guide / Booklet Title *</label>
+            <input type="text" id="modal-pdf-title" value="${pdf.title || ''}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-bold">
+          </div>
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide font-mono">Download Link / Cloud booklet URL *</label>
+            <input type="text" id="modal-pdf-link" value="${pdf.link || ''}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-mono">
+          </div>
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Subject Grouping Topic</label>
+            <input type="text" id="modal-pdf-subject" value="${pdf.groupTopic || pdf.subject || ''}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+        `;
+
+        window.openQuickContentModal(
+          `<i class="fa fa-file-pdf text-rose-500"></i> Modify Study Guide Booklet`,
+           html,
+           { type: 'pdf', action: 'edit', id: pdfId }
+        );
+      });
+    };
+
+    // Mock Test Quizzes Quick Creators
+    window.openQuizQuickAdd = function() {
+      const html = `
+        <div class="space-y-1">
+          <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Mock Test Paper Title Name *</label>
+          <input type="text" id="modal-test-title" placeholder="pedagogical simulated mock exam 5" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-bold">
+        </div>
+        <div class="space-y-1">
+          <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Estimated Solution Timer (mins)</label>
+          <input type="text" id="modal-test-duration" placeholder="15 min" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+        </div>
+        <div class="space-y-1">
+          <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Benchmark Objective Question Statement *</label>
+          <textarea id="modal-test-question" placeholder="Which developmental stages represent moral maturity in Piaget framework?" rows="2" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Option A *</label>
+            <input type="text" id="modal-test-op0" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Option B *</label>
+            <input type="text" id="modal-test-op1" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Option C *</label>
+            <input type="text" id="modal-test-op2" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Option D *</label>
+            <input type="text" id="modal-test-op3" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+        </div>
+        <div class="space-y-1">
+          <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Correct Choice Index *</label>
+          <select id="modal-test-correct" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            <option value="0">Option A</option>
+            <option value="1">Option B</option>
+            <option value="2">Option C</option>
+            <option value="3">Option D</option>
+          </select>
+        </div>
+        <div class="space-y-1">
+          <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Diagnostic Answer Explanation</label>
+          <textarea id="modal-test-explanation" placeholder="Transformational morals structure intellectual values..." rows="2" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"></textarea>
+        </div>
+      `;
+
+      window.openQuickContentModal(
+         `<i class="fa fa-circle-question text-emerald-600 animate-pulse"></i> Code Object-Exam Mock Quiz`,
+          html,
+          { type: 'quiz', action: 'add' }
+      );
+    };
+
+    window.openQuizQuickEdit = function(testId) {
+      get(ref(db, `testSeries/${testId}`)).then((snap) => {
+        if (!snap.exists()) return;
+        const test = snap.val();
+        const mainQ = (test.questions && test.questions[0]) || { statement: "", options: ["","","",""], correctIndex: 0, explanation: "" };
+
+        const html = `
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Mock Test Paper Title Name *</label>
+            <input type="text" id="modal-test-title" value="${test.title || ''}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-bold">
+          </div>
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Estimated Solution Timer (mins)</label>
+            <input type="text" id="modal-test-duration" value="${test.duration || '15 min'}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Benchmark Objective Question Statement *</label>
+            <textarea id="modal-test-question" rows="2" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">${mainQ.statement || ''}</textarea>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="space-y-1">
+              <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide font-sans">Option A *</label>
+              <input type="text" id="modal-test-op0" value="${mainQ.options[0] || ''}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+            <div class="space-y-1">
+              <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide font-sans">Option B *</label>
+              <input type="text" id="modal-test-op1" value="${mainQ.options[1] || ''}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+            <div class="space-y-1">
+              <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide font-sans">Option C *</label>
+              <input type="text" id="modal-test-op2" value="${mainQ.options[2] || ''}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+            <div class="space-y-1">
+              <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide font-sans">Option D *</label>
+              <input type="text" id="modal-test-op3" value="${mainQ.options[3] || ''}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+            </div>
+          </div>
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Correct Choice Index *</label>
+            <select id="modal-test-correct" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+              <option value="0" ${mainQ.correctIndex == 0 ? 'selected' : ''}>Option A</option>
+              <option value="1" ${mainQ.correctIndex == 1 ? 'selected' : ''}>Option B</option>
+              <option value="2" ${mainQ.correctIndex == 2 ? 'selected' : ''}>Option C</option>
+              <option value="3" ${mainQ.correctIndex == 3 ? 'selected' : ''}>Option D</option>
+            </select>
+          </div>
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Diagnostic Answer Explanation</label>
+            <textarea id="modal-test-explanation" rows="2" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">${mainQ.explanation || ''}</textarea>
+          </div>
+        `;
+
+        window.openQuickContentModal(
+          `<i class="fa fa-envelope-open-text text-emerald-600"></i> Modify Object-Exam Mock Quiz`,
+           html,
+           { type: 'quiz', action: 'edit', id: testId }
+        );
+      });
+    };
+
+    // Live Classes Quick Schedulers
+    window.openLiveQuickAdd = function() {
+      const html = `
+        <div class="space-y-1">
+          <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Live Broadcast Classroom Title *</label>
+          <input type="text" id="modal-live-title" placeholder="Bilingual Revision masterclass solved set 4" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-bold">
+        </div>
+        <div class="space-y-1">
+          <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide font-mono">Live Broadcast Stream URL *</label>
+          <input type="text" id="modal-live-url" placeholder="https://www.youtube.com/embed/..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-mono">
+        </div>
+        <div class="space-y-1">
+          <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Scheduled Date & Timing descriptor</label>
+          <input type="text" id="modal-live-scheduled" placeholder="Every Sunday at 6:30 PM (IST)" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+        </div>
+      `;
+
+      window.openQuickContentModal(
+        `<i class="fa fa-video text-amber-500 animate-pulse"></i> Schedule Live Broadcast Streaming`,
+         html,
+         { type: 'live', action: 'add' }
+      );
+    };
+
+    window.openLiveQuickEdit = function(liveId) {
+      get(ref(db, `liveClasses/${liveId}`)).then((snap) => {
+        if (!snap.exists()) return;
+        const live = snap.val();
+
+        const html = `
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Live Broadcast Classroom Title *</label>
+            <input type="text" id="modal-live-title" value="${live.title || ''}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-bold">
+          </div>
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide font-mono">Live Broadcast Stream URL *</label>
+            <input type="text" id="modal-live-url" value="${live.url || ''}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-mono">
+          </div>
+          <div class="space-y-1">
+            <label class="block font-black text-slate-600 text-5xs uppercase tracking-wide">Scheduled Date & Timing descriptor</label>
+            <input type="text" id="modal-live-scheduled" value="${live.scheduledTime || ''}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+          </div>
+        `;
+
+        window.openQuickContentModal(
+          `<i class="fa fa-video text-amber-500"></i> Modify Live Broadcast Streaming`,
+           html,
+           { type: 'live', action: 'edit', id: liveId }
+        );
+      });
+    };
+
+    // Form Submission Router for Unified Child Items Configuration Modal
+    window.saveQuickAddEditFormSubmit = function() {
+      if (!window.activeEditorCourseId) {
+        alert("Action suspended: Ensure course settings context is actively initialized first.");
+        return;
+      }
+      
+      const pType = window.activeContentModalAction.type;
+      const itemId = window.activeContentModalAction.id || (pType + "_" + Date.now());
+
+      if (pType === "lecture") {
+        const chapter = document.getElementById("modal-lec-chapter").value;
+        const title = document.getElementById("modal-lec-title").value.trim();
+        const subject = document.getElementById("modal-lec-subject").value.trim();
+        const duration = document.getElementById("modal-lec-duration").value.trim();
+        const videoUrl = document.getElementById("modal-lec-videourl").value.trim();
+        const premium = document.getElementById("modal-lec-premium").value;
+        const draft = document.getElementById("modal-lec-draft").value;
+        const desc = document.getElementById("modal-lec-desc").value.trim();
+
+        if (!title || !videoUrl) {
+          alert("Course constraints: Lesson title name & complete stream link URL is required!");
+          return;
+        }
+
+        const payload = {
+          id: itemId,
+          courseId: window.activeEditorCourseId,
+          chapter,
+          title,
+          subject: subject || "CDP",
+          duration: duration || "0:00 mins",
+          videoUrl,
+          description: desc || "",
+          isFreePreview: premium === "FREE",
+          isDraft: draft === "DRAFT",
+          watchCount: window.activeContentModalAction.watchCount || 0,
+          orderIndex: window.activeContentModalAction.orderIndex || 1,
+          lastUpdated: Date.now()
+        };
+
+        set(ref(db, `recorded_lectures/${itemId}`), payload).then(() => {
+          alert("Lecture capsule synchronized to student training records successfully!");
+          window.closeQuickContentModal();
+          window.renderChildContentList();
+          syncAllAdminData();
+        });
+
+      } else if (pType === "pdf") {
+        const title = document.getElementById("modal-pdf-title").value.trim();
+        const link = document.getElementById("modal-pdf-link").value.trim();
+        const subject = document.getElementById("modal-pdf-subject").value.trim();
+
+        if (!title || !link) {
+          alert("Provide guide title name & complete file storage stream link!");
+          return;
+        }
+
+        const payload = {
+          id: itemId,
+          courseId: window.activeEditorCourseId,
+          subject: window.activeEditorCourseId, // Mapped for user-dashboard queries
+          title,
+          link,
+          groupTopic: subject || "Revision Notes"
+        };
+
+        set(ref(db, `pdfNotes/${itemId}`), payload).then(() => {
+          alert("Study booklet PDF synchronized accurately!");
+          window.closeQuickContentModal();
+          window.renderChildContentList();
+          syncAllAdminData();
+        });
+
+      } else if (pType === "quiz") {
+        const title = document.getElementById("modal-test-title").value.trim();
+        const dur = document.getElementById("modal-test-duration").value.trim();
+        const qText = document.getElementById("modal-test-question").value.trim();
+        const op0 = document.getElementById("modal-test-op0").value.trim();
+        const op1 = document.getElementById("modal-test-op1").value.trim();
+        const op2 = document.getElementById("modal-test-op2").value.trim();
+        const op3 = document.getElementById("modal-test-op3").value.trim();
+        const correct = parseInt(document.getElementById("modal-test-correct").value);
+        const explanation = document.getElementById("modal-test-explanation").value.trim();
+
+        if (!title || !qText || !op0 || !op1) {
+          alert("Critical constraints: Quiz title, statement, and Option choices are mandatory!");
+          return;
+        }
+
+        const payload = {
+          id: itemId,
+          courseId: window.activeEditorCourseId,
+          subject: window.activeEditorCourseId, // Mapped relations
+          title,
+          duration: dur || "15 min",
+          totalQuestions: 1,
+          questions: [
+            {
+              id: "qt_" + Date.now(),
+              statement: qText,
+              options: [op0, op1, op2, op3].filter(Boolean),
+              correctIndex: correct,
+              explanation: explanation || "Academic validation complete."
+            }
+          ]
+        };
+
+        set(ref(db, `testSeries/${itemId}`), payload).then(() => {
+          alert("Benchmark test paper synchronized successfully!");
+          window.closeQuickContentModal();
+          window.renderChildContentList();
+          syncAllAdminData();
+        });
+
+      } else if (pType === "live") {
+        const title = document.getElementById("modal-live-title").value.trim();
+        const url = document.getElementById("modal-live-url").value.trim();
+        const tag = document.getElementById("modal-live-scheduled").value.trim();
+
+        if (!title || !url) {
+          alert("Identify stream title name & complete players URL first.");
+          return;
+        }
+
+        const payload = {
+          id: itemId,
+          courseId: window.activeEditorCourseId,
+          examType: window.activeEditorCourseId, // Relations
+          title,
+          url,
+          scheduledTime: tag || "Scheduled Live",
+          active: true
+        };
+
+        set(ref(db, `liveClasses/${itemId}`), payload).then(() => {
+          alert("Topic live session bimonthly schedule synchronized!");
+          window.closeQuickContentModal();
+          window.renderChildContentList();
+          syncAllAdminData();
+        });
+      }
+    };
+
+    // Child Content Deletion Engines
+    window.deleteChildLecture = function(lecId) {
+      if (confirm("Remove this lecture recording capsule from standard coursework list?")) {
+        remove(ref(db, `recorded_lectures/${lecId}`)).then(() => {
+          window.renderChildContentList();
+          syncAllAdminData();
+        });
+      }
+    };
+
+    window.deleteChildPDF = function(pdfId) {
+      if (confirm("Remove this revision study guide PDF document from database records?")) {
+        remove(ref(db, `pdfNotes/${pdfId}`)).then(() => {
+          window.renderChildContentList();
+          syncAllAdminData();
+        });
+      }
+    };
+
+    window.deleteChildTest = function(testId) {
+      if (confirm("Remove this simulated objective quiz exam paper?")) {
+        remove(ref(db, `testSeries/${testId}`)).then(() => {
+          window.renderChildContentList();
+          syncAllAdminData();
+        });
+      }
+    };
+
+    window.deleteChildLive = function(liveId) {
+      if (confirm("Cancel this topic classroom live broadcast?")) {
+        remove(ref(db, `liveClasses/${liveId}`)).then(() => {
+          window.renderChildContentList();
+          syncAllAdminData();
+        });
+      }
+    };
+
+
+    // =========================================================================
+    // SAFETY & HISTORY snapshots & RESTORATION MOTORS (TAB 4)
+    // =========================================================================
+    window.renderCourseHistoryTab = function() {
+      const parentList = document.getElementById("cc-snapshots-rows");
+      if (!parentList) return;
+      parentList.innerHTML = "";
+
+      if (!window.activeEditorCourseId) {
+        parentList.innerHTML = `
+          <tr>
+            <td colspan="4" class="text-center text-slate-400 py-6 italic text-4xs bg-slate-50">
+              No active course selected. Select an existing course package from the lists to view previous snapshots.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      get(ref(db, `courses_snapshots/${window.activeEditorCourseId}`)).then((snap) => {
+        if (!snap.exists()) {
+          parentList.innerHTML = `
+            <tr>
+              <td colspan="4" class="text-center text-slate-400 py-8 italic text-4xs bg-slate-50">
+                No archived revision snapshots recorded yet. Safe backups are taken automatically on every update save.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        const snps = Object.values(snap.val()).sort((a, b) => b.backupTimestamp - a.backupTimestamp);
+
+        snps.forEach((s) => {
+          const tr = document.createElement("tr");
+          tr.className = "border-b border-slate-100 hover:bg-slate-50 text-[10px] font-medium";
+          tr.innerHTML = `
+            <td class="py-2 px-3 text-slate-500 font-mono font-bold">${s.snapshotId}</td>
+            <td class="py-2 px-3 text-slate-705 truncate max-w-[120px] font-mono">${s.backupDateFormatted}</td>
+            <td class="py-2 px-3 text-slate-800 font-extrabold flex items-center gap-1"><i class="fa fa-user-shield text-orange-500"></i> ${s.operatorName}</td>
+            <td class="py-2 px-3 text-right">
+              <div class="flex gap-1.5 justify-end">
+                <button type="button" onclick="compareCourseSnapshot('${s.snapshotId}')" class="p-1 px-2 border border-slate-105 hover:bg-orange-50 hover:text-orange-650 rounded-lg text-4xs font-bold transition cursor-pointer flex items-center gap-1 shadow-xs"><i class="fa fa-code-compare"></i> Compare</button>
+                <button type="button" onclick="restoreCourseSnapshot('${s.snapshotId}')" class="p-1 px-2 bg-emerald-50 hover:bg-emerald-600 hover:text-white text-emerald-650 rounded-lg text-4xs font-bold transition cursor-pointer flex items-center gap-1 shadow-xs"><i class="fa fa-rotate-left"></i> Restore</button>
+              </div>
+            </td>
+          `;
+          parentList.appendChild(tr);
+        });
+      });
+    };
+
+    window.compareCourseSnapshot = function(snapId) {
+      if (!window.activeEditorCourseId) return;
+
+      get(ref(db, `courses_snapshots/${window.activeEditorCourseId}/${snapId}`)).then((snap) => {
+        if (!snap.exists()) return;
+        const snapshot = snap.val();
+        const oldCourse = snapshot.courseData;
+        const curCourse = localDB.courses[window.activeEditorCourseId] || {};
+
+        let compareHtml = `
+          <div class="space-y-4 max-h-[400px] overflow-y-auto text-3xs font-medium">
+            <div class="p-3 bg-orange-100/50 rounded-2xl border border-orange-105 text-orange-850">
+              <p class="font-extrabold flex items-center gap-1"><i class="fa fa-info-circle animate-pulse text-xs text-orange-600"></i> Compare Mode Active</p>
+              <p class="text-[10px] mt-0.5 leading-relaxed">Showing historical difference of Snapshot [${snapId}] mapped by verified operator <b>${snapshot.operatorName}</b> with the current active database representation.</p>
+            </div>
+            
+            <table class="w-full border rounded-xl overflow-hidden text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-b text-[10px]">
+                  <th class="p-2 text-slate-700 font-black">Property Field</th>
+                  <th class="p-2 text-rose-600 font-black">Snapshot Val</th>
+                  <th class="p-2 text-emerald-600 font-black">Current Live Version</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y text-[9px]">
+        `;
+
+        const compareFields = [
+          { key: "title", label: "Title Name" },
+          { key: "subtitle", label: "Subheading Descriptor" },
+          { key: "price", label: "Standard Catalog Price" },
+          { key: "discountPercent", label: "Discount Ratio (%)" },
+          { key: "duration", label: "Training Duration" },
+          { key: "language", label: "Classroom Language" },
+          { key: "status", label: "Catalog Visibility Status" },
+          { key: "certificateStatus", label: "Certificate Status" }
+        ];
+
+        compareFields.forEach(f => {
+          const oldVal = oldCourse[f.key] || "N/A";
+          const newVal = curCourse[f.key] || "N/A";
+          const isDiff = oldVal !== newVal;
+
+          compareHtml += `
+            <tr class="${isDiff ? 'bg-amber-100/40 font-bold' : ''}">
+              <td class="p-2 font-bold text-slate-700">${f.label}</td>
+              <td class="p-2 text-slate-800 ${isDiff ? 'text-rose-600 font-black decoration-rose-650' : ''}">${oldVal}</td>
+              <td class="p-2 text-slate-800 ${isDiff ? 'text-emerald-700 font-black' : ''}">${newVal}</td>
+            </tr>
+          `;
+        });
+
+        compareHtml += `
+              </tbody>
+            </table>
+          </div>
+        `;
+
+        window.openQuickContentModal(
+          `<i class="fa fa-code-compare text-orange-500 animate-bounce"></i> Comparative Properties Diff`,
+          compareHtml,
+          { type: 'comparison', id: snapId }
+        );
+
+        // Turn our Config Save action in comparison modal to direct Restoration!
+        document.getElementById("cc-modal-submit-btn").innerText = "Restore This Snapshot";
+        document.getElementById("cc-modal-submit-btn").onclick = function() {
+          window.restoreCourseSnapshot(snapId);
+          window.closeQuickContentModal();
+        };
+      });
+    };
+
+    window.restoreCourseSnapshot = function(snapId) {
+      if (!window.activeEditorCourseId) return;
+
+      if (confirm(`Overwrite current form fields with properties from Snapshot [${snapId}]? (Any unsaved current modifications will be lost!)`)) {
+        get(ref(db, `courses_snapshots/${window.activeEditorCourseId}/${snapId}`)).then((snap) => {
+          if (!snap.exists()) return;
+          const snapshot = snap.val();
+          const p = snapshot.courseData;
+
+          // Seed forms back with the historic parameters
+          document.getElementById("add-course-title").value = p.title || "";
+          document.getElementById("add-course-subtitle").value = p.subtitle || "";
+          document.getElementById("add-course-exam").value = p.examType || "CTET";
+          document.getElementById("add-course-type").value = p.courseType || "paid";
+          window.toggleCoursePricingFields();
+          document.getElementById("add-course-price").value = p.price || "";
+          document.getElementById("add-course-disc").value = p.discountPercent || "";
+          document.getElementById("add-course-desc").value = p.description || "";
+          document.getElementById("add-course-thumb").value = p.thumbnail || "";
+          document.getElementById("add-course-banner").value = p.bannerImage || "";
+          document.getElementById("add-course-qr").value = p.paymentQRCode || "";
+
+          document.getElementById("add-course-duration").value = p.duration || "";
+          document.getElementById("add-course-language").value = p.language || "";
+          document.getElementById("add-course-validity").value = p.courseValidity || "";
+          document.getElementById("add-course-enrolled").value = p.enrolledCount || "";
+          document.getElementById("add-course-completion").value = p.completionProgress || "";
+          document.getElementById("add-course-rating").value = p.rating || "";
+
+          document.getElementById("add-course-teacher-name").value = p.teacherName || "";
+          document.getElementById("add-course-teacher-qualification").value = p.teacherQualification || "";
+          document.getElementById("add-course-teacher-experience").value = p.teacherExperience || "";
+          document.getElementById("add-course-teacher-photo").value = p.teacherPhoto || "";
+          document.getElementById("add-course-teacher-desc").value = p.teacherDescription || "";
+
+          document.getElementById("add-course-features").value = (p.featuresList || []).join(", ") || "";
+          document.getElementById("add-course-subjects").value = (p.subjectsList || []).join(", ") || "";
+          document.getElementById("add-course-chapters").value = (p.chaptersList || []).join(", ") || "";
+
+          document.getElementById("add-course-status").value = p.status || "published";
+          document.getElementById("add-course-certificate").value = p.certificateStatus || "enabled";
+          document.getElementById("add-course-tags").value = (p.tags || []).join(", ") || "";
+          document.getElementById("add-course-highlights").value = (p.highlights || []).join(", ") || "";
+          document.getElementById("add-course-assignments").value = (p.assignments || []).join(", ") || "";
+          
+          document.getElementById("add-course-seo-title").value = p.seoTitle || "";
+          document.getElementById("add-course-seo-keywords").value = p.seoKeywords || "";
+          document.getElementById("add-course-seo-desc").value = p.seoDescription || "";
+
+          // Render corresponding visual loaders
+          if (p.thumbnail) {
+            document.getElementById("course-thumb-preview").src = p.thumbnail;
+            document.getElementById("course-thumb-preview-container").classList.remove("hidden");
+          }
+          if (p.bannerImage) {
+            document.getElementById("course-banner-preview").src = p.bannerImage;
+            document.getElementById("course-banner-preview-container").classList.remove("hidden");
+          }
+          if (p.teacherPhoto) {
+            document.getElementById("course-teacher-photo-preview").src = p.teacherPhoto;
+            document.getElementById("course-teacher-photo-preview-container").classList.remove("hidden");
+          }
+          if (p.paymentQRCode) {
+            document.getElementById("course-qr-preview").src = p.paymentQRCode;
+            document.getElementById("course-qr-preview-container").classList.remove("hidden");
+            document.getElementById("course-qr-droparea").classList.add("hidden");
+          }
+
+          // Force redirect to basic tab for editing
+          window.switchCourseFormTab("basic");
+          alert("Success: Snapshot [ " + snapId + " ] loaded into configuration fields! Click 'Save Properties & Backup' lower down to commit this restored state live.");
+        });
+      }
+    };
 
 
     // LIVE CLASS PUBLISH SCHEDULERS
@@ -3958,6 +5384,26 @@
       });
     };
   </script>
+
+  <!-- Dynamic Child Content Quick Add & Edit Modal -->
+  <div id="cc-quick-content-modal" class="hidden fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl border border-slate-105 relative">
+      <div class="flex items-center justify-between border-b pb-2">
+        <h3 id="cc-modal-title" class="font-black text-slate-800 text-sm flex items-center gap-1.5"><i class="fa fa-plus text-orange-500 animate-pulse"></i> Configure Content Item</h3>
+        <button onclick="closeQuickContentModal()" class="text-slate-400 hover:text-slate-600 text-sm cursor-pointer"><i class="fa fa-times"></i></button>
+      </div>
+
+      <!-- Modal custom forms inputs placeholder -->
+      <div id="cc-modal-form-fields" class="space-y-3 text-xs max-h-[400px] overflow-y-auto pr-1">
+         <!-- Conditionally rendered by JavaScript depending on type -->
+      </div>
+
+      <div class="flex gap-2 justify-end pt-3 border-t">
+         <button onclick="closeQuickContentModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-650 font-bold rounded-xl text-3xs transition cursor-pointer">Cancel / Discard</button>
+         <button onclick="saveQuickAddEditFormSubmit()" id="cc-modal-submit-btn" class="px-5 py-2 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl text-3xs transition cursor-pointer shadow-sm">Save Changes</button>
+      </div>
+    </div>
+  </div>
 
   <!-- QR Code Preview Modal -->
   <div id="course-qr-modal" class="hidden fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
